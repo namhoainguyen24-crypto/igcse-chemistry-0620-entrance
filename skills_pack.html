@@ -381,7 +381,7 @@ const PAPERS = [
           },
           {
             lbl: "(d)",
-            ao: "AO2", tier: "Ext", marks: 3, lines: 3,
+            ao: "AO2", tier: "Ext", marks: 3, lines: 3, draw: true,
             text: "Describe (or draw on paper) the dot-and-cross diagram for the ions in magnesium fluoride (MgF₂), showing outer-shell electrons and charges clearly. <em>(Online candidates: describe outer electrons and charges clearly in text, or draw on paper and send a photo to your teacher.)</em>",
             ms: "M1: One Mg²⁺ ion with 8 (or 0) outer electrons and 2+ charge [1]; M2: Two F⁻ ions each with 7 dots + 1 cross [1]; M3: 1− charge on each F⁻ ion [1]."
           },
@@ -408,7 +408,7 @@ const PAPERS = [
           },
           {
             lbl: "(b)",
-            ao: "AO2", tier: "Ext", marks: 3, lines: 2,
+            ao: "AO2", tier: "Ext", marks: 3, lines: 2, draw: true,
             text: "Using the OF₂ template above, describe (or draw on paper) the dot-and-cross outer-shell electron arrangement in a molecule of oxygen difluoride, OF₂. <em>(Online candidates: state shared pairs and lone pairs on each atom in text, or draw on paper and send a photo.)</em>",
             ms: "M1: O forms 1 shared dot-cross pair with each F [1]; M2: 4 non-bonding electrons (2 lone pairs) on O [1]; M3: 6 non-bonding electrons (3 lone pairs) on each F [1]."
           },
@@ -756,13 +756,13 @@ const PAPERS = [
         parts: [
           {
             lbl: "(a)",
-            ao: "AO2", tier: "Ext", marks: 2, lines: 2,
+            ao: "AO2", tier: "Ext", marks: 2, lines: 2, draw: true,
             text: "But-2-ene (CH₃CH=CHCH₃) undergoes addition polymerisation. Write/draw ONE repeat unit of poly(but-2-ene). <em>(Online candidates: write the condensed repeat unit with continuation bonds, e.g. –CH(CH₃)–..., or draw on paper and attach a photo.)</em>",
             ms: "M1: C–C single backbone with continuation bonds [1]; M2: –CH(CH₃)–CH(CH₃)– accurate [1]."
           },
           {
             lbl: "(b)",
-            ao: "AO2", tier: "Ext", marks: 4, lines: 3,
+            ao: "AO2", tier: "Ext", marks: 4, lines: 3, draw: true,
             text: "A polyester is made by condensation polymerisation of a diol (HO–□–OH) and a dicarboxylic acid (HOOC–■–COOH). Draw ONE repeat unit showing the ester linkage, name the small molecule eliminated, and state why it is called condensation polymerisation. <em>(Online candidates: write the condensed repeat unit using □ and ■ with continuation bonds, or draw on paper and attach a photo.)</em>",
             ms: "M1–M2: –O–□–O–C(=O)–■–C(=O)– with continuation bonds [2]; M3: water / H₂O [1]; M4: monomers join with elimination of a small molecule [1]."
           },
@@ -835,7 +835,7 @@ const PAPERS = [
           },
           {
             lbl: "(b)",
-            ao: "AO3", tier: "ATP", marks: 2, lines: 2,
+            ao: "AO3", tier: "ATP", marks: 2, lines: 2, draw: true,
             text: "Use the plotted curve above to estimate the time taken when 35 cm³ of distilled water is added, and state (or draw on a printed copy) the construction lines used on the graph.",
             ms: "Show vertical line from 35 cm³ to curve and horizontal line to y-axis [1]; value ≈ 31–33 s [1]."
           },
@@ -925,6 +925,9 @@ let state = {
   showQA: true,
   customTime: false,
   importedTimeLimit: null,
+  importedStartedAt: null,
+  importedSubmittedAt: null,
+  importedTimedOut: null,
   answers: {},
   submitted: false,
   rubricScores: {},
@@ -993,6 +996,9 @@ function initUI() {
       state.paperId = p.id;
       state.customTime = false;
       state.importedTimeLimit = null;
+      state.importedStartedAt = null;
+      state.importedSubmittedAt = null;
+      state.importedTimedOut = null;
       state.submitted = false;
       state.answers = {};
       state.rubricScores = {};
@@ -1099,6 +1105,9 @@ function applyImportedSkillsSubmission(obj) {
   document.getElementById("inDate").value = obj.date || "";
   if (obj.time) { document.getElementById("inTime").value = obj.time; state.customTime = true; state.importedTimeLimit = Number(obj.time); }
   else { state.importedTimeLimit = null; }
+  state.importedStartedAt = obj.startedAt ? Number(obj.startedAt) : null;
+  state.importedSubmittedAt = obj.submittedAt ? Number(obj.submittedAt) : null;
+  state.importedTimedOut = (typeof obj.timedOut === "boolean") ? obj.timedOut : null;
   state.elapsedSeconds = Number(obj.elapsedSeconds || 0);
   state.answers = obj.answers || {};
   state.rubricScores = {};
@@ -1192,6 +1201,9 @@ function submitOnlineExam(isTimeout = false) {
 
 function resetOnlineExam() {
   state.importedTimeLimit = null;
+  state.importedStartedAt = null;
+  state.importedSubmittedAt = null;
+  state.importedTimedOut = null;
   state.submitted = false;
   state.answers = {};
   state.rubricScores = {};
@@ -1217,11 +1229,20 @@ function setRubricScore(key, val) {
   if (box) box.innerHTML = buildReportBannerInner();
 }
 
+function fmtClockTs(ts) {
+  if (!ts || !Number.isFinite(ts)) return "";
+  const d = new Date(ts);
+  return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0") + ":" + String(d.getSeconds()).padStart(2,"0");
+}
+
 function buildReportBannerInner() {
   const s = computeOnlineScores();
   const stdLimit = getActivePaper().defaultTime;
   const appliedLimit = state.importedTimeLimit || Number(document.getElementById("inTime").value) || stdLimit;
-  const timeAuditHtml = `<div style="margin-top:6px; font-size:0.82rem; color:#475569;">⏱️ Thời gian làm bài: <strong>${formatTime(state.elapsedSeconds)}</strong> · Giới hạn từ bài nộp: <strong>${appliedLimit} phút</strong>${(state.importedTimeLimit && state.importedTimeLimit > stdLimit) ? ` <span style="color:#b45309; font-weight:600;">⚠️ (Lớn hơn mức chuẩn ${stdLimit} phút)</span>` : ""}</div>`;
+  const tsStart = fmtClockTs(state.importedStartedAt);
+  const tsSub = fmtClockTs(state.importedSubmittedAt);
+  const modeTag = state.importedTimedOut === true ? " · ⏰ Tự khóa do hết giờ" : (state.importedTimedOut === false ? " · ✅ Học sinh tự nộp" : "");
+  const timeAuditHtml = `<div style="margin-top:6px; font-size:0.82rem; color:#475569;">⏱️ Thời gian làm: <strong>${formatTime(state.elapsedSeconds)}</strong> · Giới hạn từ bài nộp: <strong>${appliedLimit} phút</strong>${tsStart ? ` · Bắt đầu: <strong>${tsStart}</strong>` : ""}${tsSub ? ` · Nộp lúc: <strong>${tsSub}</strong>` : ""}${modeTag}${(state.importedTimeLimit && state.importedTimeLimit > stdLimit) ? ` <span style="color:#b45309; font-weight:600;">⚠️ (Lớn hơn mức chuẩn ${stdLimit} phút)</span>` : ""}</div>`;
   if (!s.allGraded) {
     return `
       <h2><span>⏳ Đang chờ hoàn tất chấm điểm Set B (${s.gradedParts}/${s.totalParts} ý)</span>
@@ -1378,7 +1399,11 @@ function renderPaper() {
           const tierCls = pt.tier === "Core" ? "badge-core" : (pt.tier === "Ext" ? "badge-ext" : "badge-atp");
           let inputHtml = "";
           if (isOnline) {
+            const drawNote = pt.draw
+              ? `<div style="font-size:0.8rem; background:#fffbeb; border:1px solid #fcd34d; color:#92400e; border-radius:6px; padding:5px 8px; margin:4px 0 6px;">✏️ <strong>Câu vẽ hình / dựng đường:</strong> Vẽ ra giấy, ghi rõ mã câu <strong>${p.id} Q${q.qNo}${pt.lbl}</strong>, chụp ảnh gửi giáo viên kèm Mã Bài Làm (hoặc mô tả chi tiết vào ô bên dưới).</div>`
+              : "";
             inputHtml = `
+              ${drawNote}
               <textarea class="online-ta" ${state.submitted ? "readonly" : ""} placeholder="Nhập bài làm / phương trình / tính toán..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
               <div class="print-ans" id="pa_${rkey}">${escHtml(savedVal) || "(No written answer)"}</div>
             `;

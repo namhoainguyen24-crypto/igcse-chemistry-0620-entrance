@@ -43,6 +43,7 @@ const sanitizedPapers = PAPERS.map(p => ({
       tier: pt.tier,
       marks: pt.marks,
       lines: pt.lines,
+      draw: !!pt.draw,
       text: pt.text
     }))
   }))
@@ -117,6 +118,7 @@ let state = {
   submitted: false,
   timedOut: false,
   startedAt: null,
+  submittedAt: null,
   deadlineAt: null,
   tokenCopied: false,
   timerSeconds: 45 * 60,
@@ -136,6 +138,7 @@ function saveDraft() {
       submitted: state.submitted,
       timedOut: state.timedOut,
       startedAt: state.startedAt,
+      submittedAt: state.submittedAt,
       deadlineAt: state.deadlineAt,
       elapsedSeconds: state.elapsedSeconds,
       tokenCopied: state.tokenCopied
@@ -197,7 +200,7 @@ function updateTimerDisplays() {
 function syncWallClock() {
   if (!state.startedAt || !state.deadlineAt || state.submitted) return;
   const now = Date.now();
-  state.elapsedSeconds = Math.max(0, Math.floor((now - state.startedAt) / 1000));
+  state.elapsedSeconds = Math.max(0, Math.min(state.timeMinutes * 60, Math.floor((now - state.startedAt) / 1000)));
   state.timerSeconds = Math.max(0, Math.ceil((state.deadlineAt - now) / 1000));
   updateTimerDisplays();
   if (now >= state.deadlineAt) {
@@ -249,7 +252,8 @@ function buildSubmissionToken() {
     school: state.studentSchool,
     date: state.examDate,
     startedAt: state.startedAt,
-    submittedAt: Date.now(),
+    submittedAt: state.submittedAt || Date.now(),
+    timedOut: !!state.timedOut,
     elapsedSeconds: state.elapsedSeconds,
     answers: state.answers
   }));
@@ -293,14 +297,25 @@ function downloadSubmissionFile() {
   showToast("Đã tải file .txt dự phòng chứa Mã Bài Làm!");
 }
 
+function clearSavedExam() {
+  const warnMsg = state.tokenCopied
+    ? "Xóa bài làm đã nộp trên máy này để chuẩn bị cho học sinh tiếp theo làm bài mới?"
+    : "⚠️ Bạn CHƯA copy/tải Mã Bài Làm gửi giáo viên! Bạn có chắc chắn muốn xóa bài trên máy này để làm bài mới?";
+  if (!window.confirm(warnMsg)) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  state.tokenCopied = true;
+  window.location.reload();
+}
+
 function submitOnlineExam(isTimeout = false) {
   if (state.submitted) return;
   clearInterval(state.timerInterval);
   state.timerRunning = false;
   if (state.startedAt) {
-    state.elapsedSeconds = Math.max(state.elapsedSeconds, Math.floor((Date.now() - state.startedAt) / 1000));
+    state.elapsedSeconds = Math.min(state.timeMinutes * 60, Math.max(state.elapsedSeconds, Math.floor((Date.now() - state.startedAt) / 1000)));
   }
   state.submitted = true;
+  state.submittedAt = Date.now();
   state.timedOut = !!isTimeout;
   saveDraft();
   const stBtn = document.getElementById("btnStSubmit");
@@ -353,6 +368,7 @@ function renderPaper() {
       '<button class="btn-share" style="padding:6px 12px; font-size:0.82rem;" onclick="copySubmissionToken()">📋 Copy Mã Bài Làm gửi Giáo viên</button>' +
       '<button class="btn-mini" style="padding:6px 12px; font-size:0.82rem;" onclick="downloadSubmissionFile()">💾 Tải file .txt dự phòng</button>' +
       '<button class="btn-print" style="padding:6px 12px; font-size:0.82rem;" onclick="window.print()">🖨️ In / Lưu PDF bài làm</button>' +
+      '<button class="btn-mini" style="padding:6px 12px; font-size:0.82rem; border-color:#fca5a5; color:#991b1b; background:#fef2f2;" onclick="clearSavedExam()">🔄 Làm bài mới (xóa trên máy)</button>' +
       '</span></h2>' +
       '<div class="report-stats">' +
       '<div class="stat-pill"><div class="lbl">Số ý đã trả lời</div><div class="val">' + answered + ' ý</div></div>' +
@@ -382,8 +398,12 @@ function renderPaper() {
       const rkey = p.id + "_q" + q.qNo + "_" + idx;
       const savedVal = state.answers[rkey] || "";
       const tierCls = pt.tier === "Core" ? "badge-core" : (pt.tier === "Ext" ? "badge-ext" : "badge-atp");
+      const drawNote = pt.draw
+        ? '<div style="font-size:0.8rem; background:#fffbeb; border:1px solid #fcd34d; color:#92400e; border-radius:6px; padding:5px 8px; margin:4px 0 6px;">✏️ <strong>Câu vẽ hình / dựng đường:</strong> Vẽ ra giấy, ghi rõ mã câu <strong>' + p.id + ' Q' + q.qNo + pt.lbl + '</strong>, chụp ảnh gửi giáo viên kèm Mã Bài Làm (hoặc mô tả chi tiết vào ô bên dưới).</div>'
+        : '';
       return '<div class="subpart"><div class="subpart-head"><span><strong>' + pt.lbl + '</strong> ' + pt.text + '</span>' +
         '<span class="q-meta"><span class="badge badge-ao">' + pt.ao + '</span><span class="badge ' + tierCls + '">[' + pt.tier + ']</span><span class="marks-tag">[' + pt.marks + ']</span></span></div>' +
+        drawNote +
         '<textarea class="online-ta" ' + (state.submitted ? "readonly" : "") + ' placeholder="Nhập bài làm / phương trình / tính toán..." oninput="setTextAnswer(\\'' + rkey + '\\', this.value)">' + escHtml(savedVal) + '</textarea>' +
         '<div class="print-ans" id="pa_' + rkey + '">' + (escHtml(savedVal) || "(No written answer)") + '</div></div>';
     }).join("");
@@ -415,6 +435,7 @@ function restoreDraft() {
     }
     if (d.answers && typeof d.answers === "object") state.answers = d.answers;
     state.startedAt = d.startedAt || null;
+    state.submittedAt = d.submittedAt || null;
     state.deadlineAt = d.deadlineAt || null;
     state.elapsedSeconds = Number(d.elapsedSeconds || 0);
     state.tokenCopied = !!d.tokenCopied;

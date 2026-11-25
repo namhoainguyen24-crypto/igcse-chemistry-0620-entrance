@@ -1708,6 +1708,9 @@ let state = {
   rubricScores: {},
   rubricGraded: {},
   importedTimeLimit: null,
+  importedStartedAt: null,
+  importedSubmittedAt: null,
+  importedTimedOut: null,
   timerSeconds: 50 * 60,
   initialTimerSeconds: 50 * 60,
   elapsedSeconds: 0,
@@ -1849,6 +1852,9 @@ function initUI() {
       }
       state.customTime = false;
       state.importedTimeLimit = null;
+      state.importedStartedAt = null;
+      state.importedSubmittedAt = null;
+      state.importedTimedOut = null;
       state.onlineSubmitted = false;
       state.rubricScores = {};
       state.rubricGraded = {};
@@ -1862,6 +1868,9 @@ function initUI() {
       state.tier = btn.dataset.tier;
       state.customTime = false;
       state.importedTimeLimit = null;
+      state.importedStartedAt = null;
+      state.importedSubmittedAt = null;
+      state.importedTimedOut = null;
       state.onlineSubmitted = false;
       state.rubricScores = {};
       state.rubricGraded = {};
@@ -1936,6 +1945,9 @@ function applyPreset(p) {
   state.activePreset = p.id;
   state.customTime = false;
   state.importedTimeLimit = null;
+  state.importedStartedAt = null;
+  state.importedSubmittedAt = null;
+  state.importedTimedOut = null;
   state.customMilestone = false;
   state.onlineSubmitted = false;
   state.rubricScores = {};
@@ -2127,6 +2139,9 @@ function applyImportedSubmission(obj) {
   } else {
     state.importedTimeLimit = null;
   }
+  state.importedStartedAt = obj.startedAt ? Number(obj.startedAt) : null;
+  state.importedSubmittedAt = obj.submittedAt ? Number(obj.submittedAt) : null;
+  state.importedTimedOut = (typeof obj.timedOut === "boolean") ? obj.timedOut : null;
   state.elapsedSeconds = Number(obj.elapsedSeconds || 0);
   state.onlineAnswers = obj.answers || {};
   state.rubricScores = {};
@@ -2323,6 +2338,9 @@ function submitOnlineExam(isTimeout = false) {
 function resetOnlineExam() {
   state.onlineSubmitted = false;
   state.importedTimeLimit = null;
+  state.importedStartedAt = null;
+  state.importedSubmittedAt = null;
+  state.importedTimedOut = null;
   state.onlineAnswers = {};
   state.rubricScores = {};
   state.rubricGraded = {};
@@ -2398,6 +2416,12 @@ function buildStudentSubmittedBanner(s, m) {
   `;
 }
 
+function fmtClockTs(ts) {
+  if (!ts || !Number.isFinite(ts)) return "";
+  const d = new Date(ts);
+  return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0") + ":" + String(d.getSeconds()).padStart(2,"0");
+}
+
 function buildReportBannerInner(s, m, ev) {
   if (state.studentLock) {
     return buildStudentSubmittedBanner(s, m);
@@ -2405,7 +2429,10 @@ function buildReportBannerInner(s, m, ev) {
   const writtenMax = m.total - s.mcqMax;
   const stdLimit = Math.max(15, m.total);
   const appliedLimit = state.importedTimeLimit || Number(document.getElementById("inTime").value) || stdLimit;
-  const timeAuditHtml = `<div style="margin-top:6px; font-size:0.82rem; color:#475569;">⏱️ Thời gian làm bài: <strong>${formatTime(state.elapsedSeconds)}</strong> · Giới hạn từ bài nộp: <strong>${appliedLimit} phút</strong>${(state.importedTimeLimit && state.importedTimeLimit > stdLimit) ? ` <span style="color:#b45309; font-weight:600;">⚠️ (Lớn hơn mức chuẩn ${stdLimit} phút)</span>` : ""}</div>`;
+  const tsStart = fmtClockTs(state.importedStartedAt);
+  const tsSub = fmtClockTs(state.importedSubmittedAt);
+  const modeTag = state.importedTimedOut === true ? " · ⏰ Tự khóa do hết giờ" : (state.importedTimedOut === false ? " · ✅ Học sinh tự nộp" : "");
+  const timeAuditHtml = `<div style="margin-top:6px; font-size:0.82rem; color:#475569;">⏱️ Thời gian làm: <strong>${formatTime(state.elapsedSeconds)}</strong> · Giới hạn từ bài nộp: <strong>${appliedLimit} phút</strong>${tsStart ? ` · Bắt đầu: <strong>${tsStart}</strong>` : ""}${tsSub ? ` · Nộp lúc: <strong>${tsSub}</strong>` : ""}${modeTag}${(state.importedTimeLimit && state.importedTimeLimit > stdLimit) ? ` <span style="color:#b45309; font-weight:600;">⚠️ (Lớn hơn mức chuẩn ${stdLimit} phút)</span>` : ""}</div>`;
   if (!s.allWrittenGraded) {
     return `
       <h2>
