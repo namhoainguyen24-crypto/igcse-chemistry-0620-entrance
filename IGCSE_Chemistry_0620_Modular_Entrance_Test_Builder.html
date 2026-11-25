@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cambridge IGCSE Chemistry (0620) — Modular Entrance Test Builder</title>
+<style>
+  :root {
+    --primary: #1a365d;
+    --accent: #2b6cb0;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --border: #d8e0ea;
+    --text: #1e293b;
+    --muted: #64748b;
+    --core-bg: #e0f2fe;
+    --core-fg: #0369a1;
+    --ext-bg: #fae8ff;
+    --ext-fg: #86198f;
+    --atp-bg: #fef3c7;
+    --atp-fg: #92400e;
+    --ms-bg: #f0fdf4;
+    --ms-border: #86efac;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .hidden { display: none !important; }
+
+  /* ---- CONTROL PANEL (NO-PRINT) ---- */
+  .builder-panel {
+    max-width: 1120px;
+    margin: 20px auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    padding: 20px 24px;
+  }
+  .panel-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid var(--bg);
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+  }
+  .panel-header h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    color: var(--primary);
+  }
+  .panel-header p {
+    margin: 2px 0 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .btn-print {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-print:hover { background: #102a43; }
+  .btn-share {
+    background: #0f766e;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-share:hover { background: #115e59; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #0f172a;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.24);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .toast.show { opacity: 1; }
+
+  .section-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin: 14px 0 8px;
+  }
+  .preset-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .preset-btn {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .preset-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+    gap: 8px;
+  }
+  .mod-chip {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.84rem;
+  }
+  .mod-chip:hover { border-color: var(--accent); }
+  .mod-chip.checked {
+    background: #eff6ff;
+    border-color: var(--accent);
+  }
+  .mod-chip input { margin-top: 3px; accent-color: var(--accent); }
+  .mod-chip .mod-title { font-weight: 600; display: block; color: var(--primary); }
+  .mod-chip .mod-cup { font-size: 0.76rem; color: var(--muted); }
+
+  .controls-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .seg-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .seg-btn {
+    padding: 6px 11px;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .seg-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .meta-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .meta-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+  .meta-field input {
+    width: 100%;
+    padding: 6px 9px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.86rem;
+  }
+  .appendix-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 0.86rem;
+    font-weight: 500;
+  }
+  .appendix-toggles label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+  /* ---- STUDENT LOCKED STICKY BAR & ONLINE TOOLBAR ---- */
+  .student-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    background: #0f172a;
+    color: #fff;
+    padding: 10px 18px;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.18);
+  }
+  .student-topbar-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .student-inputs-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .student-inputs-inline input {
+    padding: 5px 9px;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    background: #1e293b;
+    color: #fff;
+    font-size: 0.84rem;
+    width: 170px;
+  }
+  .student-inputs-inline input::placeholder { color: #94a3b8; }
+  .timer-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.92rem;
+  }
+  .timer-pill.urgent { background: #7f1d1d; border-color: #ef4444; }
+  .btn-mini {
+    border: 1px solid #475569;
+    background: #334155;
+    color: #fff;
+    padding: 4px 9px;
+    border-radius: 5px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-mini:hover { background: #475569; }
+  .btn-submit-online {
+    background: #16a34a;
+    color: #fff;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-submit-online:hover { background: #15803d; }
+  .btn-unlock {
+    background: transparent;
+    border: 1px dashed #64748b;
+    color: #cbd5e1;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 0.74rem;
+    cursor: pointer;
+  }
+  .btn-unlock:hover { color: #fff; border-color: #94a3b8; }
+
+  .online-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .online-toolbar .timer-pill {
+    background: #fff;
+    color: var(--primary);
+    border-color: var(--border);
+  }
+  .online-toolbar .timer-pill.urgent { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+  .online-toolbar .btn-mini {
+    background: #fff;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .online-toolbar .btn-mini:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---- PLACEMENT CALCULATOR ---- */
+  .calc-box {
+    margin-top: 16px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    align-items: end;
+  }
+  .calc-result {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: #e2e8f0;
+  }
+  .band-1 { background: #fee2e2; color: #991b1b; }
+  .band-2 { background: #fef3c7; color: #92400e; }
+  .band-3 { background: #dbeafe; color: #1e40af; }
+  .band-4 { background: #dcfce7; color: #166534; }
+
+  /* ---- ONLINE DIAGNOSTIC REPORT BANNER ---- */
+  .report-banner {
+    border: 2px solid #0f172a;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    background: #f8fafc;
+  }
+  .report-banner h2 {
+    margin: 0 0 8px;
+    font-size: 1.08rem;
+    color: var(--primary);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .report-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .stat-pill {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .stat-pill .lbl { font-size: 0.74rem; color: var(--muted); font-weight: 600; }
+  .stat-pill .val { font-size: 1.05rem; font-weight: 800; color: var(--primary); }
+
+  /* ---- PRINTABLE EXAM PAPER ---- */
+  .paper-sheet {
+    max-width: 900px;
+    margin: 20px auto 50px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    padding: 34px 42px;
+  }
+  .cam-header {
+    border: 2px solid #0f172a;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+  }
+  .cam-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1.5px solid #0f172a;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  .cam-title { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; }
+  .cam-sub { font-size: 0.88rem; font-weight: 600; color: #334155; }
+  .cam-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+    font-size: 0.88rem;
+  }
+  .cam-instructions {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed #94a3b8;
+    font-size: 0.82rem;
+    color: #334155;
+  }
+
+  .section-banner {
+    background: #0f172a;
+    color: #fff;
+    padding: 7px 14px;
+    font-weight: 700;
+    font-size: 0.96rem;
+    margin: 24px 0 14px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 4px;
+  }
+  .q-card {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e2e8f0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .q-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .q-num { font-weight: 700; font-size: 0.96rem; }
+  .q-meta { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .badge-core { background: var(--core-bg); color: var(--core-fg); }
+  .badge-ext { background: var(--ext-bg); color: var(--ext-fg); }
+  .badge-atp { background: var(--atp-bg); color: var(--atp-fg); }
+  .badge-topic { background: #f1f5f9; color: #475569; font-weight: 600; }
+  .marks-tag { font-weight: 700; font-size: 0.85rem; color: #0f172a; }
+
+  .mcq-opts {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 18px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .mcq-opts li {
+    padding: 4px 9px;
+    border-radius: 5px;
+    font-size: 0.92rem;
+    border: 1px solid transparent;
+  }
+  .mcq-opts li.online-opt {
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .mcq-opts li.online-opt:hover { border-color: var(--accent); background: #eff6ff; }
+  .mcq-opts li.selected-opt {
+    border-color: var(--accent);
+    background: #dbeafe;
+    font-weight: 600;
+  }
+  .mcq-opts li.correct-opt {
+    background: #dcfce7 !important;
+    border: 1px solid #4ade80 !important;
+    font-weight: 700;
+  }
+  .mcq-opts li.wrong-opt {
+    background: #fee2e2 !important;
+    border: 1px solid #f87171 !important;
+    color: #991b1b;
+  }
+
+  .subpart { margin: 8px 0 8px 14px; font-size: 0.93rem; }
+  .subpart-head { display: flex; justify-content: space-between; gap: 10px; }
+  .write-lines { margin: 6px 0 8px; }
+  .write-line {
+    border-bottom: 1px dotted #94a3b8;
+    height: 22px;
+    width: 100%;
+  }
+
+  textarea.online-ta {
+    width: 100%;
+    min-height: 54px;
+    margin: 6px 0;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+    background: #f8fafc;
+  }
+  textarea.online-ta:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+  }
+  .print-ans {
+    display: none;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    border-radius: 5px;
+    padding: 6px 9px;
+    margin: 6px 0;
+    font-size: 0.88rem;
+    white-space: pre-wrap;
+  }
+
+  .rubric-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .mark-pill {
+    border: 1px solid #94a3b8;
+    background: #fff;
+    color: var(--text);
+    padding: 2px 9px;
+    border-radius: 5px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .mark-pill.active {
+    background: #16a34a;
+    color: #fff;
+    border-color: #16a34a;
+  }
+
+  .ms-box {
+    margin-top: 8px;
+    background: var(--ms-bg);
+    border-left: 4px solid #16a34a;
+    padding: 8px 12px;
+    font-size: 0.86rem;
+    color: #14532d;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .svg-wrap {
+    margin: 10px 0;
+    text-align: center;
+  }
+  .svg-wrap svg {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  table.exam-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 0.86rem;
+  }
+  table.exam-tbl th, table.exam-tbl td {
+    border: 1px solid #64748b;
+    padding: 5px 8px;
+    text-align: left;
+  }
+  table.exam-tbl th { background: #f1f5f9; font-weight: 700; }
+
+  /* ---- APPENDICES ---- */
+  .appendix-page {
+    page-break-before: always;
+    break-before: page;
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 2px solid #0f172a;
+  }
+  .pt-grid {
+    display: grid;
+    grid-template-columns: repeat(18, minmax(0, 1fr));
+    gap: 2px;
+    margin: 10px 0;
+    font-size: 0.62rem;
+  }
+  .pt-cell {
+    border: 1px solid #475569;
+    padding: 3px 1px;
+    text-align: center;
+    line-height: 1.15;
+    min-height: 38px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #fff;
+  }
+  .pt-cell b { font-size: 0.72rem; }
+  .pt-empty { border: none; background: transparent; }
+  .pt-hdr {
+    border: none;
+    font-weight: 700;
+    font-size: 0.68rem;
+    min-height: 18px;
+    background: #f1f5f9;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+    .paper-sheet {
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+    }
+    textarea.online-ta { display: none !important; }
+    .print-ans { display: block !important; }
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .section-banner {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="student-topbar no-print hidden" id="studentTopbar">
+  <div class="student-topbar-inner">
+    <div class="student-inputs-inline">
+      <strong style="font-size:0.9rem;">0620 Entrance</strong>
+      <input type="text" id="stName" placeholder="Họ tên học sinh...">
+      <input type="text" id="stSchool" placeholder="Trường đang học...">
+    </div>
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+      <div class="timer-pill" id="stTimerPill">⏱️ <span id="stTimerText">40:00</span></div>
+      <button class="btn-mini" onclick="toggleTimer()">⏯</button>
+      <button class="btn-mini" onclick="resetTimer()">↺</button>
+      <button class="btn-mini" id="btnJumpPT" onclick="jumpTo('appendix-pt')">Periodic Table</button>
+      <button class="btn-mini" id="btnJumpQA" onclick="jumpTo('appendix-qa')">QA Notes</button>
+      <button class="btn-submit-online" id="btnStSubmit" onclick="submitOnlineExam()">🚀 Nộp bài &amp; Chấm</button>
+      <button class="btn-mini" onclick="window.print()">🖨️ In</button>
+      <button class="btn-unlock" onclick="unlockTeacher()">Mở bảng GV</button>
+    </div>
+  </div>
+</div>
+
+<div class="builder-panel no-print" id="builderPanel">
+  <div class="panel-header">
+    <div>
+      <h1>Cambridge IGCSE Chemistry (0620) — Modular Entrance Test Builder</h1>
+      <p>12 Topic Modules độc lập (10đ/Module) • Làm bài Online tự chấm / In A4 • Bám sát đề Best Exam Help 2023–2026 &amp; CUP Coursebook 5th Ed.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-share" onclick="copyStudentLink()">🔗 Copy Link gửi Học sinh</button>
+      <button class="btn-print" onclick="window.print()">🖨️ In / Lưu PDF (A4)</button>
+    </div>
+  </div>
+
+  <div class="section-label">1. Chọn nhanh theo Mốc nhập học / Thứ tự dạy của trường</div>
+  <div class="preset-row" id="presetRow"></div>
+
+  <div class="section-label">2. Hoặc tích chọn trực tiếp các Topic học sinh đã học (mỗi Topic = 10 điểm Dual-Tier)</div>
+  <div class="module-grid" id="moduleGrid"></div>
+
+  <div class="controls-bar">
+    <div>
+      <div class="section-label" style="margin-top:0">3. Chế độ phân tầng (Khá / Giỏi)</div>
+      <div class="seg-group" id="tierGroup">
+        <button class="seg-btn active" data-tier="dual">Dual-Tier (Khá + Giỏi — 10đ/Mod)</button>
+        <button class="seg-btn" data-tier="core">Nhóm Khá (Core Focus — 6đ/Mod)</button>
+        <button class="seg-btn" data-tier="ext">Nhóm Giỏi (Extended Focus — 6đ/Mod)</button>
+      </div>
+    </div>
+    <div>
+      <div class="section-label" style="margin-top:0">4. Chế độ hiển thị</div>
+      <div class="seg-group" id="viewGroup">
+        <button class="seg-btn active" data-view="online">📝 Làm bài Online (Online Exam)</button>
+        <button class="seg-btn" data-view="student">📄 Đề In Học Sinh (Print Paper)</button>
+        <button class="seg-btn" data-view="teacher">✅ Đáp Án Giáo Viên (Teacher Key)</button>
+      </div>
+      <div class="appendix-toggles">
+        <label><input type="checkbox" id="chkPT" checked> Kèm Periodic Table (cuối đề)</label>
+        <label><input type="checkbox" id="chkQA" checked> Kèm Qualitative Analysis Notes (Paper 6)</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">5. Thông tin học sinh trên đầu đề</div>
+  <div class="meta-inputs">
+    <div class="meta-field"><label>Họ tên học sinh (Student Name)</label><input type="text" id="inName" placeholder="VD: Nguyễn Minh Anh"></div>
+    <div class="meta-field"><label>Trường đang học (School)</label><input type="text" id="inSchool" placeholder="VD: Vinschool / BIS / VAS"></div>
+    <div class="meta-field"><label>Mốc nhập học (Entry Milestone)</label><input type="text" id="inMilestone" value="Mốc 2A — HK II Year 1 IGCSE"></div>
+    <div class="meta-field"><label>Ngày kiểm tra (Date)</label><input type="text" id="inDate" placeholder="DD/MM/YYYY"></div>
+    <div class="meta-field"><label>Thời gian làm bài (phút)</label><input type="number" id="inTime" min="10" max="180" value="40"></div>
+  </div>
+
+  <div class="calc-box">
+    <div class="section-label" style="margin-top:0">6. Công cụ chấm &amp; Xếp lớp nhanh (Live Placement Calculator)</div>
+    <div class="calc-grid">
+      <div class="meta-field"><label>Điểm [Core] đạt được (Tối đa: <span id="maxCoreLbl">0</span>)</label><input type="number" id="earnCore" min="0" value="0"></div>
+      <div class="meta-field"><label>Điểm [Ext] đạt được (Tối đa: <span id="maxExtLbl">0</span>)</label><input type="number" id="earnExt" min="0" value="0"></div>
+      <div class="meta-field"><label>Điểm [ATP] đạt được (Tối đa: <span id="maxAtpLbl">0</span>)</label><input type="number" id="earnAtp" min="0" value="0"></div>
+      <div class="meta-field"><label>Tổng điểm đề hiện tại</label><input type="text" id="totalSummary" readonly value="0 / 0"></div>
+    </div>
+    <div class="calc-result" id="calcResult">Nhập điểm 3 phần sau khi chấm (hoặc nộp bài Online) để xem kết quả xếp lớp Khá / Giỏi.</div>
+  </div>
+</div>
+
+<div class="paper-sheet" id="paperSheet"></div>
+<div class="toast no-print" id="toastBox"></div>
+
+<script>
+const PRESETS = [
+  { id: "m1", label: "Mốc 1: Đầu Y1 (Pre-IGCSE)", modules: [1, 2, 12], milestone: "Mốc 1 — Đầu Year 1 IGCSE (HK I Y10)" },
+  { id: "m2a", label: "Mốc 2A: HK II Y1 (CUP tuần tự Ch. 1–5, 21)", modules: [1, 2, 3, 12], milestone: "Mốc 2A — HK II Year 1 (Ch. 1–5, 21)" },
+  { id: "m2b", label: "Mốc 2B: HK II Y1 (Dễ→Khó Ch. 1–4, 11–13, 21)", modules: [1, 2, 7, 8, 12], milestone: "Mốc 2B — HK II Year 1 (Ch. 1–4, 11–13, 21)" },
+  { id: "m3", label: "Mốc 3: Đầu Y2 (HK I Y11: Ch. 6–13)", modules: [4, 5, 6, 7, 8], milestone: "Mốc 3 — Đầu Year 2 IGCSE (HK I Y11)" },
+  { id: "m4", label: "Mốc 4: HK II Y2 (Pre-Mock: Ch. 14–22 + Tổng hợp)", modules: [3, 6, 9, 10, 11, 12], milestone: "Mốc 4 — HK II Year 2 (Pre-Mock 0620)" },
+  { id: "full", label: "Full 12 Topics (120đ)", modules: [1,2,3,4,5,6,7,8,9,10,11,12], milestone: "Full Syllabus Review (Topics 1–12)" }
+];
+
+const SVGS = {
+  coolingCurve: `<svg viewBox="0 0 420 220" width="380" xmlns="http://www.w3.org/2000/svg">
+    <line x1="55" y1="20" x2="55" y2="185" stroke="#1e293b" stroke-width="2"/>
+    <line x1="55" y1="185" x2="395" y2="185" stroke="#1e293b" stroke-width="2"/>
+    <text x="16" y="105" font-size="11" font-weight="bold" transform="rotate(-90 16,105)" text-anchor="middle">Temperature / °C</text>
+    <text x="225" y="208" font-size="11" font-weight="bold" text-anchor="middle">Time / min</text>
+    <line x1="50" y1="70" x2="170" y2="70" stroke="#94a3b8" stroke-dasharray="4,3"/>
+    <text x="46" y="74" font-size="10" text-anchor="end">95</text>
+    <line x1="50" y1="125" x2="295" y2="125" stroke="#94a3b8" stroke-dasharray="4,3"/>
+    <text x="46" y="129" font-size="10" text-anchor="end">55</text>
+    <polyline points="60,35 100,70 165,70 215,125 290,125 360,168" fill="none" stroke="#1d4ed8" stroke-width="2.8"/>
+    <text x="82" y="45" font-size="10" font-weight="bold" fill="#1d4ed8">A</text>
+    <text x="132" y="63" font-size="10" font-weight="bold" fill="#1d4ed8">B</text>
+    <text x="195" y="96" font-size="10" font-weight="bold" fill="#1d4ed8">C</text>
+    <text x="252" y="118" font-size="10" font-weight="bold" fill="#1d4ed8">D</text>
+    <text x="330" y="145" font-size="10" font-weight="bold" fill="#1d4ed8">E</text>
+  </svg>`,
+
+  structures: `<svg viewBox="0 0 480 155" width="460" xmlns="http://www.w3.org/2000/svg">
+    <rect x="8" y="8" width="146" height="138" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="81" y="24" font-size="11" font-weight="bold" text-anchor="middle">Structure A (Graphite)</text>
+    <line x1="30" y1="55" x2="132" y2="55" stroke="#334155" stroke-width="1.5"/>
+    <line x1="30" y1="95" x2="132" y2="95" stroke="#334155" stroke-width="1.5"/>
+    <line x1="48" y1="55" x2="48" y2="95" stroke="#94a3b8" stroke-dasharray="3,3"/>
+    <line x1="81" y1="55" x2="81" y2="95" stroke="#94a3b8" stroke-dasharray="3,3"/>
+    <line x1="114" y1="55" x2="114" y2="95" stroke="#94a3b8" stroke-dasharray="3,3"/>
+    <circle cx="48" cy="55" r="4.5" fill="#0f172a"/><circle cx="81" cy="55" r="4.5" fill="#0f172a"/><circle cx="114" cy="55" r="4.5" fill="#0f172a"/>
+    <circle cx="48" cy="95" r="4.5" fill="#0f172a"/><circle cx="81" cy="95" r="4.5" fill="#0f172a"/><circle cx="114" cy="95" r="4.5" fill="#0f172a"/>
+    <text x="81" y="132" font-size="9.5" text-anchor="middle">Hexagonal layers</text>
+
+    <rect x="167" y="8" width="146" height="138" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="240" y="24" font-size="11" font-weight="bold" text-anchor="middle">Structure B (Diamond)</text>
+    <line x1="240" y1="52" x2="205" y2="85" stroke="#334155" stroke-width="2"/>
+    <line x1="240" y1="52" x2="275" y2="85" stroke="#334155" stroke-width="2"/>
+    <line x1="240" y1="52" x2="240" y2="98" stroke="#334155" stroke-width="2"/>
+    <line x1="240" y1="35" x2="240" y2="52" stroke="#334155" stroke-width="2"/>
+    <circle cx="240" cy="52" r="5" fill="#0f172a"/><circle cx="205" cy="85" r="5" fill="#0f172a"/><circle cx="275" cy="85" r="5" fill="#0f172a"/><circle cx="240" cy="98" r="5" fill="#0f172a"/>
+    <text x="240" y="132" font-size="9.5" text-anchor="middle">4 covalent bonds per C</text>
+
+    <rect x="326" y="8" width="146" height="138" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="399" y="24" font-size="11" font-weight="bold" text-anchor="middle">Structure C (NaCl)</text>
+    <line x1="365" y1="55" x2="433" y2="55" stroke="#64748b"/><line x1="365" y1="95" x2="433" y2="95" stroke="#64748b"/>
+    <line x1="365" y1="55" x2="365" y2="95" stroke="#64748b"/><line x1="399" y1="55" x2="399" y2="95" stroke="#64748b"/><line x1="433" y1="55" x2="433" y2="95" stroke="#64748b"/>
+    <circle cx="365" cy="55" r="6" fill="#2563eb"/><circle cx="399" cy="55" r="8" fill="#16a34a"/><circle cx="433" cy="55" r="6" fill="#2563eb"/>
+    <circle cx="365" cy="95" r="8" fill="#16a34a"/><circle cx="399" cy="95" r="6" fill="#2563eb"/><circle cx="433" cy="95" r="8" fill="#16a34a"/>
+    <text x="399" y="132" font-size="9.5" text-anchor="middle">Alternating + and − ions</text>
+  </svg>`,
+
+  co2DotCross: `<svg viewBox="0 0 320 115" width="280" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="88" cy="58" r="36" fill="none" stroke="#1e293b" stroke-width="1.8"/>
+    <circle cx="160" cy="58" r="36" fill="none" stroke="#1e293b" stroke-width="1.8"/>
+    <circle cx="232" cy="58" r="36" fill="none" stroke="#1e293b" stroke-width="1.8"/>
+    <text x="80" y="62" font-size="13" font-weight="bold" text-anchor="middle">O</text>
+    <text x="160" y="62" font-size="13" font-weight="bold" text-anchor="middle">C</text>
+    <text x="240" y="62" font-size="13" font-weight="bold" text-anchor="middle">O</text>
+    <text x="160" y="108" font-size="9.5" fill="#64748b" text-anchor="middle">Complete the outer-shell electrons (dots and crosses)</text>
+  </svg>`,
+
+  brineCell: `<svg viewBox="0 0 360 185" width="320" xmlns="http://www.w3.org/2000/svg">
+    <rect x="85" y="55" width="190" height="110" fill="#e0f2fe" stroke="#0f172a" stroke-width="2"/>
+    <rect x="85" y="45" width="190" height="22" fill="#fff"/>
+    <line x1="85" y1="45" x2="85" y2="165" stroke="#0f172a" stroke-width="2"/>
+    <line x1="275" y1="45" x2="275" y2="165" stroke="#0f172a" stroke-width="2"/>
+    <rect x="120" y="38" width="16" height="95" fill="#334155"/>
+    <rect x="224" y="38" width="16" height="95" fill="#334155"/>
+    <polyline points="128,38 128,18 165,18" fill="none" stroke="#0f172a" stroke-width="1.8"/>
+    <polyline points="232,38 232,18 195,18" fill="none" stroke="#0f172a" stroke-width="1.8"/>
+    <line x1="168" y1="8" x2="168" y2="28" stroke="#0f172a" stroke-width="2.2"/>
+    <line x1="176" y1="13" x2="176" y2="23" stroke="#0f172a" stroke-width="3.5"/>
+    <line x1="184" y1="8" x2="184" y2="28" stroke="#0f172a" stroke-width="2.2"/>
+    <line x1="192" y1="13" x2="192" y2="23" stroke="#0f172a" stroke-width="3.5"/>
+    <text x="155" y="16" font-size="12" font-weight="bold">+</text>
+    <text x="200" y="16" font-size="12" font-weight="bold">−</text>
+    <text x="90" y="34" font-size="10" font-weight="bold">Anode</text>
+    <text x="242" y="34" font-size="10" font-weight="bold">Cathode</text>
+    <text x="180" y="152" font-size="10" font-weight="bold" text-anchor="middle">Concentrated NaCl(aq)</text>
+  </svg>`,
+
+  reactionPathway: `<svg viewBox="0 0 360 190" width="320" xmlns="http://www.w3.org/2000/svg">
+    <line x1="50" y1="20" x2="50" y2="160" stroke="#0f172a" stroke-width="2"/>
+    <line x1="50" y1="160" x2="340" y2="160" stroke="#0f172a" stroke-width="2"/>
+    <text x="18" y="92" font-size="11" font-weight="bold" transform="rotate(-90 18,92)" text-anchor="middle">Energy</text>
+    <text x="195" y="178" font-size="11" font-weight="bold" text-anchor="middle">Progress of reaction</text>
+    <line x1="65" y1="75" x2="130" y2="75" stroke="#1d4ed8" stroke-width="2.5"/>
+    <path d="M130,75 Q175,18 225,130" fill="none" stroke="#1d4ed8" stroke-width="2.5"/>
+    <line x1="225" y1="130" x2="310" y2="130" stroke="#1d4ed8" stroke-width="2.5"/>
+    <line x1="115" y1="75" x2="235" y2="75" stroke="#94a3b8" stroke-dasharray="4,3"/>
+    <line x1="172" y1="75" x2="172" y2="40" stroke="#dc2626" stroke-width="1.8"/>
+    <polygon points="172,35 168,43 176,43" fill="#dc2626"/>
+    <text x="180" y="57" font-size="11" font-weight="bold" fill="#dc2626">X</text>
+    <line x1="255" y1="75" x2="255" y2="125" stroke="#16a34a" stroke-width="1.8"/>
+    <polygon points="255,130 251,122 259,122" fill="#16a34a"/>
+    <text x="263" y="106" font-size="11" font-weight="bold" fill="#16a34a">Y</text>
+    <text x="95" y="68" font-size="10" text-anchor="middle">CH₄ + 2O₂</text>
+    <text x="275" y="145" font-size="10" text-anchor="middle">CO₂ + 2H₂O</text>
+  </svg>`,
+
+  rateCurve: `<svg viewBox="0 0 380 200" width="340" xmlns="http://www.w3.org/2000/svg">
+    <line x1="55" y1="20" x2="55" y2="165" stroke="#0f172a" stroke-width="2"/>
+    <line x1="55" y1="165" x2="355" y2="165" stroke="#0f172a" stroke-width="2"/>
+    <text x="16" y="92" font-size="10.5" font-weight="bold" transform="rotate(-90 16,92)" text-anchor="middle">Volume of CO₂ / cm³</text>
+    <text x="205" y="188" font-size="10.5" font-weight="bold" text-anchor="middle">Time / s</text>
+    <line x1="55" y1="45" x2="340" y2="45" stroke="#cbd5e1" stroke-dasharray="3,3"/>
+    <line x1="55" y1="73" x2="155" y2="73" stroke="#94a3b8" stroke-dasharray="4,3"/>
+    <line x1="155" y1="73" x2="155" y2="165" stroke="#94a3b8" stroke-dasharray="4,3"/>
+    <text x="48" y="49" font-size="10" text-anchor="end">60</text>
+    <text x="48" y="77" font-size="10" text-anchor="end">46</text>
+    <text x="48" y="168" font-size="10" text-anchor="end">0</text>
+    <text x="155" y="177" font-size="10" text-anchor="middle">40</text>
+    <text x="255" y="177" font-size="10" text-anchor="middle">80</text>
+    <text x="330" y="177" font-size="10" text-anchor="middle">120</text>
+    <path d="M55,165 Q105,95 155,73 T255,45 L340,45" fill="none" stroke="#2563eb" stroke-width="2.6"/>
+    <circle cx="155" cy="73" r="3.5" fill="#dc2626"/>
+    <circle cx="255" cy="45" r="3.5" fill="#dc2626"/>
+  </svg>`,
+
+  blastFurnace: `<svg viewBox="0 0 360 200" width="300" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="145,25 215,25 235,145 220,175 140,175 125,145" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+    <text x="180" y="16" font-size="9.5" font-weight="bold" text-anchor="middle">Fe₂O₃ + Coke (C) + Limestone (CaCO₃)</text>
+    <line x1="180" y1="19" x2="180" y2="38" stroke="#0f172a" stroke-width="1.8"/>
+    <polygon points="180,42 176,34 184,34" fill="#0f172a"/>
+    <line x1="90" y1="130" x2="132" y2="130" stroke="#dc2626" stroke-width="2"/>
+    <text x="85" y="133" font-size="9.5" font-weight="bold" fill="#dc2626" text-anchor="end">Hot air (O₂)</text>
+    <line x1="270" y1="130" x2="228" y2="130" stroke="#dc2626" stroke-width="2"/>
+    <text x="275" y="133" font-size="9.5" font-weight="bold" fill="#dc2626">Hot air (O₂)</text>
+    <rect x="142" y="148" width="76" height="12" fill="#cbd5e1"/>
+    <rect x="140" y="160" width="80" height="14" fill="#94a3b8"/>
+    <text x="242" y="157" font-size="9.5" font-weight="bold">Slag (CaSiO₃)</text>
+    <text x="242" y="172" font-size="9.5" font-weight="bold">Molten iron</text>
+  </svg>`,
+
+  chromatogram: `<svg viewBox="0 0 320 185" width="270" xmlns="http://www.w3.org/2000/svg">
+    <rect x="85" y="15" width="150" height="155" fill="#fff" stroke="#334155" stroke-width="1.8"/>
+    <line x1="85" y1="35" x2="235" y2="35" stroke="#2563eb" stroke-dasharray="5,3" stroke-width="1.5"/>
+    <text x="242" y="38" font-size="9.5" fill="#2563eb" font-weight="bold">Solvent front (6.0 cm)</text>
+    <line x1="85" y1="145" x2="235" y2="145" stroke="#475569" stroke-width="1.4"/>
+    <text x="242" y="148" font-size="9.5" font-weight="bold">Pencil baseline</text>
+    <circle cx="130" cy="68" r="6" fill="#dc2626"/>
+    <text x="130" y="162" font-size="10" font-weight="bold" text-anchor="middle">Dye P</text>
+    <text x="115" y="71" font-size="9" text-anchor="end">4.2 cm</text>
+    <circle cx="190" cy="52" r="5.5" fill="#16a34a"/>
+    <circle cx="190" cy="92" r="5.5" fill="#eab308"/>
+    <circle cx="190" cy="122" r="5.5" fill="#7c3aed"/>
+    <text x="190" y="162" font-size="10" font-weight="bold" text-anchor="middle">Dye Q</text>
+  </svg>`
+};
+
+const MODULES = [
+  {
+    id: 1,
+    title: "Topic 1: States of Matter",
+    cup: "CUP 5th Ed. Ch. 1",
+    mcqCore: {
+      stem: "Which statement correctly describes the arrangement and movement of particles in a liquid?",
+      options: [
+        "Closely packed in a regular lattice, vibrating about fixed positions",
+        "Closely packed in an irregular arrangement, able to slide past one another",
+        "Far apart, moving randomly at high speeds",
+        "Far apart in fixed positions"
+      ],
+      ans: 1,
+      ms: "B — Liquid particles remain touching (closely packed) in a random arrangement and slide past each other."
+    },
+    mcqExt: {
+      stem: "Ammonia gas (NH₃, Mᵣ = 17) and hydrogen chloride gas (HCl, Mᵣ = 36.5) diffuse from opposite ends of a glass tube. Where does the white ring of NH₄Cl form?",
+      options: [
+        "Exactly in the middle of the tube",
+        "Closer to the ammonia end",
+        "Closer to the hydrogen chloride end",
+        "No ring forms because gases only move upwards"
+      ],
+      ans: 2,
+      ms: "C — NH₃ has a lower Mᵣ (17 < 36.5), so NH₃ molecules diffuse faster and travel further before meeting HCl."
+    },
+    theoryCore: {
+      stem: "The cooling curve below shows a pure gas A cooled steadily to a solid E.",
+      svg: "coolingCurve",
+      parts: [
+        { lbl: "(a)", text: "State the physical state of the substance during region <strong>C</strong>.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "State the boiling point of this substance and identify which letter (A–E) represents condensation.", marks: 2, lines: 2 }
+      ],
+      ms: "(a) Liquid [1]. (b) Boiling point = 95 °C [1]; condensation occurs at B [1]."
+    },
+    theoryExt: {
+      stem: "Using kinetic particle theory, answer the following:",
+      parts: [
+        { lbl: "(a)", text: "Explain why the temperature stays constant at 55 °C during region <strong>D</strong> even though heat energy is continuously lost to the surroundings.", marks: 1, lines: 2 },
+        { lbl: "(b)", text: "A sample of gas A is sealed in a syringe. Explain what happens to the gas pressure when the plunger is pushed in at constant temperature.", marks: 2, lines: 3 }
+      ],
+      ms: "(a) Energy is released as intermolecular forces of attraction form between particles (rather than lowering kinetic energy) [1]. (b) Volume decreases so particles are closer together / more particles per unit volume [1] → more frequent collisions with the syringe walls → pressure increases [1]."
+    },
+    atp: {
+      stem: "A pure solid melts sharply at 80 °C. A student measures the melting point of an unknown sample of the same solid and records that it melts from 74 °C to 77 °C. State what this shows about the sample and explain how the melting point range confirms your answer.",
+      marks: 2,
+      lines: 3,
+      ms: "The sample is impure [1]; impurities lower the melting point (below 80 °C) and cause it to melt over a range of temperatures instead of sharply [1]."
+    }
+  },
+  {
+    id: 2,
+    title: "Topic 2: Atoms, Elements & Compounds",
+    cup: "CUP 5th Ed. Ch. 2–3",
+    mcqCore: {
+      stem: "An atom of potassium is represented as ³⁹₁₉K. How many protons, neutrons, and electrons does it contain?",
+      options: [
+        "19 protons, 19 neutrons, 20 electrons",
+        "19 protons, 20 neutrons, 19 electrons",
+        "20 protons, 19 neutrons, 19 electrons",
+        "39 protons, 19 neutrons, 39 electrons"
+      ],
+      ans: 1,
+      ms: "B — Atomic number = 19 (19p, 19e); neutrons = 39 − 19 = 20."
+    },
+    mcqExt: {
+      stem: "A sample of copper contains 69.2% ⁶³Cu and 30.8% ⁶⁵Cu. What is the relative atomic mass (Aᵣ) of copper to 1 decimal place?",
+      options: ["63.0", "63.6", "64.0", "64.4"],
+      ans: 1,
+      ms: "B — Aᵣ = (69.2 × 63 + 30.8 × 65) / 100 = 63.616 ≈ 63.6."
+    },
+    theoryCore: {
+      stem: "Look at the three structures A, B, and C shown below.",
+      svg: "structures",
+      parts: [
+        { lbl: "(a)", text: "State which structure (A, B, or C) conducts electricity when <strong>solid</strong>, and explain why.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Explain why structure <strong>C</strong> conducts electricity when molten or aqueous, but NOT when solid.", marks: 1, lines: 2 }
+      ],
+      ms: "(a) Structure A (graphite) [1]; each C atom forms 3 covalent bonds leaving 1 delocalised electron per atom free to move [1]. (b) Ions are fixed in the lattice when solid, but are free to move when molten/aqueous [1]."
+    },
+    theoryExt: {
+      stem: "Covalent bonding occurs in both simple molecules (CO₂) and giant covalent lattices (SiO₂).",
+      svg: "co2DotCross",
+      parts: [
+        { lbl: "(a)", text: "Describe (or draw on paper) the dot-and-cross arrangement of outer-shell electrons in one molecule of carbon dioxide (CO₂).", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Explain why silicon(IV) oxide (SiO₂) has a much higher melting point than CO₂.", marks: 1, lines: 2 }
+      ],
+      ms: "(a) Two shared pairs (double bond) between C and each O [1]; 2 lone pairs on each O atom and all octets complete [1]. (b) SiO₂ has a giant covalent structure with many strong covalent bonds to break, whereas CO₂ has weak intermolecular forces between molecules [1]."
+    },
+    atp: {
+      stem: "A student tests two white solids X and Y in the lab: Solid X has m.p. 801 °C, dissolves in water, and its solution conducts electricity. Solid Y has m.p. 114 °C and neither solid Y nor molten Y conducts electricity. Identify the type of structure/bonding in X and Y.",
+      marks: 2,
+      lines: 2,
+      ms: "X: giant ionic lattice / ionic bonding [1]; Y: simple molecular / covalent structure [1]."
+    }
+  },
+  {
+    id: 3,
+    title: "Topic 3: Stoichiometry & Moles",
+    cup: "CUP 5th Ed. Ch. 4–5",
+    mcqCore: {
+      stem: "What is the correct chemical formula of aluminium sulfate (containing Al³⁺ and SO₄²⁻ ions)?",
+      options: ["AlSO₄", "Al₂SO₄", "Al₂(SO₄)₃", "Al₃(SO₄)₂"],
+      ans: 2,
+      ms: "C — Balance charges: 2 × (+3) + 3 × (−2) = 0 → Al₂(SO₄)₃."
+    },
+    mcqExt: {
+      stem: "What volume of hydrogen gas (at r.t.p.) is produced when 0.025 mol of magnesium reacts with excess dilute HCl? (Mg + 2HCl → MgCl₂ + H₂)",
+      options: ["0.30 dm³", "0.60 dm³", "1.20 dm³", "6.00 dm³"],
+      ans: 1,
+      ms: "B — n(H₂) = 0.025 mol; V = 0.025 × 24 = 0.60 dm³."
+    },
+    theoryCore: {
+      stem: "Calcium carbonate reacts with dilute hydrochloric acid: CaCO₃(s) + 2HCl(aq) → CaCl₂(aq) + H₂O(l) + CO₂(g). A student adds 2.50 g of pure CaCO₃ to excess acid.",
+      parts: [
+        { lbl: "(a)", text: "Calculate the relative formula mass (Mᵣ) of CaCO₃ and the number of moles of CaCO₃ in 2.50 g.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Write the ionic equation (including state symbols) for the reaction between CaCO₃(s) and H⁺(aq).", marks: 1, lines: 2 }
+      ],
+      ms: "(a) Mᵣ(CaCO₃) = 40 + 12 + 3(16) = 100 [1]; n = 2.50 / 100 = 0.0250 mol [1]. (b) CaCO₃(s) + 2H⁺(aq) → Ca²⁺(aq) + H₂O(l) + CO₂(g) [1]."
+    },
+    theoryExt: {
+      stem: "In a separate experiment, 2.50 g (0.0250 mol) of CaCO₃ is added to 40.0 cm³ of 1.50 mol/dm³ HCl(aq).",
+      parts: [
+        { lbl: "(a)", text: "Calculate the moles of HCl used and deduce which reactant is the limiting reactant.", marks: 1, lines: 2 },
+        { lbl: "(b)", text: "Calculate the theoretical volume of CO₂ gas formed, in cm³, at r.t.p.", marks: 1, lines: 2 },
+        { lbl: "(c)", text: "The student actually collects 510 cm³ of CO₂. Calculate the percentage yield.", marks: 1, lines: 2 }
+      ],
+      ms: "(a) n(HCl) = (40.0/1000) × 1.50 = 0.0600 mol; 0.0250 mol CaCO₃ needs 0.0500 mol HCl → CaCO₃ is limiting [1]. (b) V = 0.0250 × 24 × 1000 = 600 cm³ [1]. (c) % yield = (510 / 600) × 100 = 85.0% [1]."
+    },
+    atp: {
+      stem: "A student measures 25.0 cm³ of HCl into a conical flask using a measuring cylinder, and records three burette readings as: 24, 24.15, 24.2. Identify ONE apparatus improvement for measuring the 25.0 cm³ HCl and ONE recording error in the burette readings.",
+      marks: 2,
+      lines: 3,
+      ms: "Use a (25.0 cm³ volumetric) pipette instead of a measuring cylinder [1]; burette readings must be recorded consistently to 2 decimal places (e.g., 24.00, 24.15, 24.20) [1]."
+    }
+  },
+  {
+    id: 4,
+    title: "Topic 4: Electrochemistry",
+    cup: "CUP 5th Ed. Ch. 6",
+    mcqCore: {
+      stem: "During the electrolysis of molten lead(II) bromide (PbBr₂) using inert carbon electrodes, what is formed at the cathode and anode?",
+      options: [
+        "Cathode: bromine, Anode: lead",
+        "Cathode: lead, Anode: bromine",
+        "Cathode: hydrogen, Anode: bromine",
+        "Cathode: lead, Anode: oxygen"
+      ],
+      ans: 1,
+      ms: "B — Pb²⁺ ions migrate to the negative cathode (forming lead); Br⁻ ions migrate to the positive anode (forming bromine)."
+    },
+    mcqExt: {
+      stem: "During the electrolysis of concentrated aqueous sodium chloride (brine) with inert platinum electrodes, which ionic half-equation occurs at the cathode?",
+      options: [
+        "Na⁺ + e⁻ → Na",
+        "2H⁺ + 2e⁻ → H₂",
+        "2Cl⁻ → Cl₂ + 2e⁻",
+        "4OH⁻ → O₂ + 2H₂O + 4e⁻"
+      ],
+      ans: 1,
+      ms: "B — H⁺ is preferentially discharged over Na⁺ because hydrogen is less reactive than sodium."
+    },
+    theoryCore: {
+      stem: "The diagram shows the electrolysis of concentrated aqueous sodium chloride (brine) using inert carbon electrodes.",
+      svg: "brineCell",
+      parts: [
+        { lbl: "(a)", text: "Name the gas formed at the anode and the gas formed at the cathode.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Name the alkaline solution that remains in the cell after electrolysis.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) Anode: chlorine [1]; Cathode: hydrogen [1]. (b) Aqueous sodium hydroxide / NaOH(aq) [1]."
+    },
+    theoryExt: {
+      stem: "Answer the following questions on electrochemistry:",
+      parts: [
+        { lbl: "(a)", text: "Copper(II) sulfate solution is electrolysed using copper electrodes. Write the ionic half-equation at the anode and explain why the blue colour of the solution stays constant.", marks: 2, lines: 3 },
+        { lbl: "(b)", text: "State ONE advantage of using a hydrogen–oxygen fuel cell compared to a petrol engine in vehicles.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) Anode: Cu → Cu²⁺ + 2e⁻ [1]; rate of Cu²⁺ entering from anode equals rate of Cu²⁺ discharged at cathode so [Cu²⁺] remains constant [1]. (b) Only chemical product is water (no CO₂ / greenhouse gas / toxic emissions) [1]."
+    },
+    atp: {
+      stem: "When electrolysing molten lead(II) chloride in the laboratory, state ONE safety precaution required for the anode gas and describe the chemical test (with expected result) for this gas.",
+      marks: 2,
+      lines: 3,
+      ms: "Safety: carry out in a fume cupboard (chlorine is toxic) [1]; Test: bleaches damp litmus paper (turns white) [1]."
+    }
+  },
+  {
+    id: 5,
+    title: "Topic 5: Chemical Energetics",
+    cup: "CUP 5th Ed. Ch. 7",
+    mcqCore: {
+      stem: "Which process is an endothermic change?",
+      options: [
+        "Combustion of methane",
+        "Neutralisation of HCl with NaOH",
+        "Thermal decomposition of calcium carbonate",
+        "Condensation of steam"
+      ],
+      ans: 2,
+      ms: "C — Thermal decomposition absorbs heat energy continuously from the surroundings."
+    },
+    mcqExt: {
+      stem: "Which statement correctly describes bond breaking and bond making in a chemical reaction?",
+      options: [
+        "Both bond breaking and bond making are exothermic.",
+        "Bond breaking is endothermic and bond making is exothermic.",
+        "Bond breaking is exothermic and bond making is endothermic.",
+        "Neither involves an energy change."
+      ],
+      ans: 1,
+      ms: "B — Energy is absorbed to break bonds (endothermic) and released when new bonds form (exothermic)."
+    },
+    theoryCore: {
+      stem: "The reaction pathway diagram below represents the complete combustion of methane: CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(g).",
+      svg: "reactionPathway",
+      parts: [
+        { lbl: "(a)", text: "Identify the energy changes labelled <strong>X</strong> and <strong>Y</strong>.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "State whether this reaction is exothermic or endothermic, giving a reason from the diagram.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) X = activation energy (Eₐ) [1]; Y = enthalpy change (ΔH) [1]. (b) Exothermic because products have lower energy than reactants [1]."
+    },
+    theoryExt: {
+      stem: "Use the bond energies (kJ/mol): C–H = 413, O=O = 498, C=O = 805, O–H = 464 for the combustion: CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(g).",
+      parts: [
+        { lbl: "(a)", text: "Calculate the total energy absorbed to break all bonds in the reactants.", marks: 1, lines: 2 },
+        { lbl: "(b)", text: "Calculate the total energy released when forming all bonds in the products.", marks: 1, lines: 2 },
+        { lbl: "(c)", text: "Calculate the overall enthalpy change (ΔH), including the correct sign and unit.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) 4(413) + 2(498) = 1652 + 996 = 2648 kJ/mol [1]. (b) 2(805) + 4(464) = 1610 + 1856 = 3466 kJ/mol [1]. (c) ΔH = 2648 − 3466 = −818 kJ/mol [1]."
+    },
+    atp: {
+      stem: "A student measures the temperature rise when zinc reacts with copper(II) sulfate solution in a glass beaker. Suggest ONE improvement to the container to reduce heat loss and explain why the measured temperature rise is usually lower than the theoretical value.",
+      marks: 2,
+      lines: 3,
+      ms: "Use a polystyrene (insulated) cup with a lid [1]; heat is lost to the surroundings (air/beaker/thermometer) [1]."
+    }
+  },
+  {
+    id: 6,
+    title: "Topic 6: Rates, Equilibrium & Redox",
+    cup: "CUP 5th Ed. Ch. 8–10",
+    mcqCore: {
+      stem: "How does a catalyst increase the rate of a chemical reaction?",
+      options: [
+        "Increases the kinetic energy of the reactant particles",
+        "Increases the concentration of reactants",
+        "Provides an alternative reaction pathway with a lower activation energy (Eₐ)",
+        "Shifts the position of equilibrium to the right"
+      ],
+      ans: 2,
+      ms: "C — A catalyst lowers the activation energy so a greater proportion of collisions have E ≥ Eₐ."
+    },
+    mcqExt: {
+      stem: "What is the oxidation number of chromium in the dichromate(VI) ion, Cr₂O₇²⁻?",
+      options: ["+3", "+5", "+6", "+7"],
+      ans: 2,
+      ms: "C — 2x + 7(−2) = −2 → 2x = +12 → x = +6."
+    },
+    theoryCore: {
+      stem: "Excess calcium carbonate chips react with 50 cm³ of 1.0 mol/dm³ HCl at 25 °C. The volume of CO₂ collected is shown on the graph.",
+      svg: "rateCurve",
+      parts: [
+        { lbl: "(a)", text: "Calculate the average rate of reaction during the first 40 s (include units).", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Explain why the reaction stops completely at 80 s.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) 46 / 40 = 1.15 [1] cm³/s [1]. (b) All the hydrochloric acid (limiting reactant) has been used up [1]."
+    },
+    theoryExt: {
+      stem: "In the Contact Process: 2SO₂(g) + O₂(g) ⇌ 2SO₃(g), ΔH = −196 kJ/mol. State the effect on the equilibrium yield of SO₃ using ONLY 'increases', 'decreases', or 'no change':",
+      parts: [
+        { lbl: "(a)", text: "Temperature is increased: effect on equilibrium yield of SO₃.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Pressure is increased: effect on equilibrium yield of SO₃.", marks: 1, lines: 1 },
+        { lbl: "(c)", text: "V₂O₅ catalyst is added: effect on equilibrium yield of SO₃.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) decreases (forward reaction is exothermic) [1]; (b) increases (fewer gas moles on right: 3 → 2) [1]; (c) no change (catalyst speeds forward and reverse rates equally) [1]."
+    },
+    atp: {
+      stem: "In the CO₂ collection experiment above, a student drops CaCO₃ chips into HCl in a conical flask and then quickly pushes in the bung connected to the gas syringe. Identify ONE source of error in this procedure and suggest a practical improvement.",
+      marks: 2,
+      lines: 3,
+      ms: "Some CO₂ gas escapes before the bung is fitted (giving a lower measured volume) [1]; place CaCO₃ in a small suspended test tube inside the sealed flask and tilt/shake to mix [1]."
+    }
+  },
+  {
+    id: 7,
+    title: "Topic 7: Acids, Bases & Salts",
+    cup: "CUP 5th Ed. Ch. 11–12",
+    mcqCore: {
+      stem: "What is the colour of thymolphthalein indicator in dilute hydrochloric acid and in aqueous sodium hydroxide?",
+      options: [
+        "Acid: red, Alkali: yellow",
+        "Acid: colourless, Alkali: blue",
+        "Acid: colourless, Alkali: pink",
+        "Acid: blue, Alkali: colourless"
+      ],
+      ans: 1,
+      ms: "B — Thymolphthalein is colourless in acidic/neutral solutions and blue in alkaline solutions."
+    },
+    mcqExt: {
+      stem: "Which statement defines a strong acid such as hydrochloric acid (HCl)?",
+      options: [
+        "It has a high concentration in mol/dm³.",
+        "It completely dissociates (ionises) in aqueous solution.",
+        "It partially dissociates in aqueous solution.",
+        "It is a proton acceptor."
+      ],
+      ans: 1,
+      ms: "B — Strong acids fully dissociate into ions in water (HCl → H⁺ + Cl⁻)."
+    },
+    theoryCore: {
+      stem: "Answer the following questions on oxides and salt preparation:",
+      parts: [
+        { lbl: "(a)", text: "Classify each oxide as acidic, basic, or amphoteric: <strong>Al₂O₃</strong>, <strong>MgO</strong>, <strong>SO₂</strong>.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Name the method used to prepare an insoluble salt such as barium sulfate (BaSO₄) from two aqueous solutions.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) Al₂O₃ = amphoteric, MgO = basic, SO₂ = acidic [2: all 3 = 2, 2 = 1]. (b) Precipitation [1]."
+    },
+    theoryExt: {
+      stem: "25.0 cm³ of aqueous NaOH is titrated against 0.150 mol/dm³ dilute sulfuric acid: 2NaOH(aq) + H₂SO₄(aq) → Na₂SO₄(aq) + 2H₂O(l). Exactly 20.0 cm³ of H₂SO₄ is required.",
+      parts: [
+        { lbl: "(a)", text: "Calculate the number of moles of H₂SO₄ used.", marks: 1, lines: 2 },
+        { lbl: "(b)", text: "Calculate the number of moles of NaOH in 25.0 cm³ and the concentration of NaOH(aq) in mol/dm³.", marks: 2, lines: 3 }
+      ],
+      ms: "(a) n(H₂SO₄) = (20.0/1000) × 0.150 = 0.00300 mol [1]. (b) n(NaOH) = 2 × 0.00300 = 0.00600 mol [1]; c(NaOH) = 0.00600 / (25.0/1000) = 0.240 mol/dm³ [1]."
+    },
+    atp: {
+      stem: "To prepare pure copper(II) sulfate crystals, excess black copper(II) oxide powder is added to warm dilute sulfuric acid. Explain why copper(II) oxide is added in excess and state how the unreacted solid is removed.",
+      marks: 2,
+      lines: 2,
+      ms: "To ensure all the sulfuric acid is completely neutralised/reacted [1]; remove unreacted CuO by filtration [1]."
+    }
+  },
+  {
+    id: 8,
+    title: "Topic 8: The Periodic Table",
+    cup: "CUP 5th Ed. Ch. 13",
+    mcqCore: {
+      stem: "Which trend is observed going down Group I (alkali metals: Li → Na → K)?",
+      options: [
+        "Melting point increases and reactivity increases",
+        "Melting point decreases and reactivity increases",
+        "Melting point decreases and reactivity decreases",
+        "Density decreases and hardness increases"
+      ],
+      ans: 1,
+      ms: "B — Down Group I, melting point decreases while reactivity with water increases."
+    },
+    mcqExt: {
+      stem: "Which set of properties is characteristic of transition elements (e.g., Fe, Cu, V) compared to Group I metals?",
+      options: [
+        "Low melting points and soft",
+        "Form white compounds only and non-catalytic",
+        "High densities, act as catalysts, and form coloured compounds with variable oxidation states",
+        "React violently with cold water"
+      ],
+      ans: 2,
+      ms: "C — Transition elements have high densities/melting points, variable oxidation states, coloured compounds, and act as catalysts."
+    },
+    theoryCore: {
+      stem: "Answer the following questions about Group I and Group VIII:",
+      parts: [
+        { lbl: "(a)", text: "Describe TWO observations when a small piece of potassium is dropped into cold water.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Explain why Group VIII noble gases (such as argon) are unreactive.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) Any two: fizzes/effervescence, melts into a ball, moves rapidly on surface, lilac flame, potassium disappears [2]. (b) Full outer electron shell (stable electronic configuration) [1]."
+    },
+    theoryExt: {
+      stem: "Aqueous chlorine is added to aqueous potassium bromide (KBr).",
+      parts: [
+        { lbl: "(a)", text: "Write the ionic equation for this displacement reaction and state the colour change of the solution.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Predict what happens when aqueous iodine is added to aqueous potassium bromide, giving a reason.", marks: 1, lines: 2 }
+      ],
+      ms: "(a) Cl₂ + 2Br⁻ → 2Cl⁻ + Br₂ [1]; solution turns orange / orange-brown [1]. (b) No reaction because iodine is less reactive than bromine [1]."
+    },
+    atp: {
+      stem: "When sodium reacts with water containing a few drops of thymolphthalein, a student writes: 'Observation: hydrogen gas is produced.' Explain why this statement is marked wrong in Paper 6 and state what should be written for the indicator colour change instead.",
+      marks: 2,
+      lines: 3,
+      ms: "'Hydrogen gas' is a conclusion, not a physical observation — should write 'effervescence / fizzing / bubbles' [1]; thymolphthalein turns from colourless to blue [1]."
+    }
+  },
+  {
+    id: 9,
+    title: "Topic 9: Metals & Extraction",
+    cup: "CUP 5th Ed. Ch. 14–16",
+    mcqCore: {
+      stem: "Why are alloys (such as brass or steel) harder and stronger than pure metals?",
+      options: [
+        "Alloys form giant covalent lattices",
+        "Atoms of different sizes disrupt the regular layers, making it harder for layers to slide",
+        "Alloys have weaker metallic bonds",
+        "Alloys contain ionic bonds"
+      ],
+      ans: 1,
+      ms: "B — Different-sized atoms distort the metallic layers and prevent them from sliding easily."
+    },
+    mcqExt: {
+      stem: "In the extraction of aluminium by electrolysis of Al₂O₃ dissolved in molten cryolite, why must the carbon anodes be replaced regularly?",
+      options: [
+        "They dissolve in cryolite",
+        "They react with molten aluminium",
+        "Oxygen formed at the anodes reacts with the hot carbon to produce CO₂ gas",
+        "They melt at 950 °C"
+      ],
+      ans: 2,
+      ms: "C — Hot carbon anodes burn away in the oxygen produced at the anode: C + O₂ → CO₂."
+    },
+    theoryCore: {
+      stem: "The diagram shows a blast furnace used to extract iron from haematite (Fe₂O₃).",
+      svg: "blastFurnace",
+      parts: [
+        { lbl: "(a)", text: "Write the balanced symbol equation for the reduction of iron(III) oxide (Fe₂O₃) by carbon monoxide (CO).", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Name the main acidic impurity in iron ore that is removed by calcium oxide as slag.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) Fe₂O₃ + 3CO → 2Fe + 3CO₂ [2: formulae 1, balancing 1]. (b) Silicon(IV) oxide / silica (SiO₂) [1]."
+    },
+    theoryExt: {
+      stem: "Answer the following on metal extraction and corrosion:",
+      parts: [
+        { lbl: "(a)", text: "State TWO reasons why aluminium oxide is dissolved in molten cryolite during aluminium extraction.", marks: 1, lines: 2 },
+        { lbl: "(b)", text: "Explain, in terms of electron transfer, how zinc blocks protect an underground steel (iron) pipe from rusting (sacrificial protection).", marks: 2, lines: 3 }
+      ],
+      ms: "(a) Lowers operating temperature/melting point AND increases electrical conductivity [1 for both]. (b) Zinc is more reactive than iron so zinc loses electrons / oxidises more readily (Zn → Zn²⁺ + 2e⁻) [1], supplying electrons to iron so iron does not oxidise/rust [1]."
+    },
+    atp: {
+      stem: "A student plans an experiment to compare the reactivity of three powdered metals P, Q, and R by reacting each with dilute hydrochloric acid in a polystyrene cup and measuring the temperature rise (ΔT). State TWO variables that must be kept constant to ensure a fair test.",
+      marks: 2,
+      lines: 2,
+      ms: "Any two: same mass (or moles) of powdered metal; same volume and concentration of HCl; same initial temperature of acid [2]."
+    }
+  },
+  {
+    id: 10,
+    title: "Topic 10: Chemistry of the Environment",
+    cup: "CUP 5th Ed. Ch. 17",
+    mcqCore: {
+      stem: "Which chemical test confirms the presence of water?",
+      options: [
+        "Boiling point is 100 °C",
+        "Turns anhydrous copper(II) sulfate from white to blue",
+        "Turns damp red litmus paper blue",
+        "Relights a glowing splint"
+      ],
+      ans: 1,
+      ms: "B — Anhydrous copper(II) sulfate turns white → blue in the presence of water (cobalt(II) chloride turns blue → pink)."
+    },
+    mcqExt: {
+      stem: "How do greenhouse gases such as CO₂ and CH₄ cause global warming?",
+      options: [
+        "They destroy the ozone layer letting UV rays in",
+        "They absorb thermal energy re-emitted from Earth's surface and re-emit it in all directions, reducing thermal energy loss to space",
+        "They react exothermically with oxygen",
+        "They block all visible sunlight from reaching Earth"
+      ],
+      ans: 1,
+      ms: "B — Greenhouse gases absorb and re-emit infrared/thermal radiation emitted from the Earth's surface."
+    },
+    theoryCore: {
+      stem: "Answer the following questions on water and fertilisers:",
+      parts: [
+        { lbl: "(a)", text: "State the THREE essential elements provided by NPK fertilisers for improved plant growth.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "In the treatment of domestic water supply, state the purpose of: (i) chlorination, and (ii) filtration through carbon.", marks: 2, lines: 2 }
+      ],
+      ms: "(a) Nitrogen, phosphorus, potassium [1]. (b)(i) Kills microbes/bacteria [1]; (ii) Removes tastes and odours [1]."
+    },
+    theoryExt: {
+      stem: "Petrol car exhausts contain toxic carbon monoxide (CO) and nitrogen monoxide (NO), which pass through a catalytic converter.",
+      parts: [
+        { lbl: "(a)", text: "Write the balanced symbol equation for the reaction between CO and NO in a catalytic converter.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Explain how oxides of nitrogen (NOₓ) are formed inside a car engine.", marks: 1, lines: 2 }
+      ],
+      ms: "(a) 2CO + 2NO → 2CO₂ + N₂ [2: formulae 1, balancing 1]. (b) High temperature in the engine causes nitrogen and oxygen from the air to react [1]."
+    },
+    atp: {
+      stem: "A colourless liquid turns anhydrous copper(II) sulfate blue. A student claims this proves the liquid is 100% pure water. Explain why the student is wrong and state a physical test that confirms purity.",
+      marks: 2,
+      lines: 3,
+      ms: "Anhydrous CuSO₄ only tests for the presence of water (an aqueous solution also gives a positive result) [1]; measure boiling point (sharply at 100 °C) or freezing point (sharply at 0 °C) [1]."
+    }
+  },
+  {
+    id: 11,
+    title: "Topic 11: Organic Chemistry & Polymers",
+    cup: "CUP 5th Ed. Ch. 18–20",
+    mcqCore: {
+      stem: "Which homologous series has the general formula CₙH₂ₙ and decolourises aqueous bromine rapidly at room temperature?",
+      options: ["Alkanes", "Alkenes", "Alcohols", "Carboxylic acids"],
+      ans: 1,
+      ms: "B — Alkenes contain a C=C double bond (unsaturated) and react rapidly with bromine water (orange-brown → colourless)."
+    },
+    mcqExt: {
+      stem: "Ethanol reacts with propanoic acid in the presence of concentrated H₂SO₄ catalyst. What is the name and formula of the ester formed?",
+      options: [
+        "Propyl ethanoate, CH₃COOCH₂CH₂CH₃",
+        "Ethyl propanoate, CH₃CH₂COOCH₂CH₃",
+        "Ethyl ethanoate, CH₃COOCH₂CH₃",
+        "Propyl propanoate, CH₃CH₂COOCH₂CH₂CH₃"
+      ],
+      ans: 1,
+      ms: "B — Ethanol (ethyl) + propanoic acid (propanoate) → ethyl propanoate (CH₃CH₂COOCH₂CH₃)."
+    },
+    theoryCore: {
+      stem: "Answer the following questions on hydrocarbons and ethanol:",
+      parts: [
+        { lbl: "(a)", text: "Decane (C₁₀H₂₂) undergoes catalytic cracking to form octane (C₈H₁₈) and one other hydrocarbon Z. Write the balanced equation and name Z.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "State ONE reaction condition required for producing ethanol by fermentation of aqueous glucose.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) C₁₀H₂₂ → C₈H₁₈ + C₂H₄ [1]; Z = ethene [1]. (b) Yeast (enzymes) / 25–35 °C / anaerobic (absence of oxygen) [1]."
+    },
+    theoryExt: {
+      stem: "Glucose (C₆H₁₂O₆, Mᵣ = 180) ferments to ethanol (C₂H₅OH, Mᵣ = 46): C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂.",
+      parts: [
+        { lbl: "(a)", text: "Calculate the maximum theoretical mass of ethanol produced from 9.00 g of glucose.", marks: 1, lines: 2 },
+        { lbl: "(b)", text: "Write/draw one repeat unit of nylon (from HOOC–□–COOH and H₂N–■–NH₂) showing the amide linkage, and name the small molecule eliminated.", marks: 1, lines: 2 },
+        { lbl: "(c)", text: "State how PET plastic waste can be chemically recycled back into new PET.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) n(glucose) = 9.00/180 = 0.0500 mol → n(ethanol) = 0.100 mol → mass = 0.100 × 46 = 4.60 g [1]. (b) –C(=O)–□–C(=O)–NH–■–NH– with continuation bonds + water (H₂O) [1]. (c) PET can be converted back into monomers and re-polymerised [1]."
+    },
+    atp: {
+      stem: "Describe a chemical test (reagent and observations for BOTH liquids) to distinguish between liquid hexane (an alkane) and liquid hexene (an alkene).",
+      marks: 2,
+      lines: 3,
+      ms: "Add aqueous bromine / bromine water and shake [1]; hexene decolourises bromine water (orange-brown to colourless), whereas hexane stays orange-brown (no change) [1]."
+    }
+  },
+  {
+    id: 12,
+    title: "Topic 12: Experimental Techniques & Analysis",
+    cup: "CUP 5th Ed. Ch. 21–22",
+    mcqCore: {
+      stem: "Which separation method is best used to separate a miscible mixture of ethanol (b.p. 78 °C) and water (b.p. 100 °C)?",
+      options: ["Filtration", "Fractional distillation", "Crystallisation", "Evaporation to dryness"],
+      ans: 1,
+      ms: "B — Miscible liquids with different boiling points are separated by fractional distillation."
+    },
+    mcqExt: {
+      stem: "Why is a locating agent sometimes sprayed onto a completed paper chromatogram?",
+      options: [
+        "To make the solvent travel faster",
+        "To separate overlapping coloured spots",
+        "To react with colourless substances (such as amino acids) to make them visible",
+        "To prevent the solvent from evaporating"
+      ],
+      ans: 2,
+      ms: "C — Locating agents react with colourless spots to produce coloured/visible spots."
+    },
+    theoryCore: {
+      stem: "A student analyses food dyes P and Q using paper chromatography, obtaining the chromatogram shown below.",
+      svg: "chromatogram",
+      parts: [
+        { lbl: "(a)", text: "Explain why the baseline must be drawn in pencil and why the solvent level must be below this baseline.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "What does the chromatogram show about the purity of dye Q?", marks: 1, lines: 1 }
+      ],
+      ms: "(a) Pencil/graphite is insoluble in the solvent (ink would dissolve and run) [1]; solvent below baseline prevents spots from dissolving into the bulk solvent [1]. (b) Q is a mixture (of 3 substances) / impure [1]."
+    },
+    theoryExt: {
+      stem: "Using the chromatogram above and qualitative analysis tests:",
+      parts: [
+        { lbl: "(a)", text: "Calculate the R_f value of dye P (show your working).", marks: 1, lines: 2 },
+        { lbl: "(b)", text: "Salt X gives a green precipitate with NaOH(aq) (insoluble in excess) and a white precipitate with acidified Ba(NO₃)₂(aq). Identify Salt X.", marks: 1, lines: 1 },
+        { lbl: "(c)", text: "Salt Y gives a lilac flame in a flame test and a yellow precipitate with acidified AgNO₃(aq). Identify Salt Y.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) R_f = 4.2 / 6.0 = 0.70 [1]. (b) Iron(II) sulfate / FeSO₄ [1]. (c) Potassium iodide / KI [1]."
+    },
+    atp: {
+      stem: "State what would be observed when aqueous ammonia, NH₃(aq), is added dropwise and then in excess to aqueous copper(II) sulfate, CuSO₄(aq).",
+      marks: 2,
+      lines: 2,
+      ms: "Light blue precipitate forms initially [1]; precipitate dissolves in excess NH₃(aq) to give a deep/dark blue solution [1]."
+    }
+  }
+];
+
+const PT_DATA = [
+  [1,"H","1",1], null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null, [2,"He","4",18],
+  [3,"Li","7",1],[4,"Be","9",2], null,null,null,null,null,null,null,null,null,null, [5,"B","11",13],[6,"C","12",14],[7,"N","14",15],[8,"O","16",16],[9,"F","19",17],[10,"Ne","20",18],
+  [11,"Na","23",1],[12,"Mg","24",2], null,null,null,null,null,null,null,null,null,null, [13,"Al","27",13],[14,"Si","28",14],[15,"P","31",15],[16,"S","32",16],[17,"Cl","35.5",17],[18,"Ar","40",18],
+  [19,"K","39",1],[20,"Ca","40",2],[21,"Sc","45",3],[22,"Ti","48",4],[23,"V","51",5],[24,"Cr","52",6],[25,"Mn","55",7],[26,"Fe","56",8],[27,"Co","59",9],[28,"Ni","59",10],[29,"Cu","64",11],[30,"Zn","65",12],[31,"Ga","70",13],[32,"Ge","73",14],[33,"As","75",15],[34,"Se","79",16],[35,"Br","80",17],[36,"Kr","84",18],
+  [37,"Rb","85",1],[38,"Sr","88",2],[39,"Y","89",3],[40,"Zr","91",4],[41,"Nb","93",5],[42,"Mo","96",6],[43,"Tc","–",7],[44,"Ru","101",8],[45,"Rh","103",9],[46,"Pd","106",10],[47,"Ag","108",11],[48,"Cd","112",12],[49,"In","115",13],[50,"Sn","119",14],[51,"Sb","122",15],[52,"Te","128",16],[53,"I","127",17],[54,"Xe","131",18],
+  [55,"Cs","133",1],[56,"Ba","137",2],[57,"La*","139",3],[72,"Hf","178",4],[73,"Ta","181",5],[74,"W","184",6],[75,"Re","186",7],[76,"Os","190",8],[77,"Ir","192",9],[78,"Pt","195",10],[79,"Au","197",11],[80,"Hg","201",12],[81,"Tl","204",13],[82,"Pb","207",14],[83,"Bi","209",15],[84,"Po","–",16],[85,"At","–",17],[86,"Rn","–",18]
+];
+
+let state = {
+  selected: [1, 2, 3, 12],
+  activePreset: "m2a",
+  tier: "dual",
+  view: "online",
+  showPT: true,
+  showQA: true,
+  customTime: false,
+  studentLock: false,
+  onlineAnswers: {},
+  onlineSubmitted: false,
+  rubricScores: {},
+  timerSeconds: 40 * 60,
+  timerRunning: false,
+  timerInterval: null
+};
+
+function escHtml(s) {
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function showToast(msg) {
+  const box = document.getElementById("toastBox");
+  box.textContent = msg;
+  box.classList.add("show");
+  setTimeout(() => box.classList.remove("show"), 2600);
+}
+
+function parseUrlParams() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.has("mods")) {
+    const ids = p.get("mods").split(",").map(Number).filter(n => n >= 1 && n <= 12);
+    if (ids.length) {
+      state.selected = Array.from(new Set(ids)).sort((a,b)=>a-b);
+      state.activePreset = null;
+    }
+  }
+  if (p.has("tier") && ["dual","core","ext"].includes(p.get("tier"))) {
+    state.tier = p.get("tier");
+  }
+  if (p.has("milestone")) {
+    document.getElementById("inMilestone").value = p.get("milestone");
+  }
+  if (p.has("pt")) {
+    state.showPT = p.get("pt") !== "0";
+    document.getElementById("chkPT").checked = state.showPT;
+  }
+  if (p.has("qa")) {
+    state.showQA = p.get("qa") !== "0";
+    document.getElementById("chkQA").checked = state.showQA;
+  }
+  if (p.has("time")) {
+    const t = parseInt(p.get("time"), 10);
+    if (t >= 5 && t <= 180) {
+      document.getElementById("inTime").value = t;
+      state.customTime = true;
+      state.timerSeconds = t * 60;
+    }
+  }
+  if (p.get("student") === "1") {
+    state.studentLock = true;
+    state.view = "online";
+  }
+}
+
+function initUI() {
+  const presetRow = document.getElementById("presetRow");
+  PRESETS.forEach(p => {
+    const b = document.createElement("button");
+    b.className = "preset-btn" + (p.id === state.activePreset ? " active" : "");
+    b.textContent = p.label;
+    b.dataset.pid = p.id;
+    b.onclick = () => applyPreset(p);
+    presetRow.appendChild(b);
+  });
+
+  const grid = document.getElementById("moduleGrid");
+  MODULES.forEach(m => {
+    const lbl = document.createElement("label");
+    lbl.className = "mod-chip";
+    lbl.dataset.mid = m.id;
+    lbl.innerHTML = `<input type="checkbox" value="${m.id}"><div><span class="mod-title">${m.title}</span><span class="mod-cup">${m.cup}</span></div>`;
+    const cb = lbl.querySelector("input");
+    cb.onchange = () => {
+      state.activePreset = null;
+      state.selected = Array.from(grid.querySelectorAll("input:checked")).map(x => Number(x.value)).sort((a,b)=>a-b);
+      state.customTime = false;
+      state.onlineSubmitted = false;
+      syncUI();
+    };
+    grid.appendChild(lbl);
+  });
+
+  document.querySelectorAll("#tierGroup .seg-btn").forEach(btn => {
+    btn.onclick = () => {
+      state.tier = btn.dataset.tier;
+      state.customTime = false;
+      state.onlineSubmitted = false;
+      syncUI();
+    };
+  });
+
+  document.querySelectorAll("#viewGroup .seg-btn").forEach(btn => {
+    btn.onclick = () => {
+      state.view = btn.dataset.view;
+      syncUI();
+    };
+  });
+
+  document.getElementById("chkPT").onchange = (e) => { state.showPT = e.target.checked; syncAppendixButtons(); renderPaper(); };
+  document.getElementById("chkQA").onchange = (e) => { state.showQA = e.target.checked; syncAppendixButtons(); renderPaper(); };
+
+  ["inName","inSchool","inMilestone","inDate"].forEach(id => {
+    document.getElementById(id).oninput = renderPaper;
+  });
+  document.getElementById("stName").oninput = (e) => {
+    document.getElementById("inName").value = e.target.value;
+    updateHeaderMetaOnly();
+  };
+  document.getElementById("stSchool").oninput = (e) => {
+    document.getElementById("inSchool").value = e.target.value;
+    updateHeaderMetaOnly();
+  };
+  document.getElementById("inTime").oninput = () => {
+    state.customTime = true;
+    resetTimer();
+    renderPaper();
+  };
+  ["earnCore","earnExt","earnAtp"].forEach(id => {
+    document.getElementById(id).oninput = updateCalc;
+  });
+
+  parseUrlParams();
+  if (!state.customTime) {
+    const m = getMarksBreakdown();
+    state.timerSeconds = Math.max(15, m.total) * 60;
+  }
+  syncUI();
+}
+
+function updateHeaderMetaOnly() {
+  const n = document.getElementById("hdrName");
+  const s = document.getElementById("hdrSchool");
+  if (n) n.textContent = document.getElementById("inName").value || "___________________________________";
+  if (s) s.textContent = document.getElementById("inSchool").value || "_________________________";
+}
+
+function syncAppendixButtons() {
+  document.getElementById("btnJumpPT").classList.toggle("hidden", !state.showPT);
+  document.getElementById("btnJumpQA").classList.toggle("hidden", !state.showQA);
+}
+
+function unlockTeacher() {
+  state.studentLock = false;
+  syncUI();
+  showToast("Đã mở Bảng điều khiển Giáo viên.");
+}
+
+function applyPreset(p) {
+  state.selected = [...p.modules];
+  state.activePreset = p.id;
+  state.customTime = false;
+  state.onlineSubmitted = false;
+  document.getElementById("inMilestone").value = p.milestone;
+  syncUI();
+}
+
+function getMarksBreakdown() {
+  const n = state.selected.length;
+  if (state.tier === "dual") return { core: n * 4, ext: n * 4, atp: n * 2, total: n * 10 };
+  if (state.tier === "core") return { core: n * 4, ext: 0, atp: n * 2, total: n * 6 };
+  return { core: 0, ext: n * 4, atp: n * 2, total: n * 6 };
+}
+
+function syncUI() {
+  document.getElementById("builderPanel").classList.toggle("hidden", state.studentLock);
+  document.getElementById("studentTopbar").classList.toggle("hidden", !state.studentLock);
+  syncAppendixButtons();
+
+  document.querySelectorAll(".preset-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.pid === state.activePreset);
+  });
+  document.querySelectorAll(".mod-chip").forEach(c => {
+    const mid = Number(c.dataset.mid);
+    const checked = state.selected.includes(mid);
+    c.classList.toggle("checked", checked);
+    c.querySelector("input").checked = checked;
+  });
+  document.querySelectorAll("#tierGroup .seg-btn").forEach(b => b.classList.toggle("active", b.dataset.tier === state.tier));
+  document.querySelectorAll("#viewGroup .seg-btn").forEach(b => b.classList.toggle("active", b.dataset.view === state.view));
+
+  const m = getMarksBreakdown();
+  if (!state.customTime) {
+    const mins = Math.max(15, m.total);
+    document.getElementById("inTime").value = mins;
+    if (!state.timerRunning && !state.onlineSubmitted) state.timerSeconds = mins * 60;
+  }
+  document.getElementById("maxCoreLbl").textContent = m.core;
+  document.getElementById("maxExtLbl").textContent = m.ext;
+  document.getElementById("maxAtpLbl").textContent = m.atp;
+  updateTimerDisplays();
+  updateCalc();
+  renderPaper();
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+}
+
+function updateTimerDisplays() {
+  const txt = formatTime(state.timerSeconds);
+  const urgent = state.timerSeconds <= 300;
+  ["stTimerText","onTimerText"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  });
+  ["stTimerPill","onTimerPill"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("urgent", urgent);
+  });
+}
+
+function toggleTimer() {
+  if (state.timerRunning) {
+    clearInterval(state.timerInterval);
+    state.timerRunning = false;
+  } else {
+    state.timerRunning = true;
+    state.timerInterval = setInterval(() => {
+      if (state.timerSeconds > 0) {
+        state.timerSeconds--;
+        updateTimerDisplays();
+      } else {
+        clearInterval(state.timerInterval);
+        state.timerRunning = false;
+        showToast("Hết giờ làm bài!");
+      }
+    }, 1000);
+  }
+}
+
+function resetTimer() {
+  clearInterval(state.timerInterval);
+  state.timerRunning = false;
+  const mins = parseInt(document.getElementById("inTime").value, 10) || 40;
+  state.timerSeconds = mins * 60;
+  updateTimerDisplays();
+}
+
+function jumpTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+}
+
+function copyStudentLink() {
+  const baseUrl = window.location.origin === "null"
+    ? window.location.href.split("?")[0]
+    : (window.location.origin + window.location.pathname);
+  const params = new URLSearchParams({
+    student: "1",
+    mods: state.selected.join(","),
+    tier: state.tier,
+    time: document.getElementById("inTime").value || "40",
+    milestone: document.getElementById("inMilestone").value || "IGCSE Chemistry 0620",
+    pt: state.showPT ? "1" : "0",
+    qa: state.showQA ? "1" : "0"
+  });
+  const url = baseUrl + "?" + params.toString();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast("Đã copy link bài thi Online gửi học sinh!");
+    }).catch(() => {
+      window.prompt("Copy link gửi học sinh:", url);
+    });
+  } else {
+    window.prompt("Copy link gửi học sinh:", url);
+  }
+}
+
+function evaluatePlacement(c, e, a, m) {
+  const totalEarned = c + e + a;
+  if (m.total === 0) return { bandClass: "", title: "", advice: "", pct: 0, pctExt: null, pctAtp: 0 };
+  const pct = (totalEarned / m.total) * 100;
+  const pctExt = m.ext > 0 ? (e / m.ext) * 100 : null;
+  const pctAtp = m.atp > 0 ? (a / m.atp) * 100 : 0;
+
+  let bandClass = "band-1", title = "", advice = "";
+  if (pct < 44) {
+    bandClass = "band-1";
+    title = "Nhóm 1: Foundation / Cần bù nền tảng";
+    advice = "Học lại thuật ngữ Hóa tiếng Anh, cấu tạo nguyên tử & cân bằng phương trình; ưu tiên lộ trình Core (mục tiêu C).";
+  } else if (pct < 68 || (pctExt !== null && pctExt < 60)) {
+    bandClass = "band-2";
+    title = "Nhóm 2: Trung bình – Khá (Core vững / Standard Extended)";
+    advice = "Nắm được lõi kiến thức nhưng phần [Ext] đạt " + (pctExt !== null ? pctExt.toFixed(0) + "%" : "N/A") + ". Xếp lớp Core (mục tiêu C) hoặc Extended chuẩn kèm bổ trợ Mol & định lượng.";
+  } else if (pct >= 82 && (pctExt === null || pctExt >= 75) && pctAtp >= 70) {
+    bandClass = "band-4";
+    title = "Nhóm 4: Giỏi – Xuất sắc (Extended tăng tốc / A*)";
+    advice = "Đủ năng lực bứt phá A/A*! Tập trung đề Paper 4 nâng cao và câu Q4 thiết kế thí nghiệm Paper 6.";
+  } else {
+    bandClass = "band-3";
+    title = "Nhóm 3: Khá – Giỏi (Extended vững / mục tiêu A)";
+    advice = "Đủ điều kiện học hệ Extended (mục tiêu B–A). Cần rèn chuẩn hóa từ khóa Mark Scheme và kỹ năng thực nghiệm Paper 6.";
+  }
+  return { bandClass, title, advice, pct, pctExt, pctAtp, totalEarned };
+}
+
+function updateCalc() {
+  const m = getMarksBreakdown();
+  const c = Math.min(m.core, Math.max(0, Number(document.getElementById("earnCore").value) || 0));
+  const e = Math.min(m.ext, Math.max(0, Number(document.getElementById("earnExt").value) || 0));
+  const a = Math.min(m.atp, Math.max(0, Number(document.getElementById("earnAtp").value) || 0));
+  document.getElementById("totalSummary").value = `${c + e + a} / ${m.total}`;
+  const res = document.getElementById("calcResult");
+  if (m.total === 0) {
+    res.className = "calc-result";
+    res.textContent = "Hãy chọn ít nhất 1 Module để tính điểm xếp lớp.";
+    return;
+  }
+  const ev = evaluatePlacement(c, e, a, m);
+  res.className = "calc-result " + ev.bandClass;
+  res.innerHTML = `${ev.title} (${ev.pct.toFixed(1)}% tổng${ev.pctExt !== null ? " | Ext: " + ev.pctExt.toFixed(0) + "%" : ""} | ATP: ${ev.pctAtp.toFixed(0)}%) — ${ev.advice}`;
+}
+
+function computeOnlineScores() {
+  const chosen = MODULES.filter(m => state.selected.includes(m.id));
+  let c = 0, e = 0, a = 0;
+  chosen.forEach(mod => {
+    if (state.tier !== "ext") {
+      if (state.onlineAnswers[`mcq_${mod.id}_Core`] === mod.mcqCore.ans) c += 1;
+      mod.theoryCore.parts.forEach((pt, idx) => {
+        c += Number(state.rubricScores[`th_${mod.id}_Core_${idx}`] || 0);
+      });
+    }
+    if (state.tier !== "core") {
+      if (state.onlineAnswers[`mcq_${mod.id}_Ext`] === mod.mcqExt.ans) e += 1;
+      mod.theoryExt.parts.forEach((pt, idx) => {
+        e += Number(state.rubricScores[`th_${mod.id}_Ext_${idx}`] || 0);
+      });
+    }
+    a += Number(state.rubricScores[`atp_${mod.id}`] || 0);
+  });
+  return { c, e, a };
+}
+
+function syncOnlineScoresToCalc() {
+  const s = computeOnlineScores();
+  document.getElementById("earnCore").value = s.c;
+  document.getElementById("earnExt").value = s.e;
+  document.getElementById("earnAtp").value = s.a;
+  updateCalc();
+  return s;
+}
+
+function submitOnlineExam() {
+  clearInterval(state.timerInterval);
+  state.timerRunning = false;
+  state.onlineSubmitted = true;
+  syncOnlineScoresToCalc();
+  renderPaper();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  showToast("Đã chấm tự động phần trắc nghiệm! Chấm điểm phần Tự luận/ATP bên dưới để hoàn tất.");
+}
+
+function resetOnlineExam() {
+  state.onlineSubmitted = false;
+  state.onlineAnswers = {};
+  state.rubricScores = {};
+  resetTimer();
+  syncOnlineScoresToCalc();
+  renderPaper();
+}
+
+function selectMcq(key, optIdx) {
+  if (state.onlineSubmitted) return;
+  state.onlineAnswers[key] = optIdx;
+  const list = document.querySelectorAll(`li[data-mcq-key="${key}"]`);
+  list.forEach((li, i) => li.classList.toggle("selected-opt", i === optIdx));
+}
+
+function setTextAnswer(key, val) {
+  state.onlineAnswers[key] = val;
+  const pa = document.getElementById("pa_" + key);
+  if (pa) pa.textContent = val || "(No written answer)";
+}
+
+function setRubricScore(key, val) {
+  state.rubricScores[key] = val;
+  const pills = document.querySelectorAll(`button[data-rkey="${key}"]`);
+  pills.forEach(p => p.classList.toggle("active", Number(p.dataset.rval) === val));
+  syncOnlineScoresToCalc();
+  refreshReportBanner();
+}
+
+function refreshReportBanner() {
+  const box = document.getElementById("onlineReportBanner");
+  if (!box) return;
+  const m = getMarksBreakdown();
+  const s = computeOnlineScores();
+  const ev = evaluatePlacement(s.c, s.e, s.a, m);
+  box.innerHTML = buildReportBannerInner(s, m, ev);
+}
+
+function buildReportBannerInner(s, m, ev) {
+  return `
+    <h2>
+      <span>📊 Kết quả Chẩn đoán Online (Online Diagnostic Report)</span>
+      <span class="no-print" style="display:flex; gap:8px;">
+        <button class="btn-mini" onclick="window.print()">🖨️ In / Lưu PDF kết quả</button>
+        <button class="btn-mini" onclick="resetOnlineExam()">🔄 Làm lại bài</button>
+      </span>
+    </h2>
+    <div class="report-stats">
+      <div class="stat-pill"><div class="lbl">[Core] (MCQ + Theory)</div><div class="val">${s.c} / ${m.core}</div></div>
+      <div class="stat-pill"><div class="lbl">[Ext] (MCQ + Theory)</div><div class="val">${s.e} / ${m.ext}</div></div>
+      <div class="stat-pill"><div class="lbl">[ATP] (Paper 6)</div><div class="val">${s.a} / ${m.atp}</div></div>
+      <div class="stat-pill"><div class="lbl">Tổng điểm</div><div class="val">${ev.totalEarned} / ${m.total} (${ev.pct.toFixed(1)}%)</div></div>
+    </div>
+    <div class="calc-result ${ev.bandClass}" style="margin-top:4px;">
+      ${ev.title} — ${ev.advice}
+      <div style="font-weight:500; font-size:0.8rem; margin-top:4px;">* Lưu ý: Phần Trắc nghiệm đã chấm tự động. Bấm các nút điểm [0..max] ngay dưới mỗi câu Tự luận/ATP để cộng điểm bài viết.</div>
+    </div>
+  `;
+}
+
+function linesHtml(n) {
+  let s = `<div class="write-lines">`;
+  for (let i = 0; i < n; i++) s += `<div class="write-line"></div>`;
+  return s + `</div>`;
+}
+
+function renderPT() {
+  const groups = ["I","II","","","","","","","","","","","III","IV","V","VI","VII","VIII"];
+  let cells = groups.map(g => `<div class="pt-cell pt-hdr">${g}</div>`).join("");
+  PT_DATA.forEach(el => {
+    if (!el) {
+      cells += `<div class="pt-cell pt-empty"></div>`;
+    } else {
+      cells += `<div class="pt-cell"><span>${el[0]}</span><b>${el[1]}</b><span>${el[2]}</span></div>`;
+    }
+  });
+  return `
+    <div class="appendix-page" id="appendix-pt">
+      <h3 style="margin:0 0 4px; text-align:center;">The Periodic Table of Elements (Cambridge IGCSE 0620)</h3>
+      <div class="pt-grid">${cells}</div>
+      <p style="font-size:0.82rem; margin:8px 0 0;">*58–71 Lanthanoids &amp; 90–103 Actinoids omitted for compact diagnostic printing. <strong>The volume of one mole of any gas is 24 dm³ at room temperature and pressure (r.t.p.).</strong></p>
+    </div>
+  `;
+}
+
+function renderQA() {
+  return `
+    <div class="appendix-page" id="appendix-qa">
+      <h3 style="margin:0 0 10px; text-align:center;">Notes for Use in Qualitative Analysis (0620 Paper 6 — 2023–2028 Syllabus)</h3>
+      <table class="exam-tbl">
+        <tr><th colspan="3">Tests for anions</th></tr>
+        <tr><th>Anion</th><th>Test</th><th>Test result</th></tr>
+        <tr><td>carbonate, CO₃²⁻</td><td>add dilute acid, then test for carbon dioxide gas</td><td>effervescence, carbon dioxide produced</td></tr>
+        <tr><td>chloride, Cl⁻ [in solution]</td><td>acidify with dilute nitric acid, then add aqueous silver nitrate</td><td>white ppt.</td></tr>
+        <tr><td>bromide, Br⁻ [in solution]</td><td>acidify with dilute nitric acid, then add aqueous silver nitrate</td><td>cream ppt.</td></tr>
+        <tr><td>iodide, I⁻ [in solution]</td><td>acidify with dilute nitric acid, then add aqueous silver nitrate</td><td>yellow ppt.</td></tr>
+        <tr><td>nitrate, NO₃⁻ [in solution]</td><td>add aqueous sodium hydroxide, then aluminium foil; warm carefully</td><td>ammonia produced</td></tr>
+        <tr><td>sulfate, SO₄²⁻ [in solution]</td><td>acidify with dilute nitric acid, then add aqueous barium nitrate</td><td>white ppt.</td></tr>
+        <tr><td>sulfite, SO₃²⁻</td><td>add a small volume of acidified aqueous potassium manganate(VII)</td><td>the acidified aqueous potassium manganate(VII) changes colour from purple to colourless</td></tr>
+      </table>
+      <table class="exam-tbl">
+        <tr><th colspan="3">Tests for aqueous cations</th></tr>
+        <tr><th>Cation</th><th>Effect of aqueous sodium hydroxide</th><th>Effect of aqueous ammonia</th></tr>
+        <tr><td>aluminium, Al³⁺</td><td>white ppt., soluble in excess, giving a colourless solution</td><td>white ppt., insoluble in excess</td></tr>
+        <tr><td>ammonium, NH₄⁺</td><td>ammonia produced on warming</td><td>–</td></tr>
+        <tr><td>calcium, Ca²⁺</td><td>white ppt., insoluble in excess</td><td>no ppt. or very slight white ppt.</td></tr>
+        <tr><td>chromium(III), Cr³⁺</td><td>green ppt., soluble in excess</td><td>green ppt., insoluble in excess</td></tr>
+        <tr><td>copper(II), Cu²⁺</td><td>light blue ppt., insoluble in excess</td><td>light blue ppt., soluble in excess, giving a dark blue solution</td></tr>
+        <tr><td>iron(II), Fe²⁺</td><td>green ppt., insoluble in excess, turns brown near surface on standing</td><td>green ppt., insoluble in excess, turns brown near surface on standing</td></tr>
+        <tr><td>iron(III), Fe³⁺</td><td>red-brown ppt., insoluble in excess</td><td>red-brown ppt., insoluble in excess</td></tr>
+        <tr><td>zinc, Zn²⁺</td><td>white ppt., soluble in excess, giving a colourless solution</td><td>white ppt., soluble in excess, giving a colourless solution</td></tr>
+      </table>
+      <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:12px;">
+        <table class="exam-tbl">
+          <tr><th colspan="2">Tests for gases</th></tr>
+          <tr><th>Gas</th><th>Test and test result</th></tr>
+          <tr><td>ammonia, NH₃</td><td>turns damp red litmus paper blue</td></tr>
+          <tr><td>carbon dioxide, CO₂</td><td>turns limewater milky</td></tr>
+          <tr><td>chlorine, Cl₂</td><td>bleaches damp litmus paper</td></tr>
+          <tr><td>hydrogen, H₂</td><td>'pops' with a lighted splint</td></tr>
+          <tr><td>oxygen, O₂</td><td>relights a glowing splint</td></tr>
+          <tr><td>sulfur dioxide, SO₂</td><td>turns acidified aqueous potassium manganate(VII) from purple to colourless</td></tr>
+        </table>
+        <table class="exam-tbl">
+          <tr><th colspan="2">Flame tests for metal ions</th></tr>
+          <tr><th>Metal ion</th><th>Flame colour</th></tr>
+          <tr><td>lithium, Li⁺</td><td>red</td></tr>
+          <tr><td>sodium, Na⁺</td><td>yellow</td></tr>
+          <tr><td>potassium, K⁺</td><td>lilac</td></tr>
+          <tr><td>calcium, Ca²⁺</td><td>orange-red</td></tr>
+          <tr><td>barium, Ba²⁺</td><td>light green</td></tr>
+          <tr><td>copper(II), Cu²⁺</td><td>blue-green</td></tr>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderPaper() {
+  const sheet = document.getElementById("paperSheet");
+  const chosen = MODULES.filter(m => state.selected.includes(m.id));
+  if (chosen.length === 0) {
+    sheet.innerHTML = `<div class="empty-state"><h3>Chưa chọn Topic Module nào</h3><p>Hãy chọn một Preset hoặc tích chọn các Topic ở bảng điều khiển phía trên để tạo đề thi.</p></div>`;
+    return;
+  }
+
+  const m = getMarksBreakdown();
+  const isOnline = state.view === "online";
+  const isTeacher = state.view === "teacher";
+  const showMS = isTeacher || (isOnline && state.onlineSubmitted);
+  const sName = escHtml(document.getElementById("inName").value) || "___________________________________";
+  const sSchool = escHtml(document.getElementById("inSchool").value) || "_________________________";
+  const sMile = escHtml(document.getElementById("inMilestone").value) || "Custom Modular Test";
+  const sDate = escHtml(document.getElementById("inDate").value) || "____ / ____ / 202__";
+  const sTime = document.getElementById("inTime").value || m.total;
+  const tierLabel = state.tier === "dual" ? "Dual-Tier (Core + Extended + ATP)" : (state.tier === "core" ? "Core Focus (Khá — Core + ATP)" : "Extended Focus (Giỏi — Extended + ATP)");
+
+  let html = "";
+
+  if (isOnline && !state.studentLock) {
+    html += `
+      <div class="online-toolbar no-print">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <div class="timer-pill" id="onTimerPill">⏱️ <span id="onTimerText">${formatTime(state.timerSeconds)}</span></div>
+          <button class="btn-mini" onclick="toggleTimer()">⏯ Bắt đầu / Tạm dừng</button>
+          <button class="btn-mini" onclick="resetTimer()">↺ Đặt lại giờ</button>
+          ${state.showPT ? `<button class="btn-mini" onclick="jumpTo('appendix-pt')">Periodic Table</button>` : ""}
+          ${state.showQA ? `<button class="btn-mini" onclick="jumpTo('appendix-qa')">QA Notes</button>` : ""}
+        </div>
+        <div>
+          ${state.onlineSubmitted
+            ? `<button class="btn-mini" onclick="resetOnlineExam()">🔄 Làm lại bài (Reset)</button>`
+            : `<button class="btn-submit-online" onclick="submitOnlineExam()">🚀 Nộp bài &amp; Chấm điểm</button>`
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  if (isOnline && state.onlineSubmitted) {
+    const s = computeOnlineScores();
+    const ev = evaluatePlacement(s.c, s.e, s.a, m);
+    html += `<div class="report-banner" id="onlineReportBanner">${buildReportBannerInner(s, m, ev)}</div>`;
+  }
+
+  html += `
+    <div class="cam-header">
+      <div class="cam-header-top">
+        <div>
+          <div class="cam-title">Cambridge IGCSE™ Chemistry (0620) — Entrance Diagnostic ${isTeacher ? "(MARK SCHEME)" : ""}</div>
+          <div class="cam-sub">${sMile} • ${tierLabel}</div>
+        </div>
+        <div style="text-align:right; font-size:0.86rem;">
+          <div><strong>Total Marks: ${m.total}</strong></div>
+          <div>Time Allowed: <strong>${sTime} mins</strong></div>
+        </div>
+      </div>
+      <div class="cam-meta-grid">
+        <div><strong>Candidate Name:</strong> <span id="hdrName">${sName}</span></div>
+        <div><strong>Date:</strong> ${sDate}</div>
+        <div><strong>Current School:</strong> <span id="hdrSchool">${sSchool}</span></div>
+        <div><strong>Topics Covered:</strong> ${chosen.map(x => "T" + x.id).join(", ")}</div>
+      </div>
+      <div class="cam-instructions">
+        <strong>READ THESE INSTRUCTIONS FIRST:</strong> Answer all questions. Electronic calculators may be used. Show clear working in all calculations (give numerical answers to 3 significant figures where appropriate).
+      </div>
+    </div>
+  `;
+
+  // SECTION A: MCQ
+  const mcqs = [];
+  chosen.forEach(mod => {
+    if (state.tier !== "ext") mcqs.push({ mod, tier: "Core", item: mod.mcqCore });
+    if (state.tier !== "core") mcqs.push({ mod, tier: "Ext", item: mod.mcqExt });
+  });
+  html += `<div class="section-banner"><span>SECTION A — Multiple Choice</span><span>${mcqs.length} marks</span></div>`;
+  let qNo = 1;
+  mcqs.forEach(entry => {
+    const letters = ["A", "B", "C", "D"];
+    const key = `mcq_${entry.mod.id}_${entry.tier}`;
+    const picked = state.onlineAnswers[key];
+    const badge = entry.tier === "Core" ? `<span class="badge badge-core">[Core]</span>` : `<span class="badge badge-ext">[Ext]</span>`;
+    html += `
+      <div class="q-card">
+        <div class="q-head">
+          <div class="q-num">${qNo}. ${entry.item.stem}</div>
+          <div class="q-meta"><span class="badge badge-topic">T${entry.mod.id}</span>${badge}<span class="marks-tag">[1]</span></div>
+        </div>
+        <ul class="mcq-opts">
+          ${entry.item.options.map((opt, idx) => {
+            let cls = isOnline ? "online-opt" : "";
+            if (isOnline && picked === idx && !state.onlineSubmitted) cls += " selected-opt";
+            if (showMS && idx === entry.item.ans) cls += " correct-opt";
+            else if (isOnline && state.onlineSubmitted && picked === idx && idx !== entry.item.ans) cls += " wrong-opt";
+            const radio = isOnline
+              ? `<input type="radio" name="${key}" ${picked === idx ? "checked" : ""} ${state.onlineSubmitted ? "disabled" : ""} style="margin-top:3px;">`
+              : "";
+            const onclickAttr = isOnline && !state.onlineSubmitted ? `onclick="selectMcq('${key}', ${idx})"` : "";
+            return `<li class="${cls}" data-mcq-key="${key}" ${onclickAttr}>${radio}<span><strong>${letters[idx]}.</strong> ${opt}</span></li>`;
+          }).join("")}
+        </ul>
+        ${showMS ? `<div class="ms-box"><strong>Mark Scheme:</strong> ${entry.item.ms}</div>` : ""}
+      </div>
+    `;
+    qNo++;
+  });
+
+  // SECTION B: STRUCTURED THEORY
+  const theories = [];
+  chosen.forEach(mod => {
+    if (state.tier !== "ext") theories.push({ mod, tier: "Core", item: mod.theoryCore });
+    if (state.tier !== "core") theories.push({ mod, tier: "Ext", item: mod.theoryExt });
+  });
+  const secBMarks = theories.length * 3;
+  html += `<div class="section-banner"><span>SECTION B — Structured Theory</span><span>${secBMarks} marks</span></div>`;
+  theories.forEach(entry => {
+    const badge = entry.tier === "Core" ? `<span class="badge badge-core">[Core]</span>` : `<span class="badge badge-ext">[Ext]</span>`;
+    html += `
+      <div class="q-card">
+        <div class="q-head">
+          <div class="q-num">Question ${qNo} — ${entry.mod.title.replace(/^Topic \d+:\s*/, "")}</div>
+          <div class="q-meta"><span class="badge badge-topic">T${entry.mod.id}</span>${badge}<span class="marks-tag">[3]</span></div>
+        </div>
+        <div>${entry.item.stem}</div>
+        ${entry.item.svg ? `<div class="svg-wrap">${SVGS[entry.item.svg]}</div>` : ""}
+        ${entry.item.parts.map((pt, idx) => {
+          const rkey = `th_${entry.mod.id}_${entry.tier}_${idx}`;
+          const savedVal = state.onlineAnswers[rkey] || "";
+          const curScore = Number(state.rubricScores[rkey] || 0);
+          let inputHtml = "";
+          if (isOnline) {
+            inputHtml = `
+              <textarea class="online-ta" placeholder="Nhập câu trả lời và các bước tính toán tại đây..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
+              <div class="print-ans" id="pa_${rkey}">${escHtml(savedVal) || "(No written answer)"}</div>
+            `;
+            if (state.onlineSubmitted) {
+              let pills = "";
+              for (let v = 0; v <= pt.marks; v++) {
+                pills += `<button type="button" class="mark-pill ${curScore === v ? "active" : ""}" data-rkey="${rkey}" data-rval="${v}" onclick="setRubricScore('${rkey}', ${v})">${v}đ</button>`;
+              }
+              inputHtml += `<div class="rubric-bar no-print"><span>Chấm điểm ý ${pt.lbl} (tối đa ${pt.marks}đ):</span>${pills}</div>`;
+            }
+          } else if (!isTeacher) {
+            inputHtml = linesHtml(pt.lines);
+          }
+          return `
+            <div class="subpart">
+              <div class="subpart-head"><span><strong>${pt.lbl}</strong> ${pt.text}</span><span class="marks-tag">[${pt.marks}]</span></div>
+              ${inputHtml}
+            </div>
+          `;
+        }).join("")}
+        ${showMS ? `<div class="ms-box"><strong>Mark Scheme:</strong> ${entry.item.ms}</div>` : ""}
+      </div>
+    `;
+    qNo++;
+  });
+
+  // SECTION C: ATP
+  const secCMarks = chosen.length * 2;
+  html += `<div class="section-banner"><span>SECTION C — Practical Skills &amp; Analysis (Paper 6 ATP)</span><span>${secCMarks} marks</span></div>`;
+  chosen.forEach(mod => {
+    const rkey = `atp_${mod.id}`;
+    const savedVal = state.onlineAnswers[rkey] || "";
+    const curScore = Number(state.rubricScores[rkey] || 0);
+    let inputHtml = "";
+    if (isOnline) {
+      inputHtml = `
+        <textarea class="online-ta" placeholder="Nhập nhận xét thí nghiệm / phương án xử lý sai số tại đây..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
+        <div class="print-ans" id="pa_${rkey}">${escHtml(savedVal) || "(No written answer)"}</div>
+      `;
+      if (state.onlineSubmitted) {
+        let pills = "";
+        for (let v = 0; v <= mod.atp.marks; v++) {
+          pills += `<button type="button" class="mark-pill ${curScore === v ? "active" : ""}" data-rkey="${rkey}" data-rval="${v}" onclick="setRubricScore('${rkey}', ${v})">${v}đ</button>`;
+        }
+        inputHtml += `<div class="rubric-bar no-print"><span>Chấm điểm câu ATP (tối đa ${mod.atp.marks}đ):</span>${pills}</div>`;
+      }
+    } else if (!isTeacher) {
+      inputHtml = linesHtml(mod.atp.lines);
+    }
+    html += `
+      <div class="q-card">
+        <div class="q-head">
+          <div class="q-num">Question ${qNo} — Practical Investigation (${mod.title.replace(/^Topic \d+:\s*/, "")})</div>
+          <div class="q-meta"><span class="badge badge-topic">T${mod.id}</span><span class="badge badge-atp">[ATP]</span><span class="marks-tag">[2]</span></div>
+        </div>
+        <div>${mod.atp.stem}</div>
+        ${inputHtml}
+        ${showMS ? `<div class="ms-box"><strong>Mark Scheme:</strong> ${mod.atp.ms}</div>` : ""}
+      </div>
+    `;
+    qNo++;
+  });
+
+  if (state.showPT) html += renderPT();
+  if (state.showQA) html += renderQA();
+
+  sheet.innerHTML = html;
+  updateTimerDisplays();
+}
+
+initUI();
+</script>
+</body>
+</html>
