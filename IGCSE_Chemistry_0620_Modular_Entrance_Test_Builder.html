@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cambridge IGCSE Chemistry (0620) — Modular Entrance Test Builder</title>
+<title>Cambridge IGCSE Chemistry (0620) — Modular Entrance Test Builder (Syllabus 2026–2028)</title>
 <style>
   :root {
     --primary: #1a365d;
@@ -54,12 +54,12 @@
   }
   .panel-header h1 {
     margin: 0;
-    font-size: 1.35rem;
+    font-size: 1.32rem;
     color: var(--primary);
   }
   .panel-header p {
     margin: 2px 0 0;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     color: var(--muted);
   }
   .header-actions {
@@ -128,7 +128,7 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 7px 12px;
-    font-size: 0.84rem;
+    font-size: 0.83rem;
     font-weight: 600;
     color: var(--text);
     cursor: pointer;
@@ -143,7 +143,7 @@
 
   .module-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
     gap: 8px;
   }
   .mod-chip {
@@ -156,7 +156,7 @@
     background: #fff;
     cursor: pointer;
     transition: all 0.15s;
-    font-size: 0.84rem;
+    font-size: 0.83rem;
   }
   .mod-chip:hover { border-color: var(--accent); }
   .mod-chip.checked {
@@ -165,7 +165,7 @@
   }
   .mod-chip input { margin-top: 3px; accent-color: var(--accent); }
   .mod-chip .mod-title { font-weight: 600; display: block; color: var(--primary); }
-  .mod-chip .mod-cup { font-size: 0.76rem; color: var(--muted); }
+  .mod-chip .mod-cup { font-size: 0.75rem; color: var(--muted); }
 
   .controls-bar {
     display: grid;
@@ -256,7 +256,7 @@
     background: #1e293b;
     color: #fff;
     font-size: 0.84rem;
-    width: 170px;
+    width: 165px;
   }
   .student-inputs-inline input::placeholder { color: #94a3b8; }
   .timer-pill {
@@ -294,6 +294,7 @@
     cursor: pointer;
   }
   .btn-submit-online:hover { background: #15803d; }
+  .btn-submit-online:disabled { background: #475569; cursor: default; }
   .btn-unlock {
     background: transparent;
     border: 1px dashed #64748b;
@@ -352,10 +353,16 @@
     font-weight: 600;
     background: #e2e8f0;
   }
+  .calc-note {
+    margin-top: 6px;
+    font-size: 0.76rem;
+    color: var(--muted);
+  }
   .band-1 { background: #fee2e2; color: #991b1b; }
   .band-2 { background: #fef3c7; color: #92400e; }
   .band-3 { background: #dbeafe; color: #1e40af; }
   .band-4 { background: #dcfce7; color: #166534; }
+  .band-wait { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
 
   /* ---- ONLINE DIAGNOSTIC REPORT BANNER ---- */
   .report-banner {
@@ -367,7 +374,7 @@
   }
   .report-banner h2 {
     margin: 0 0 8px;
-    font-size: 1.08rem;
+    font-size: 1.06rem;
     color: var(--primary);
     display: flex;
     flex-wrap: wrap;
@@ -389,7 +396,7 @@
     text-align: center;
   }
   .stat-pill .lbl { font-size: 0.74rem; color: var(--muted); font-weight: 600; }
-  .stat-pill .val { font-size: 1.05rem; font-weight: 800; color: var(--primary); }
+  .stat-pill .val { font-size: 1.02rem; font-weight: 800; color: var(--primary); }
 
   /* ---- PRINTABLE EXAM PAPER ---- */
   .paper-sheet {
@@ -414,8 +421,8 @@
     padding-bottom: 8px;
     margin-bottom: 10px;
   }
-  .cam-title { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; }
-  .cam-sub { font-size: 0.88rem; font-weight: 600; color: #334155; }
+  .cam-title { font-size: 1.12rem; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; }
+  .cam-sub { font-size: 0.86rem; font-weight: 600; color: #334155; }
   .cam-meta-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -468,6 +475,7 @@
   .badge-ext { background: var(--ext-bg); color: var(--ext-fg); }
   .badge-atp { background: var(--atp-bg); color: var(--atp-fg); }
   .badge-topic { background: #f1f5f9; color: #475569; font-weight: 600; }
+  .badge-wait { background: #fef9c3; color: #854d0e; font-size: 0.72rem; padding: 1px 7px; border-radius: 999px; font-weight: 700; }
   .marks-tag { font-weight: 700; font-size: 0.85rem; color: #0f172a; }
 
   .mcq-opts {
@@ -534,6 +542,11 @@
     outline: none;
     border-color: var(--accent);
     background: #fff;
+  }
+  textarea.online-ta[readonly] {
+    background: #f1f5f9;
+    color: #334155;
+    cursor: not-allowed;
   }
   .print-ans {
     display: none;
@@ -687,12 +700,11 @@
       <input type="text" id="stSchool" placeholder="Trường đang học...">
     </div>
     <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
-      <div class="timer-pill" id="stTimerPill">⏱️ <span id="stTimerText">40:00</span></div>
-      <button class="btn-mini" onclick="toggleTimer()">⏯</button>
-      <button class="btn-mini" onclick="resetTimer()">↺</button>
+      <div class="timer-pill" id="stTimerPill">⏱️ <span id="stTimerText">50:00</span></div>
+      <button class="btn-mini" id="btnStStartTimer" onclick="startStudentTimer()">▶️ Bắt đầu tính giờ</button>
       <button class="btn-mini" id="btnJumpPT" onclick="jumpTo('appendix-pt')">Periodic Table</button>
       <button class="btn-mini" id="btnJumpQA" onclick="jumpTo('appendix-qa')">QA Notes</button>
-      <button class="btn-submit-online" id="btnStSubmit" onclick="submitOnlineExam()">🚀 Nộp bài &amp; Chấm</button>
+      <button class="btn-submit-online" id="btnStSubmit" onclick="submitOnlineExam()">🚀 Nộp bài</button>
       <button class="btn-mini" onclick="window.print()">🖨️ In</button>
       <button class="btn-unlock" onclick="unlockTeacher()">Mở bảng GV</button>
     </div>
@@ -703,7 +715,7 @@
   <div class="panel-header">
     <div>
       <h1>Cambridge IGCSE Chemistry (0620) — Modular Entrance Test Builder</h1>
-      <p>12 Topic Modules độc lập (10đ/Module) • Làm bài Online tự chấm / In A4 • Bám sát đề Best Exam Help 2023–2026 &amp; CUP Coursebook 5th Ed.</p>
+      <p>15 Module độc lập (10đ/Module) • Cambridge IGCSE 0620 Syllabus 2026–2028 &amp; CUP Coursebook 5th Edition • Past Papers 2023–2026</p>
     </div>
     <div class="header-actions">
       <button class="btn-share" onclick="copyStudentLink()">🔗 Copy Link gửi Học sinh</button>
@@ -714,22 +726,22 @@
   <div class="section-label">1. Chọn nhanh theo Mốc nhập học / Thứ tự dạy của trường</div>
   <div class="preset-row" id="presetRow"></div>
 
-  <div class="section-label">2. Hoặc tích chọn trực tiếp các Topic học sinh đã học (mỗi Topic = 10 điểm Dual-Tier)</div>
+  <div class="section-label">2. Hoặc tích chọn trực tiếp các Module học sinh đã học (mỗi Module = 10 điểm Dual-Tier)</div>
   <div class="module-grid" id="moduleGrid"></div>
 
   <div class="controls-bar">
     <div>
-      <div class="section-label" style="margin-top:0">3. Chế độ phân tầng (Khá / Giỏi)</div>
+      <div class="section-label" style="margin-top:0">3. Chế độ phân tầng (Core / Supplement)</div>
       <div class="seg-group" id="tierGroup">
         <button class="seg-btn active" data-tier="dual">Dual-Tier (Khá + Giỏi — 10đ/Mod)</button>
-        <button class="seg-btn" data-tier="core">Nhóm Khá (Core Focus — 6đ/Mod)</button>
-        <button class="seg-btn" data-tier="ext">Nhóm Giỏi (Extended Focus — 6đ/Mod)</button>
+        <button class="seg-btn" data-tier="core">Core Only (Khảo sát nền tảng — 6đ/Mod)</button>
+        <button class="seg-btn" data-tier="ext">Extended Focus (Supplement — 6đ/Mod)</button>
       </div>
     </div>
     <div>
       <div class="section-label" style="margin-top:0">4. Chế độ hiển thị</div>
       <div class="seg-group" id="viewGroup">
-        <button class="seg-btn active" data-view="online">📝 Làm bài Online (Online Exam)</button>
+        <button class="seg-btn active" data-view="online">📝 Làm bài &amp; Chấm Online</button>
         <button class="seg-btn" data-view="student">📄 Đề In Học Sinh (Print Paper)</button>
         <button class="seg-btn" data-view="teacher">✅ Đáp Án Giáo Viên (Teacher Key)</button>
       </div>
@@ -744,20 +756,21 @@
   <div class="meta-inputs">
     <div class="meta-field"><label>Họ tên học sinh (Student Name)</label><input type="text" id="inName" placeholder="VD: Nguyễn Minh Anh"></div>
     <div class="meta-field"><label>Trường đang học (School)</label><input type="text" id="inSchool" placeholder="VD: Vinschool / BIS / VAS"></div>
-    <div class="meta-field"><label>Mốc nhập học (Entry Milestone)</label><input type="text" id="inMilestone" value="Mốc 2A — HK II Year 1 IGCSE"></div>
+    <div class="meta-field"><label>Mốc nhập học (Entry Milestone)</label><input type="text" id="inMilestone" value="Mốc 2A — Đầu HK II Year 1 (CUP Ch. 1–5, 21)"></div>
     <div class="meta-field"><label>Ngày kiểm tra (Date)</label><input type="text" id="inDate" placeholder="DD/MM/YYYY"></div>
-    <div class="meta-field"><label>Thời gian làm bài (phút)</label><input type="number" id="inTime" min="10" max="180" value="40"></div>
+    <div class="meta-field"><label>Thời gian làm bài (phút)</label><input type="number" id="inTime" min="10" max="180" value="50"></div>
   </div>
 
   <div class="calc-box">
-    <div class="section-label" style="margin-top:0">6. Công cụ chấm &amp; Xếp lớp nhanh (Live Placement Calculator)</div>
+    <div class="section-label" style="margin-top:0">6. Công cụ chấm &amp; Xếp lớp nhanh (Teacher Placement Calculator)</div>
     <div class="calc-grid">
       <div class="meta-field"><label>Điểm [Core] đạt được (Tối đa: <span id="maxCoreLbl">0</span>)</label><input type="number" id="earnCore" min="0" value="0"></div>
       <div class="meta-field"><label>Điểm [Ext] đạt được (Tối đa: <span id="maxExtLbl">0</span>)</label><input type="number" id="earnExt" min="0" value="0"></div>
       <div class="meta-field"><label>Điểm [ATP] đạt được (Tối đa: <span id="maxAtpLbl">0</span>)</label><input type="number" id="earnAtp" min="0" value="0"></div>
       <div class="meta-field"><label>Tổng điểm đề hiện tại</label><input type="text" id="totalSummary" readonly value="0 / 0"></div>
     </div>
-    <div class="calc-result" id="calcResult">Nhập điểm 3 phần sau khi chấm (hoặc nộp bài Online) để xem kết quả xếp lớp Khá / Giỏi.</div>
+    <div class="calc-result" id="calcResult">Nhập điểm 3 phần sau khi giáo viên chấm xong để xem gợi ý xếp lớp.</div>
+    <div class="calc-note">Ghi chú chuẩn hóa: Các ngưỡng 44% / 68% / 82% là mốc khởi đầu tham chiếu theo Grade Thresholds 0620 (2023–2025) và nên được hiệu chỉnh theo dữ liệu học sinh thực tế của trường/trung tâm.</div>
   </div>
 </div>
 
@@ -766,12 +779,12 @@
 
 <script>
 const PRESETS = [
-  { id: "m1", label: "Mốc 1: Đầu Y1 (Pre-IGCSE)", modules: [1, 2, 12], milestone: "Mốc 1 — Đầu Year 1 IGCSE (HK I Y10)" },
-  { id: "m2a", label: "Mốc 2A: HK II Y1 (CUP tuần tự Ch. 1–5, 21)", modules: [1, 2, 3, 12], milestone: "Mốc 2A — HK II Year 1 (Ch. 1–5, 21)" },
-  { id: "m2b", label: "Mốc 2B: HK II Y1 (Dễ→Khó Ch. 1–4, 11–13, 21)", modules: [1, 2, 7, 8, 12], milestone: "Mốc 2B — HK II Year 1 (Ch. 1–4, 11–13, 21)" },
-  { id: "m3", label: "Mốc 3: Đầu Y2 (HK I Y11: Ch. 6–13)", modules: [4, 5, 6, 7, 8], milestone: "Mốc 3 — Đầu Year 2 IGCSE (HK I Y11)" },
-  { id: "m4", label: "Mốc 4: HK II Y2 (Pre-Mock: Ch. 14–22 + Tổng hợp)", modules: [3, 6, 9, 10, 11, 12], milestone: "Mốc 4 — HK II Year 2 (Pre-Mock 0620)" },
-  { id: "full", label: "Full 12 Topics (120đ)", modules: [1,2,3,4,5,6,7,8,9,10,11,12], milestone: "Full Syllabus Review (Topics 1–12)" }
+  { id: "m1", label: "Mốc 1: Đầu Y1 (Pre-IGCSE — Ch. 1, 21)", modules: ["m0", "1", "12a"], milestone: "Mốc 1 — Đầu Year 1 IGCSE (Pre-IGCSE Diagnostic)" },
+  { id: "m2a", label: "Mốc 2A: Đầu HK II Y1 (CUP Ch. 1–5, 21)", modules: ["1", "2", "3a", "3b", "12a"], milestone: "Mốc 2A — Đầu HK II Year 1 (CUP Ch. 1–5, 21)" },
+  { id: "m2b", label: "Mốc 2B: Đầu HK II Y1 (Dễ→Khó: Ch. 1–4, 11–13, 21)", modules: ["1", "2", "3a", "7", "8", "12a"], milestone: "Mốc 2B — Đầu HK II Year 1 (Ch. 1–4, 11–13, 21)" },
+  { id: "m3", label: "Mốc 3: Đầu Y2 (HK I Y11: Ch. 4 & 6–13)", modules: ["3a", "4", "5", "6", "7", "8"], milestone: "Mốc 3 — Đầu Year 2 IGCSE (HK I Y11)" },
+  { id: "m4", label: "Mốc 4: Đầu HK II Y2 (Pre-Mock: Ch. 5, 8–10, 14–22)", modules: ["3b", "6", "9", "10", "11", "12b"], milestone: "Mốc 4 — Đầu HK II Year 2 (Pre-Mock 0620)" },
+  { id: "full", label: "Full IGCSE 0620 (14 Modules T1–T12B — 140đ)", modules: ["1","2","3a","3b","4","5","6","7","8","9","10","11","12a","12b"], milestone: "Full Syllabus Review (0620 Topics 1–12)" }
 ];
 
 const SVGS = {
@@ -923,30 +936,77 @@ const SVGS = {
 
 const MODULES = [
   {
-    id: 1,
+    id: "m0",
+    short: "M0",
+    title: "Module 0: Pre-IGCSE Readiness",
+    cup: "Checkpoint Stage 7–9",
+    mcqCore: {
+      stem: "Which row correctly classifies air, carbon dioxide, and oxygen?",
+      options: [
+        "Air: compound | Carbon dioxide: mixture | Oxygen: element",
+        "Air: mixture | Carbon dioxide: compound | Oxygen: element",
+        "Air: mixture | Carbon dioxide: element | Oxygen: compound",
+        "Air: element | Carbon dioxide: compound | Oxygen: mixture"
+      ],
+      ans: 1,
+      ms: "B — Air is a mixture of gases, CO₂ is a compound of C and O, and O₂ is an element."
+    },
+    mcqExt: {
+      stem: "Metal X displaces metal Y from a solution of Y nitrate. Metal Z displaces metal X from a solution of X nitrate. What is the order of reactivity from most reactive to least reactive?",
+      options: ["X → Y → Z", "Y → X → Z", "Z → X → Y", "Z → Y → X"],
+      ans: 2,
+      ms: "C — Z is more reactive than X, and X is more reactive than Y → Z → X → Y."
+    },
+    theoryCore: {
+      stem: "Answer the following questions on pH and acids–metals:",
+      parts: [
+        { lbl: "(a)", text: "State the pH of pure water at 25 °C and the colour of universal indicator in aqueous sodium hydroxide.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Write the word equation for zinc reacting with dilute sulfuric acid, and state the test for the gas produced.", marks: 2, lines: 2 }
+      ],
+      ms: "(a) pH 7 and purple / dark blue [1 for both]. (b) zinc + sulfuric acid → zinc sulfate + hydrogen [1]; lighted splint gives a squeaky pop [1]."
+    },
+    theoryExt: {
+      stem: "An atom of magnesium is represented as ²⁴₁₂Mg (early IGCSE stretch check).",
+      parts: [
+        { lbl: "(a)", text: "State the numbers of protons, neutrons, and electrons in one ²⁴₁₂Mg atom.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Write the electronic configuration of this magnesium atom.", marks: 1, lines: 1 },
+        { lbl: "(c)", text: "State its Group and Period in the Periodic Table, and whether it is a metal or non-metal.", marks: 1, lines: 1 }
+      ],
+      ms: "(a) 12 protons, 12 neutrons, 12 electrons [1]. (b) 2,8,2 [1]. (c) Group II, Period 3, metal [1]."
+    },
+    atp: {
+      stem: "A student is given a mixture of insoluble sand and aqueous sodium chloride (salt solution). State the TWO separation techniques, in order, needed to separate the sand and then obtain dry sodium chloride crystals.",
+      marks: 2,
+      lines: 2,
+      ms: "1. Filtration (to separate insoluble sand) [1]; 2. Crystallisation / evaporation of filtrate to dryness (to obtain salt crystals) [1]."
+    }
+  },
+  {
+    id: "1",
+    short: "T1",
     title: "Topic 1: States of Matter",
     cup: "CUP 5th Ed. Ch. 1",
     mcqCore: {
       stem: "Which statement correctly describes the arrangement and movement of particles in a liquid?",
       options: [
-        "Closely packed in a regular lattice, vibrating about fixed positions",
         "Closely packed in an irregular arrangement, able to slide past one another",
+        "Closely packed in a regular lattice, vibrating about fixed positions",
         "Far apart, moving randomly at high speeds",
         "Far apart in fixed positions"
       ],
-      ans: 1,
-      ms: "B — Liquid particles remain touching (closely packed) in a random arrangement and slide past each other."
+      ans: 0,
+      ms: "A — Liquid particles remain touching (closely packed) in a random arrangement and slide past each other."
     },
     mcqExt: {
       stem: "Ammonia gas (NH₃, Mᵣ = 17) and hydrogen chloride gas (HCl, Mᵣ = 36.5) diffuse from opposite ends of a glass tube. Where does the white ring of NH₄Cl form?",
       options: [
         "Exactly in the middle of the tube",
         "Closer to the ammonia end",
-        "Closer to the hydrogen chloride end",
-        "No ring forms because gases only move upwards"
+        "No ring forms because gases only move upwards",
+        "Closer to the hydrogen chloride end"
       ],
-      ans: 2,
-      ms: "C — NH₃ has a lower Mᵣ (17 < 36.5), so NH₃ molecules diffuse faster and travel further before meeting HCl."
+      ans: 3,
+      ms: "D — NH₃ has a lower Mᵣ (17 < 36.5), so NH₃ molecules diffuse faster and travel further before meeting HCl."
     },
     theoryCore: {
       stem: "The cooling curve below shows a pure gas A cooled steadily to a solid E.",
@@ -958,7 +1018,8 @@ const MODULES = [
       ms: "(a) Liquid [1]. (b) Boiling point = 95 °C [1]; condensation occurs at B [1]."
     },
     theoryExt: {
-      stem: "Using kinetic particle theory, answer the following:",
+      stem: "Using the cooling curve and kinetic particle theory, answer the following:",
+      svg: "coolingCurve",
       parts: [
         { lbl: "(a)", text: "Explain why the temperature stays constant at 55 °C during region <strong>D</strong> even though heat energy is continuously lost to the surroundings.", marks: 1, lines: 2 },
         { lbl: "(b)", text: "A sample of gas A is sealed in a syringe. Explain what happens to the gas pressure when the plunger is pushed in at constant temperature.", marks: 2, lines: 3 }
@@ -973,7 +1034,8 @@ const MODULES = [
     }
   },
   {
-    id: 2,
+    id: "2",
+    short: "T2",
     title: "Topic 2: Atoms, Elements & Compounds",
     cup: "CUP 5th Ed. Ch. 2–3",
     mcqCore: {
@@ -989,9 +1051,9 @@ const MODULES = [
     },
     mcqExt: {
       stem: "A sample of copper contains 69.2% ⁶³Cu and 30.8% ⁶⁵Cu. What is the relative atomic mass (Aᵣ) of copper to 1 decimal place?",
-      options: ["63.0", "63.6", "64.0", "64.4"],
-      ans: 1,
-      ms: "B — Aᵣ = (69.2 × 63 + 30.8 × 65) / 100 = 63.616 ≈ 63.6."
+      options: ["63.0", "64.0", "63.6", "64.4"],
+      ans: 2,
+      ms: "C — Aᵣ = (69.2 × 63 + 30.8 × 65) / 100 = 63.616 ≈ 63.6."
     },
     theoryCore: {
       stem: "Look at the three structures A, B, and C shown below.",
@@ -1019,37 +1081,80 @@ const MODULES = [
     }
   },
   {
-    id: 3,
-    title: "Topic 3: Stoichiometry & Moles",
-    cup: "CUP 5th Ed. Ch. 4–5",
+    id: "3a",
+    short: "T3A",
+    title: "Topic 3A: Formulae & Equations",
+    cup: "CUP 5th Ed. Ch. 4",
     mcqCore: {
+      stem: "How many oxygen atoms are shown in the formula of calcium hydroxide, Ca(OH)₂?",
+      options: ["2", "1", "3", "4"],
+      ans: 0,
+      ms: "A — The subscript 2 outside (OH)₂ multiplies both O and H by 2, giving 2 oxygen atoms."
+    },
+    mcqExt: {
       stem: "What is the correct chemical formula of aluminium sulfate (containing Al³⁺ and SO₄²⁻ ions)?",
-      options: ["AlSO₄", "Al₂SO₄", "Al₂(SO₄)₃", "Al₃(SO₄)₂"],
+      options: ["AlSO₄", "Al₂SO₄", "Al₃(SO₄)₂", "Al₂(SO₄)₃"],
+      ans: 3,
+      ms: "D — Balance charges: 2 × (+3) + 3 × (−2) = 0 → Al₂(SO₄)₃."
+    },
+    theoryCore: {
+      stem: "Answer the following questions on chemical formulae and equations (0620 Core 3.1–3.2):",
+      parts: [
+        { lbl: "(a)", text: "Calculate the relative formula mass (Mᵣ) of calcium carbonate, CaCO₃.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Write the word equation for calcium carbonate reacting with dilute hydrochloric acid to form calcium chloride, water, and carbon dioxide.", marks: 1, lines: 1 },
+        { lbl: "(c)", text: "Balance the symbol equation: ___Ca + ___HCl → ___CaCl₂ + ___H₂", marks: 1, lines: 1 }
+      ],
+      ms: "(a) Mᵣ(CaCO₃) = 40 + 12 + 3(16) = 100 [1]. (b) calcium carbonate + hydrochloric acid → calcium chloride + water + carbon dioxide [1]. (c) Ca + 2HCl → CaCl₂ + H₂ [1]."
+    },
+    theoryExt: {
+      stem: "Answer the following questions on ionic formulae and ionic equations (0620 Supplement 3.1):",
+      parts: [
+        { lbl: "(a)", text: "Deduce the formula of iron(III) oxide from the ions Fe³⁺ and O²⁻.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Write the balanced ionic equation (including state symbols) for solid calcium carbonate reacting with dilute hydrochloric acid, H⁺(aq).", marks: 2, lines: 2 }
+      ],
+      ms: "(a) Fe₂O₃ [1]. (b) CaCO₃(s) + 2H⁺(aq) → Ca²⁺(aq) + H₂O(l) + CO₂(g) [2: formulae/balancing 1, state symbols 1]."
+    },
+    atp: {
+      stem: "State TWO physical observations you would see when calcium carbonate powder is added to excess dilute hydrochloric acid. (Do not simply state 'carbon dioxide is produced'.)",
+      marks: 2,
+      lines: 2,
+      ms: "Effervescence / fizzing / bubbles of gas [1]; solid disappears / dissolves [1]."
+    }
+  },
+  {
+    id: "3b",
+    short: "T3B",
+    title: "Topic 3B: Stoichiometry & Moles",
+    cup: "CUP 5th Ed. Ch. 5",
+    mcqCore: {
+      stem: "What is the relative formula mass (Mᵣ) of hydrated copper(II) sulfate, CuSO₄·5H₂O? (Aᵣ: Cu = 64, S = 32, O = 16, H = 1)",
+      options: ["160", "178", "250", "266"],
       ans: 2,
-      ms: "C — Balance charges: 2 × (+3) + 3 × (−2) = 0 → Al₂(SO₄)₃."
+      ms: "C — 64 + 32 + 4(16) + 5(18) = 160 + 90 = 250."
     },
     mcqExt: {
       stem: "What volume of hydrogen gas (at r.t.p.) is produced when 0.025 mol of magnesium reacts with excess dilute HCl? (Mg + 2HCl → MgCl₂ + H₂)",
-      options: ["0.30 dm³", "0.60 dm³", "1.20 dm³", "6.00 dm³"],
-      ans: 1,
-      ms: "B — n(H₂) = 0.025 mol; V = 0.025 × 24 = 0.60 dm³."
+      options: ["0.60 dm³", "0.30 dm³", "1.20 dm³", "6.00 dm³"],
+      ans: 0,
+      ms: "A — n(H₂) = 0.025 mol; V = 0.025 × 24 = 0.60 dm³."
     },
     theoryCore: {
-      stem: "Calcium carbonate reacts with dilute hydrochloric acid: CaCO₃(s) + 2HCl(aq) → CaCl₂(aq) + H₂O(l) + CO₂(g). A student adds 2.50 g of pure CaCO₃ to excess acid.",
+      stem: "Answer the following reacting-mass calculations (0620 Core 3.2):",
       parts: [
-        { lbl: "(a)", text: "Calculate the relative formula mass (Mᵣ) of CaCO₃ and the number of moles of CaCO₃ in 2.50 g.", marks: 2, lines: 2 },
-        { lbl: "(b)", text: "Write the ionic equation (including state symbols) for the reaction between CaCO₃(s) and H⁺(aq).", marks: 1, lines: 2 }
+        { lbl: "(a)", text: "Calculate the relative formula mass (Mᵣ) of magnesium carbonate, MgCO₃. (Aᵣ: Mg = 24, C = 12, O = 16)", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "4.8 g of magnesium burns completely in oxygen to form 8.0 g of magnesium oxide (MgO). Calculate the mass of oxygen that reacted.", marks: 1, lines: 1 },
+        { lbl: "(c)", text: "Calculate the percentage by mass of magnesium in magnesium oxide, MgO (Mᵣ = 40).", marks: 1, lines: 2 }
       ],
-      ms: "(a) Mᵣ(CaCO₃) = 40 + 12 + 3(16) = 100 [1]; n = 2.50 / 100 = 0.0250 mol [1]. (b) CaCO₃(s) + 2H⁺(aq) → Ca²⁺(aq) + H₂O(l) + CO₂(g) [1]."
+      ms: "(a) 24 + 12 + 3(16) = 84 [1]. (b) 8.0 − 4.8 = 3.2 g [1]. (c) (24 / 40) × 100 = 60% [1]."
     },
     theoryExt: {
-      stem: "In a separate experiment, 2.50 g (0.0250 mol) of CaCO₃ is added to 40.0 cm³ of 1.50 mol/dm³ HCl(aq).",
+      stem: "Magnesium carbonate reacts with dilute hydrochloric acid: MgCO₃(s) + 2HCl(aq) → MgCl₂(aq) + H₂O(l) + CO₂(g). A student adds 2.10 g of pure MgCO₃ (Mᵣ = 84) to 40.0 cm³ of 1.50 mol/dm³ HCl(aq).",
       parts: [
-        { lbl: "(a)", text: "Calculate the moles of HCl used and deduce which reactant is the limiting reactant.", marks: 1, lines: 2 },
+        { lbl: "(a)", text: "Calculate the moles of MgCO₃ and the moles of HCl used, and deduce which reactant is the limiting reactant.", marks: 1, lines: 2 },
         { lbl: "(b)", text: "Calculate the theoretical volume of CO₂ gas formed, in cm³, at r.t.p.", marks: 1, lines: 2 },
-        { lbl: "(c)", text: "The student actually collects 510 cm³ of CO₂. Calculate the percentage yield.", marks: 1, lines: 2 }
+        { lbl: "(c)", text: "In the actual experiment, 510 cm³ of CO₂ is collected. Calculate the percentage yield.", marks: 1, lines: 2 }
       ],
-      ms: "(a) n(HCl) = (40.0/1000) × 1.50 = 0.0600 mol; 0.0250 mol CaCO₃ needs 0.0500 mol HCl → CaCO₃ is limiting [1]. (b) V = 0.0250 × 24 × 1000 = 600 cm³ [1]. (c) % yield = (510 / 600) × 100 = 85.0% [1]."
+      ms: "(a) n(MgCO₃) = 2.10 / 84 = 0.0250 mol; n(HCl) = (40.0/1000) × 1.50 = 0.0600 mol; 0.0250 mol MgCO₃ needs 0.0500 mol HCl → MgCO₃ is limiting [1]. (b) V = 0.0250 × 24 × 1000 = 600 cm³ [1]. (c) % yield = (510 / 600) × 100 = 85.0% [1]."
     },
     atp: {
       stem: "A student measures 25.0 cm³ of HCl into a conical flask using a measuring cylinder, and records three burette readings as: 24, 24.15, 24.2. Identify ONE apparatus improvement for measuring the 25.0 cm³ HCl and ONE recording error in the burette readings.",
@@ -1059,19 +1164,20 @@ const MODULES = [
     }
   },
   {
-    id: 4,
+    id: "4",
+    short: "T4",
     title: "Topic 4: Electrochemistry",
     cup: "CUP 5th Ed. Ch. 6",
     mcqCore: {
       stem: "During the electrolysis of molten lead(II) bromide (PbBr₂) using inert carbon electrodes, what is formed at the cathode and anode?",
       options: [
         "Cathode: bromine, Anode: lead",
-        "Cathode: lead, Anode: bromine",
         "Cathode: hydrogen, Anode: bromine",
-        "Cathode: lead, Anode: oxygen"
+        "Cathode: lead, Anode: oxygen",
+        "Cathode: lead, Anode: bromine"
       ],
-      ans: 1,
-      ms: "B — Pb²⁺ ions migrate to the negative cathode (forming lead); Br⁻ ions migrate to the positive anode (forming bromine)."
+      ans: 3,
+      ms: "D — Pb²⁺ ions migrate to the negative cathode (forming lead); Br⁻ ions migrate to the positive anode (forming bromine)."
     },
     mcqExt: {
       stem: "During the electrolysis of concentrated aqueous sodium chloride (brine) with inert platinum electrodes, which ionic half-equation occurs at the cathode?",
@@ -1109,7 +1215,8 @@ const MODULES = [
     }
   },
   {
-    id: 5,
+    id: "5",
+    short: "T5",
     title: "Topic 5: Chemical Energetics",
     cup: "CUP 5th Ed. Ch. 7",
     mcqCore: {
@@ -1126,13 +1233,13 @@ const MODULES = [
     mcqExt: {
       stem: "Which statement correctly describes bond breaking and bond making in a chemical reaction?",
       options: [
-        "Both bond breaking and bond making are exothermic.",
         "Bond breaking is endothermic and bond making is exothermic.",
+        "Both bond breaking and bond making are exothermic.",
         "Bond breaking is exothermic and bond making is endothermic.",
         "Neither involves an energy change."
       ],
-      ans: 1,
-      ms: "B — Energy is absorbed to break bonds (endothermic) and released when new bonds form (exothermic)."
+      ans: 0,
+      ms: "A — Energy is absorbed to break bonds (endothermic) and released when new bonds form (exothermic)."
     },
     theoryCore: {
       stem: "The reaction pathway diagram below represents the complete combustion of methane: CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(g).",
@@ -1160,7 +1267,8 @@ const MODULES = [
     }
   },
   {
-    id: 6,
+    id: "6",
+    short: "T6",
     title: "Topic 6: Rates, Equilibrium & Redox",
     cup: "CUP 5th Ed. Ch. 8–10",
     mcqCore: {
@@ -1168,20 +1276,20 @@ const MODULES = [
       options: [
         "Increases the kinetic energy of the reactant particles",
         "Increases the concentration of reactants",
-        "Provides an alternative reaction pathway with a lower activation energy (Eₐ)",
-        "Shifts the position of equilibrium to the right"
+        "Shifts the position of equilibrium to the right",
+        "Provides an alternative reaction pathway with a lower activation energy (Eₐ)"
       ],
-      ans: 2,
-      ms: "C — A catalyst lowers the activation energy so a greater proportion of collisions have E ≥ Eₐ."
+      ans: 3,
+      ms: "D — A catalyst lowers the activation energy so a greater proportion of collisions have E ≥ Eₐ."
     },
     mcqExt: {
-      stem: "What is the oxidation number of chromium in the dichromate(VI) ion, Cr₂O₇²⁻?",
+      stem: "What is the oxidation number of chromium in the dichromate ion, Cr₂O₇²⁻?",
       options: ["+3", "+5", "+6", "+7"],
       ans: 2,
       ms: "C — 2x + 7(−2) = −2 → 2x = +12 → x = +6."
     },
     theoryCore: {
-      stem: "Excess calcium carbonate chips react with 50 cm³ of 1.0 mol/dm³ HCl at 25 °C. The volume of CO₂ collected is shown on the graph.",
+      stem: "Excess calcium carbonate chips react with 50 cm³ of 0.10 mol/dm³ HCl at 25 °C. The volume of CO₂ collected at r.t.p. is shown on the graph.",
       svg: "rateCurve",
       parts: [
         { lbl: "(a)", text: "Calculate the average rate of reaction during the first 40 s (include units).", marks: 2, lines: 2 },
@@ -1206,7 +1314,8 @@ const MODULES = [
     }
   },
   {
-    id: 7,
+    id: "7",
+    short: "T7",
     title: "Topic 7: Acids, Bases & Salts",
     cup: "CUP 5th Ed. Ch. 11–12",
     mcqCore: {
@@ -1223,13 +1332,13 @@ const MODULES = [
     mcqExt: {
       stem: "Which statement defines a strong acid such as hydrochloric acid (HCl)?",
       options: [
-        "It has a high concentration in mol/dm³.",
         "It completely dissociates (ionises) in aqueous solution.",
+        "It has a high concentration in mol/dm³.",
         "It partially dissociates in aqueous solution.",
         "It is a proton acceptor."
       ],
-      ans: 1,
-      ms: "B — Strong acids fully dissociate into ions in water (HCl → H⁺ + Cl⁻)."
+      ans: 0,
+      ms: "A — Strong acids fully dissociate into ions in water (HCl → H⁺ + Cl⁻)."
     },
     theoryCore: {
       stem: "Answer the following questions on oxides and salt preparation:",
@@ -1255,30 +1364,31 @@ const MODULES = [
     }
   },
   {
-    id: 8,
+    id: "8",
+    short: "T8",
     title: "Topic 8: The Periodic Table",
     cup: "CUP 5th Ed. Ch. 13",
     mcqCore: {
       stem: "Which trend is observed going down Group I (alkali metals: Li → Na → K)?",
       options: [
-        "Melting point increases and reactivity increases",
         "Melting point decreases and reactivity increases",
+        "Melting point increases and reactivity increases",
         "Melting point decreases and reactivity decreases",
         "Density decreases and hardness increases"
       ],
-      ans: 1,
-      ms: "B — Down Group I, melting point decreases while reactivity with water increases."
+      ans: 0,
+      ms: "A — Down Group I, melting point decreases while reactivity with water increases."
     },
     mcqExt: {
       stem: "Which set of properties is characteristic of transition elements (e.g., Fe, Cu, V) compared to Group I metals?",
       options: [
         "Low melting points and soft",
         "Form white compounds only and non-catalytic",
-        "High densities, act as catalysts, and form coloured compounds with variable oxidation states",
-        "React violently with cold water"
+        "React violently with cold water",
+        "High densities, act as catalysts, and form coloured compounds with variable oxidation states"
       ],
-      ans: 2,
-      ms: "C — Transition elements have high densities/melting points, variable oxidation states, coloured compounds, and act as catalysts."
+      ans: 3,
+      ms: "D — Transition elements have high densities/melting points, variable oxidation states, coloured compounds, and act as catalysts."
     },
     theoryCore: {
       stem: "Answer the following questions about Group I and Group VIII:",
@@ -1304,30 +1414,31 @@ const MODULES = [
     }
   },
   {
-    id: 9,
+    id: "9",
+    short: "T9",
     title: "Topic 9: Metals & Extraction",
     cup: "CUP 5th Ed. Ch. 14–16",
     mcqCore: {
       stem: "Why are alloys (such as brass or steel) harder and stronger than pure metals?",
       options: [
         "Alloys form giant covalent lattices",
-        "Atoms of different sizes disrupt the regular layers, making it harder for layers to slide",
         "Alloys have weaker metallic bonds",
+        "Atoms of different sizes disrupt the regular layers, making it harder for layers to slide",
         "Alloys contain ionic bonds"
       ],
-      ans: 1,
-      ms: "B — Different-sized atoms distort the metallic layers and prevent them from sliding easily."
+      ans: 2,
+      ms: "C — Different-sized atoms distort the metallic layers and prevent them from sliding easily."
     },
     mcqExt: {
       stem: "In the extraction of aluminium by electrolysis of Al₂O₃ dissolved in molten cryolite, why must the carbon anodes be replaced regularly?",
       options: [
         "They dissolve in cryolite",
-        "They react with molten aluminium",
         "Oxygen formed at the anodes reacts with the hot carbon to produce CO₂ gas",
+        "They react with molten aluminium",
         "They melt at 950 °C"
       ],
-      ans: 2,
-      ms: "C — Hot carbon anodes burn away in the oxygen produced at the anode: C + O₂ → CO₂."
+      ans: 1,
+      ms: "B — Hot carbon anodes burn away in the oxygen produced at the anode: C + O₂ → CO₂."
     },
     theoryCore: {
       stem: "The diagram shows a blast furnace used to extract iron from haematite (Fe₂O₃).",
@@ -1354,19 +1465,20 @@ const MODULES = [
     }
   },
   {
-    id: 10,
+    id: "10",
+    short: "T10",
     title: "Topic 10: Chemistry of the Environment",
     cup: "CUP 5th Ed. Ch. 17",
     mcqCore: {
       stem: "Which chemical test confirms the presence of water?",
       options: [
         "Boiling point is 100 °C",
-        "Turns anhydrous copper(II) sulfate from white to blue",
         "Turns damp red litmus paper blue",
-        "Relights a glowing splint"
+        "Relights a glowing splint",
+        "Turns anhydrous copper(II) sulfate from white to blue"
       ],
-      ans: 1,
-      ms: "B — Anhydrous copper(II) sulfate turns white → blue in the presence of water (cobalt(II) chloride turns blue → pink)."
+      ans: 3,
+      ms: "D — Anhydrous copper(II) sulfate turns white → blue in the presence of water (cobalt(II) chloride turns blue → pink)."
     },
     mcqExt: {
       stem: "How do greenhouse gases such as CO₂ and CH₄ cause global warming?",
@@ -1403,25 +1515,26 @@ const MODULES = [
     }
   },
   {
-    id: 11,
+    id: "11",
+    short: "T11",
     title: "Topic 11: Organic Chemistry & Polymers",
     cup: "CUP 5th Ed. Ch. 18–20",
     mcqCore: {
       stem: "Which homologous series has the general formula CₙH₂ₙ and decolourises aqueous bromine rapidly at room temperature?",
-      options: ["Alkanes", "Alkenes", "Alcohols", "Carboxylic acids"],
-      ans: 1,
-      ms: "B — Alkenes contain a C=C double bond (unsaturated) and react rapidly with bromine water (orange-brown → colourless)."
+      options: ["Alkenes", "Alkanes", "Alcohols", "Carboxylic acids"],
+      ans: 0,
+      ms: "A — Alkenes contain a C=C double bond (unsaturated) and react rapidly with bromine water (orange-brown → colourless)."
     },
     mcqExt: {
       stem: "Ethanol reacts with propanoic acid in the presence of concentrated H₂SO₄ catalyst. What is the name and formula of the ester formed?",
       options: [
         "Propyl ethanoate, CH₃COOCH₂CH₂CH₃",
-        "Ethyl propanoate, CH₃CH₂COOCH₂CH₃",
         "Ethyl ethanoate, CH₃COOCH₂CH₃",
+        "Ethyl propanoate, CH₃CH₂COOCH₂CH₃",
         "Propyl propanoate, CH₃CH₂COOCH₂CH₂CH₃"
       ],
-      ans: 1,
-      ms: "B — Ethanol (ethyl) + propanoic acid (propanoate) → ethyl propanoate (CH₃CH₂COOCH₂CH₃)."
+      ans: 2,
+      ms: "C — Ethanol (ethyl) + propanoic acid (propanoate) → ethyl propanoate (CH₃CH₂COOCH₂CH₃)."
     },
     theoryCore: {
       stem: "Answer the following questions on hydrocarbons and ethanol:",
@@ -1435,10 +1548,10 @@ const MODULES = [
       stem: "Glucose (C₆H₁₂O₆, Mᵣ = 180) ferments to ethanol (C₂H₅OH, Mᵣ = 46): C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂.",
       parts: [
         { lbl: "(a)", text: "Calculate the maximum theoretical mass of ethanol produced from 9.00 g of glucose.", marks: 1, lines: 2 },
-        { lbl: "(b)", text: "Write/draw one repeat unit of nylon (from HOOC–□–COOH and H₂N–■–NH₂) showing the amide linkage, and name the small molecule eliminated.", marks: 1, lines: 2 },
-        { lbl: "(c)", text: "State how PET plastic waste can be chemically recycled back into new PET.", marks: 1, lines: 1 }
+        { lbl: "(b)", text: "Nylon is formed from HOOC–□–COOH and H₂N–■–NH₂. Write/draw ONE repeat unit of nylon showing the amide linkage clearly.", marks: 1, lines: 2 },
+        { lbl: "(c)", text: "Name the small molecule eliminated during this condensation polymerisation.", marks: 1, lines: 1 }
       ],
-      ms: "(a) n(glucose) = 9.00/180 = 0.0500 mol → n(ethanol) = 0.100 mol → mass = 0.100 × 46 = 4.60 g [1]. (b) –C(=O)–□–C(=O)–NH–■–NH– with continuation bonds + water (H₂O) [1]. (c) PET can be converted back into monomers and re-polymerised [1]."
+      ms: "(a) n(glucose) = 9.00/180 = 0.0500 mol → n(ethanol) = 0.100 mol → mass = 0.100 × 46 = 4.60 g [1]. (b) –C(=O)–□–C(=O)–NH–■–NH– with continuation bonds [1]. (c) Water (H₂O) [1]."
     },
     atp: {
       stem: "Describe a chemical test (reagent and observations for BOTH liquids) to distinguish between liquid hexane (an alkane) and liquid hexene (an alkene).",
@@ -1448,9 +1561,10 @@ const MODULES = [
     }
   },
   {
-    id: 12,
-    title: "Topic 12: Experimental Techniques & Analysis",
-    cup: "CUP 5th Ed. Ch. 21–22",
+    id: "12a",
+    short: "T12A",
+    title: "Topic 12A: Experimental Design & Separation",
+    cup: "CUP 5th Ed. Ch. 21",
     mcqCore: {
       stem: "Which separation method is best used to separate a miscible mixture of ethanol (b.p. 78 °C) and water (b.p. 100 °C)?",
       options: ["Filtration", "Fractional distillation", "Crystallisation", "Evaporation to dryness"],
@@ -1462,11 +1576,11 @@ const MODULES = [
       options: [
         "To make the solvent travel faster",
         "To separate overlapping coloured spots",
-        "To react with colourless substances (such as amino acids) to make them visible",
-        "To prevent the solvent from evaporating"
+        "To prevent the solvent from evaporating",
+        "To react with colourless substances (such as amino acids) to make them visible"
       ],
-      ans: 2,
-      ms: "C — Locating agents react with colourless spots to produce coloured/visible spots."
+      ans: 3,
+      ms: "D — Locating agents react with colourless spots to produce coloured/visible spots."
     },
     theoryCore: {
       stem: "A student analyses food dyes P and Q using paper chromatography, obtaining the chromatogram shown below.",
@@ -1478,19 +1592,64 @@ const MODULES = [
       ms: "(a) Pencil/graphite is insoluble in the solvent (ink would dissolve and run) [1]; solvent below baseline prevents spots from dissolving into the bulk solvent [1]. (b) Q is a mixture (of 3 substances) / impure [1]."
     },
     theoryExt: {
-      stem: "Using the chromatogram above and qualitative analysis tests:",
+      stem: "Using the chromatogram and separation principles:",
+      svg: "chromatogram",
       parts: [
-        { lbl: "(a)", text: "Calculate the R_f value of dye P (show your working).", marks: 1, lines: 2 },
-        { lbl: "(b)", text: "Salt X gives a green precipitate with NaOH(aq) (insoluble in excess) and a white precipitate with acidified Ba(NO₃)₂(aq). Identify Salt X.", marks: 1, lines: 1 },
-        { lbl: "(c)", text: "Salt Y gives a lilac flame in a flame test and a yellow precipitate with acidified AgNO₃(aq). Identify Salt Y.", marks: 1, lines: 1 }
+        { lbl: "(a)", text: "Calculate the R_f value of dye P from the chromatogram (show your working).", marks: 1, lines: 2 },
+        { lbl: "(b)", text: "In fractional distillation, state where the thermometer bulb must be placed and explain the role of the fractionating column.", marks: 2, lines: 2 }
       ],
-      ms: "(a) R_f = 4.2 / 6.0 = 0.70 [1]. (b) Iron(II) sulfate / FeSO₄ [1]. (c) Potassium iodide / KI [1]."
+      ms: "(a) R_f = 4.2 / 6.0 = 0.70 [1]. (b) Bulb level with side-arm to measure vapour b.p. entering condenser [1]; column provides large surface area so higher-b.p. vapour condenses and falls back [1]."
     },
     atp: {
-      stem: "State what would be observed when aqueous ammonia, NH₃(aq), is added dropwise and then in excess to aqueous copper(II) sulfate, CuSO₄(aq).",
+      stem: "A liquid distillate of pure substance L (expected b.p. 65 °C) is tested and found to boil between 66.5 °C and 71.0 °C. State what this indicates about the distillate and justify your answer.",
       marks: 2,
       lines: 2,
-      ms: "Light blue precipitate forms initially [1]; precipitate dissolves in excess NH₃(aq) to give a deep/dark blue solution [1]."
+      ms: "The distillate is impure [1]; it boils over a temperature range (above 65 °C) instead of sharply at 65 °C [1]."
+    }
+  },
+  {
+    id: "12b",
+    short: "T12B",
+    title: "Topic 12B: Chemical Analysis & Planning",
+    cup: "CUP 5th Ed. Ch. 22 + Paper 6",
+    mcqCore: {
+      stem: "What colour flame is produced when a potassium salt (K⁺) is tested in a flame test?",
+      options: ["Yellow", "Orange-red", "Lilac", "Blue-green"],
+      ans: 2,
+      ms: "C — Potassium ions (K⁺) give a lilac flame (Na⁺ = yellow, Ca²⁺ = orange-red, Cu²⁺ = blue-green)."
+    },
+    mcqExt: {
+      stem: "Which test confirms the presence of nitrate ions, NO₃⁻, in aqueous solution?",
+      options: [
+        "Add NaOH(aq) and aluminium foil, warm carefully → ammonia gas produced turns damp red litmus paper blue",
+        "Add dilute HNO₃ then AgNO₃(aq) → white precipitate",
+        "Add dilute HNO₃ then Ba(NO₃)₂(aq) → white precipitate",
+        "Add acidified KMnO₄(aq) → purple to colourless"
+      ],
+      ans: 0,
+      ms: "A — Al + NaOH(aq) on warming reduces NO₃⁻ to NH₃ gas, which turns damp red litmus blue."
+    },
+    theoryCore: {
+      stem: "Use the Qualitative Analysis Notes to answer the following:",
+      parts: [
+        { lbl: "(a)", text: "Salt X forms a pale green solution. Adding NaOH(aq) gives a green precipitate (insoluble in excess). Adding dilute HNO₃ then Ba(NO₃)₂(aq) gives a white precipitate. Identify the cation and anion in Salt X.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "State the flame test colour produced by calcium ions (Ca²⁺).", marks: 1, lines: 1 }
+      ],
+      ms: "(a) Cation: iron(II) / Fe²⁺ [1]; Anion: sulfate / SO₄²⁻ (Salt X = FeSO₄) [1]. (b) Orange-red [1]."
+    },
+    theoryExt: {
+      stem: "Use the Qualitative Analysis Notes for the following observations:",
+      parts: [
+        { lbl: "(a)", text: "Salt Y gives a lilac flame and a yellow precipitate with acidified AgNO₃(aq). Identify Salt Y.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Describe what is observed when aqueous ammonia, NH₃(aq), is added dropwise and then in excess to aqueous copper(II) sulfate, CuSO₄(aq).", marks: 2, lines: 2 }
+      ],
+      ms: "(a) Potassium iodide / KI [1]. (b) Light blue precipitate forms initially [1]; precipitate dissolves in excess NH₃(aq) to form a dark/deep blue solution [1]."
+    },
+    atp: {
+      stem: "Plan a laboratory method to prepare pure, dry crystals of magnesium sulfate (MgSO₄) starting from insoluble magnesium oxide powder (MgO) and dilute sulfuric acid (H₂SO₄).",
+      marks: 2,
+      lines: 3,
+      ms: "Add excess MgO powder to warm dilute H₂SO₄ until no more dissolves, then filter off excess MgO [1]; evaporate filtrate to crystallisation point, allow to cool to form crystals, filter and dry between filter papers [1]."
     }
   }
 ];
@@ -1504,8 +1663,10 @@ const PT_DATA = [
   [55,"Cs","133",1],[56,"Ba","137",2],[57,"La*","139",3],[72,"Hf","178",4],[73,"Ta","181",5],[74,"W","184",6],[75,"Re","186",7],[76,"Os","190",8],[77,"Ir","192",9],[78,"Pt","195",10],[79,"Au","197",11],[80,"Hg","201",12],[81,"Tl","204",13],[82,"Pb","207",14],[83,"Bi","209",15],[84,"Po","–",16],[85,"At","–",17],[86,"Rn","–",18]
 ];
 
+const MODULE_ORDER = MODULES.map(m => m.id);
+
 let state = {
-  selected: [1, 2, 3, 12],
+  selected: ["1", "2", "3a", "3b", "12a"],
   activePreset: "m2a",
   tier: "dual",
   view: "online",
@@ -1516,7 +1677,10 @@ let state = {
   onlineAnswers: {},
   onlineSubmitted: false,
   rubricScores: {},
-  timerSeconds: 40 * 60,
+  rubricGraded: {},
+  timerSeconds: 50 * 60,
+  initialTimerSeconds: 50 * 60,
+  elapsedSeconds: 0,
   timerRunning: false,
   timerInterval: null
 };
@@ -1532,12 +1696,28 @@ function showToast(msg) {
   setTimeout(() => box.classList.remove("show"), 2600);
 }
 
+function sortModIds(ids) {
+  const uniq = Array.from(new Set(ids));
+  return uniq.sort((a, b) => MODULE_ORDER.indexOf(a) - MODULE_ORDER.indexOf(b));
+}
+
+function expandLegacyModIds(rawList) {
+  const out = [];
+  rawList.forEach(tok => {
+    const t = tok.trim().toLowerCase();
+    if (t === "3") { out.push("3a", "3b"); }
+    else if (t === "12") { out.push("12a", "12b"); }
+    else if (MODULE_ORDER.includes(t)) { out.push(t); }
+  });
+  return sortModIds(out);
+}
+
 function parseUrlParams() {
   const p = new URLSearchParams(window.location.search);
   if (p.has("mods")) {
-    const ids = p.get("mods").split(",").map(Number).filter(n => n >= 1 && n <= 12);
+    const ids = expandLegacyModIds(p.get("mods").split(","));
     if (ids.length) {
-      state.selected = Array.from(new Set(ids)).sort((a,b)=>a-b);
+      state.selected = ids;
       state.activePreset = null;
     }
   }
@@ -1561,6 +1741,7 @@ function parseUrlParams() {
       document.getElementById("inTime").value = t;
       state.customTime = true;
       state.timerSeconds = t * 60;
+      state.initialTimerSeconds = t * 60;
     }
   }
   if (p.get("student") === "1") {
@@ -1589,9 +1770,12 @@ function initUI() {
     const cb = lbl.querySelector("input");
     cb.onchange = () => {
       state.activePreset = null;
-      state.selected = Array.from(grid.querySelectorAll("input:checked")).map(x => Number(x.value)).sort((a,b)=>a-b);
+      const checkedVals = Array.from(grid.querySelectorAll("input:checked")).map(x => x.value);
+      state.selected = sortModIds(checkedVals);
       state.customTime = false;
       state.onlineSubmitted = false;
+      state.rubricScores = {};
+      state.rubricGraded = {};
       syncUI();
     };
     grid.appendChild(lbl);
@@ -1602,6 +1786,8 @@ function initUI() {
       state.tier = btn.dataset.tier;
       state.customTime = false;
       state.onlineSubmitted = false;
+      state.rubricScores = {};
+      state.rubricGraded = {};
       syncUI();
     };
   });
@@ -1639,7 +1825,9 @@ function initUI() {
   parseUrlParams();
   if (!state.customTime) {
     const m = getMarksBreakdown();
-    state.timerSeconds = Math.max(15, m.total) * 60;
+    const mins = Math.max(15, m.total);
+    state.timerSeconds = mins * 60;
+    state.initialTimerSeconds = mins * 60;
   }
   syncUI();
 }
@@ -1659,7 +1847,7 @@ function syncAppendixButtons() {
 function unlockTeacher() {
   state.studentLock = false;
   syncUI();
-  showToast("Đã mở Bảng điều khiển Giáo viên.");
+  showToast("Đã mở Bảng điều khiển & Chấm điểm Giáo viên.");
 }
 
 function applyPreset(p) {
@@ -1667,6 +1855,8 @@ function applyPreset(p) {
   state.activePreset = p.id;
   state.customTime = false;
   state.onlineSubmitted = false;
+  state.rubricScores = {};
+  state.rubricGraded = {};
   document.getElementById("inMilestone").value = p.milestone;
   syncUI();
 }
@@ -1687,7 +1877,7 @@ function syncUI() {
     b.classList.toggle("active", b.dataset.pid === state.activePreset);
   });
   document.querySelectorAll(".mod-chip").forEach(c => {
-    const mid = Number(c.dataset.mid);
+    const mid = c.dataset.mid;
     const checked = state.selected.includes(mid);
     c.classList.toggle("checked", checked);
     c.querySelector("input").checked = checked;
@@ -1699,16 +1889,26 @@ function syncUI() {
   if (!state.customTime) {
     const mins = Math.max(15, m.total);
     document.getElementById("inTime").value = mins;
-    if (!state.timerRunning && !state.onlineSubmitted) state.timerSeconds = mins * 60;
+    if (!state.timerRunning && !state.onlineSubmitted) {
+      state.timerSeconds = mins * 60;
+      state.initialTimerSeconds = mins * 60;
+      state.elapsedSeconds = 0;
+    }
   }
   document.getElementById("maxCoreLbl").textContent = m.core;
   document.getElementById("maxExtLbl").textContent = m.ext;
   document.getElementById("maxAtpLbl").textContent = m.atp;
+
   const stBtn = document.getElementById("btnStSubmit");
   if (stBtn) {
     stBtn.disabled = state.onlineSubmitted;
-    stBtn.textContent = state.onlineSubmitted ? "✅ Đã nộp bài" : "🚀 Nộp bài & Chấm";
+    stBtn.textContent = state.onlineSubmitted ? "✅ Đã nộp bài" : "🚀 Nộp bài";
   }
+  const stStartBtn = document.getElementById("btnStStartTimer");
+  if (stStartBtn) {
+    stStartBtn.classList.toggle("hidden", state.timerRunning || state.onlineSubmitted);
+  }
+
   updateTimerDisplays();
   updateCalc();
   renderPaper();
@@ -1733,6 +1933,24 @@ function updateTimerDisplays() {
   });
 }
 
+function startStudentTimer() {
+  if (state.timerRunning || state.onlineSubmitted) return;
+  state.timerRunning = true;
+  const stStartBtn = document.getElementById("btnStStartTimer");
+  if (stStartBtn) stStartBtn.classList.add("hidden");
+  state.timerInterval = setInterval(() => {
+    state.elapsedSeconds++;
+    if (state.timerSeconds > 0) {
+      state.timerSeconds--;
+      updateTimerDisplays();
+    } else {
+      clearInterval(state.timerInterval);
+      state.timerRunning = false;
+      showToast("Hết giờ làm bài!");
+    }
+  }, 1000);
+}
+
 function toggleTimer() {
   if (state.timerRunning) {
     clearInterval(state.timerInterval);
@@ -1740,6 +1958,7 @@ function toggleTimer() {
   } else {
     state.timerRunning = true;
     state.timerInterval = setInterval(() => {
+      state.elapsedSeconds++;
       if (state.timerSeconds > 0) {
         state.timerSeconds--;
         updateTimerDisplays();
@@ -1755,8 +1974,10 @@ function toggleTimer() {
 function resetTimer() {
   clearInterval(state.timerInterval);
   state.timerRunning = false;
-  const mins = parseInt(document.getElementById("inTime").value, 10) || 40;
+  const mins = parseInt(document.getElementById("inTime").value, 10) || 50;
   state.timerSeconds = mins * 60;
+  state.initialTimerSeconds = mins * 60;
+  state.elapsedSeconds = 0;
   updateTimerDisplays();
 }
 
@@ -1773,7 +1994,7 @@ function copyStudentLink() {
     student: "1",
     mods: state.selected.join(","),
     tier: state.tier,
-    time: document.getElementById("inTime").value || "40",
+    time: document.getElementById("inTime").value || "50",
     milestone: document.getElementById("inMilestone").value || "IGCSE Chemistry 0620",
     pt: state.showPT ? "1" : "0",
     qa: state.showQA ? "1" : "0"
@@ -1792,21 +2013,41 @@ function copyStudentLink() {
 
 function evaluatePlacement(c, e, a, m) {
   const totalEarned = c + e + a;
-  if (m.total === 0) return { bandClass: "", title: "", advice: "", pct: 0, pctExt: null, pctAtp: 0 };
+  if (m.total === 0) return { bandClass: "", title: "", advice: "", pct: 0, pctExt: null, pctAtp: 0, totalEarned: 0 };
   const pct = (totalEarned / m.total) * 100;
   const pctExt = m.ext > 0 ? (e / m.ext) * 100 : null;
   const pctAtp = m.atp > 0 ? (a / m.atp) * 100 : 0;
 
   let bandClass = "band-1", title = "", advice = "";
+
+  // Core-only mode (no Supplement [Ext] questions tested) MUST NOT award Extended / A* labels
+  if (m.ext === 0) {
+    if (pct < 44) {
+      bandClass = "band-1";
+      title = "Nhóm 1: Foundation / Cần bù nền tảng (Core)";
+      advice = "Học sinh cần củng cố thuật ngữ Hóa tiếng Anh, cấu tạo nguyên tử & phương trình cơ bản theo lộ trình Core (mục tiêu C).";
+    } else if (pct < 80) {
+      bandClass = "band-2";
+      title = "Nhóm 2: Đạt nền tảng Core (mục tiêu C)";
+      advice = "Nắm được nội dung Core cơ bản. Lưu ý: đề này chưa kiểm tra phần Supplement ([Ext]) — cần làm thêm bài [Ext] nếu muốn xét lên hệ Extended.";
+    } else {
+      bandClass = "band-3";
+      title = "Vững nền tảng Core (đủ điều kiện khảo sát Supplement để xét Extended)";
+      advice = "Điểm Core tốt (≥ 80%), nhưng bài thi chưa gồm phần Supplement ([Ext]) nên không tự động xếp Extended A/A*. Cần cho làm thêm phần [Ext] trước khi chốt lớp.";
+    }
+    return { bandClass, title, advice, pct, pctExt, pctAtp, totalEarned };
+  }
+
+  // Dual-Tier or Extended Focus (has Supplement [Ext] evidence)
   if (pct < 44) {
     bandClass = "band-1";
     title = "Nhóm 1: Foundation / Cần bù nền tảng";
     advice = "Học lại thuật ngữ Hóa tiếng Anh, cấu tạo nguyên tử & cân bằng phương trình; ưu tiên lộ trình Core (mục tiêu C).";
-  } else if (pct < 68 || (pctExt !== null && pctExt < 60)) {
+  } else if (pct < 68 || pctExt < 60) {
     bandClass = "band-2";
     title = "Nhóm 2: Trung bình – Khá (Core vững / Standard Extended)";
-    advice = "Nắm được lõi kiến thức nhưng phần [Ext] đạt " + (pctExt !== null ? pctExt.toFixed(0) + "%" : "N/A") + ". Xếp lớp Core (mục tiêu C) hoặc Extended chuẩn kèm bổ trợ Mol & định lượng.";
-  } else if (pct >= 82 && (pctExt === null || pctExt >= 75) && pctAtp >= 70) {
+    advice = "Phần [Ext] đạt " + pctExt.toFixed(0) + "%. Xếp lớp Core (mục tiêu C) hoặc Extended chuẩn kèm bổ trợ Mol & định lượng.";
+  } else if (pct >= 82 && pctExt >= 75 && pctAtp >= 70) {
     bandClass = "band-4";
     title = "Nhóm 4: Giỏi – Xuất sắc (Extended tăng tốc / A*)";
     advice = "Đủ năng lực bứt phá A/A*! Tập trung đề Paper 4 nâng cao và câu Q4 thiết kế thí nghiệm Paper 6.";
@@ -1838,22 +2079,45 @@ function updateCalc() {
 function computeOnlineScores() {
   const chosen = MODULES.filter(m => state.selected.includes(m.id));
   let c = 0, e = 0, a = 0;
+  let mcqCoreCorrect = 0, mcqExtCorrect = 0, mcqMax = 0;
+  let gradedWritten = 0, totalWritten = 0;
+
   chosen.forEach(mod => {
     if (state.tier !== "ext") {
-      if (state.onlineAnswers[`mcq_${mod.id}_Core`] === mod.mcqCore.ans) c += 1;
+      mcqMax += 1;
+      if (state.onlineAnswers[`mcq_${mod.id}_Core`] === mod.mcqCore.ans) {
+        c += 1;
+        mcqCoreCorrect += 1;
+      }
       mod.theoryCore.parts.forEach((pt, idx) => {
-        c += Number(state.rubricScores[`th_${mod.id}_Core_${idx}`] || 0);
+        totalWritten += 1;
+        const rk = `th_${mod.id}_Core_${idx}`;
+        if (state.rubricGraded[rk]) gradedWritten += 1;
+        c += Number(state.rubricScores[rk] || 0);
       });
     }
     if (state.tier !== "core") {
-      if (state.onlineAnswers[`mcq_${mod.id}_Ext`] === mod.mcqExt.ans) e += 1;
+      mcqMax += 1;
+      if (state.onlineAnswers[`mcq_${mod.id}_Ext`] === mod.mcqExt.ans) {
+        e += 1;
+        mcqExtCorrect += 1;
+      }
       mod.theoryExt.parts.forEach((pt, idx) => {
-        e += Number(state.rubricScores[`th_${mod.id}_Ext_${idx}`] || 0);
+        totalWritten += 1;
+        const rk = `th_${mod.id}_Ext_${idx}`;
+        if (state.rubricGraded[rk]) gradedWritten += 1;
+        e += Number(state.rubricScores[rk] || 0);
       });
     }
-    a += Number(state.rubricScores[`atp_${mod.id}`] || 0);
+    totalWritten += 1;
+    const atpKey = `atp_${mod.id}`;
+    if (state.rubricGraded[atpKey]) gradedWritten += 1;
+    a += Number(state.rubricScores[atpKey] || 0);
   });
-  return { c, e, a };
+
+  const mcqTotal = mcqCoreCorrect + mcqExtCorrect;
+  const allWrittenGraded = (totalWritten > 0 && gradedWritten === totalWritten);
+  return { c, e, a, mcqCoreCorrect, mcqExtCorrect, mcqTotal, mcqMax, gradedWritten, totalWritten, allWrittenGraded };
 }
 
 function syncOnlineScoresToCalc() {
@@ -1874,20 +2138,27 @@ function submitOnlineExam() {
     stBtn.disabled = true;
     stBtn.textContent = "✅ Đã nộp bài";
   }
+  const stStartBtn = document.getElementById("btnStStartTimer");
+  if (stStartBtn) stStartBtn.classList.add("hidden");
   syncOnlineScoresToCalc();
   renderPaper();
   window.scrollTo({ top: 0, behavior: "smooth" });
-  showToast("Đã chấm tự động phần trắc nghiệm! Chấm điểm phần Tự luận/ATP bên dưới để hoàn tất.");
+  if (state.studentLock) {
+    showToast("Đã nộp bài! Hãy in/lưu PDF bài làm gửi giáo viên chấm phần tự luận.");
+  } else {
+    showToast("Đã chấm tự động phần Trắc nghiệm! Chấm điểm các ý Tự luận & ATP bên dưới để ra kết luận xếp lớp.");
+  }
 }
 
 function resetOnlineExam() {
   state.onlineSubmitted = false;
   state.onlineAnswers = {};
   state.rubricScores = {};
+  state.rubricGraded = {};
   const stBtn = document.getElementById("btnStSubmit");
   if (stBtn) {
     stBtn.disabled = false;
-    stBtn.textContent = "🚀 Nộp bài & Chấm";
+    stBtn.textContent = "🚀 Nộp bài";
   }
   resetTimer();
   syncOnlineScoresToCalc();
@@ -1896,6 +2167,7 @@ function resetOnlineExam() {
 
 function selectMcq(key, optIdx) {
   if (state.onlineSubmitted) return;
+  if (state.studentLock && !state.timerRunning) startStudentTimer();
   state.onlineAnswers[key] = optIdx;
   const list = document.querySelectorAll(`li[data-mcq-key="${key}"]`);
   list.forEach((li, i) => {
@@ -1906,15 +2178,21 @@ function selectMcq(key, optIdx) {
 }
 
 function setTextAnswer(key, val) {
+  if (state.onlineSubmitted) return;
+  if (state.studentLock && !state.timerRunning) startStudentTimer();
   state.onlineAnswers[key] = val;
   const pa = document.getElementById("pa_" + key);
   if (pa) pa.textContent = val || "(No written answer)";
 }
 
 function setRubricScore(key, val) {
+  if (state.studentLock) return;
   state.rubricScores[key] = val;
+  state.rubricGraded[key] = true;
   const pills = document.querySelectorAll(`button[data-rkey="${key}"]`);
   pills.forEach(p => p.classList.toggle("active", Number(p.dataset.rval) === val));
+  const waitBadge = document.getElementById("wait_" + key);
+  if (waitBadge) waitBadge.classList.add("hidden");
   syncOnlineScoresToCalc();
   refreshReportBanner();
 }
@@ -1928,10 +2206,54 @@ function refreshReportBanner() {
   box.innerHTML = buildReportBannerInner(s, m, ev);
 }
 
-function buildReportBannerInner(s, m, ev) {
+function buildStudentSubmittedBanner(s, m) {
+  const writtenMax = m.total - s.mcqMax;
+  const timeSpent = formatTime(state.elapsedSeconds);
   return `
     <h2>
-      <span>📊 Kết quả Chẩn đoán Online (Online Diagnostic Report)</span>
+      <span>✅ Đã nộp bài thành công!</span>
+      <span class="no-print" style="display:flex; gap:8px;">
+        <button class="btn-mini" onclick="window.print()">🖨️ In / Lưu PDF bài làm gửi Giáo viên</button>
+      </span>
+    </h2>
+    <div class="report-stats">
+      <div class="stat-pill"><div class="lbl">Trắc nghiệm (Auto-graded)</div><div class="val">${s.mcqTotal} / ${s.mcqMax}</div></div>
+      <div class="stat-pill"><div class="lbl">Tự luận &amp; Thực hành (${writtenMax}đ)</div><div class="val">⏳ Chờ giáo viên chấm</div></div>
+      <div class="stat-pill"><div class="lbl">Thời gian làm bài</div><div class="val">${timeSpent}</div></div>
+    </div>
+    <div class="calc-result band-wait" style="margin-top:4px;">
+      Trắc nghiệm: <strong>${s.mcqTotal}/${s.mcqMax}</strong> điểm · Phần Tự luận và Thực hành (<strong>${writtenMax} điểm</strong>) đang chờ giáo viên chấm. Hãy bấm <strong>In / Lưu PDF</strong> để gửi bài làm cho giáo viên (hoặc bấm <em>Mở bảng GV</em> ở góc trên bên phải nếu giáo viên chấm trực tiếp trên máy này).
+    </div>
+  `;
+}
+
+function buildReportBannerInner(s, m, ev) {
+  if (state.studentLock) {
+    return buildStudentSubmittedBanner(s, m);
+  }
+  const writtenMax = m.total - s.mcqMax;
+  if (!s.allWrittenGraded) {
+    return `
+      <h2>
+        <span>⏳ Đang chờ hoàn tất chấm điểm (Teacher Review Mode)</span>
+        <span class="no-print" style="display:flex; gap:8px;">
+          <button class="btn-mini" onclick="window.print()">🖨️ In / Lưu PDF</button>
+          <button class="btn-mini" onclick="resetOnlineExam()">🔄 Làm lại bài</button>
+        </span>
+      </h2>
+      <div class="report-stats">
+        <div class="stat-pill"><div class="lbl">Trắc nghiệm (Đã chấm)</div><div class="val">${s.mcqTotal} / ${s.mcqMax}</div></div>
+        <div class="stat-pill"><div class="lbl">Ý Tự luận &amp; ATP đã chấm</div><div class="val">${s.gradedWritten} / ${s.totalWritten} ý</div></div>
+        <div class="stat-pill"><div class="lbl">Điểm Tự luận/ATP hiện tại</div><div class="val">${(s.c + s.e + s.a) - s.mcqTotal} / ${writtenMax}</div></div>
+      </div>
+      <div class="calc-result band-wait" style="margin-top:4px;">
+        Trắc nghiệm: <strong>${s.mcqTotal}/${s.mcqMax}</strong> · Tự luận &amp; Thực hành còn <strong>${s.totalWritten - s.gradedWritten} ý chưa chấm</strong>. Hãy bấm các nút điểm <code>[0đ..max]</code> ngay dưới từng câu bên dưới — kết luận xếp lớp sẽ chỉ hiển thị sau khi giáo viên chấm đủ 100% các ý viết!
+      </div>
+    `;
+  }
+  return `
+    <h2>
+      <span>📊 Kết quả Chẩn đoán Chính thức (Official Placement Report)</span>
       <span class="no-print" style="display:flex; gap:8px;">
         <button class="btn-mini" onclick="window.print()">🖨️ In / Lưu PDF kết quả</button>
         <button class="btn-mini" onclick="resetOnlineExam()">🔄 Làm lại bài</button>
@@ -1945,7 +2267,6 @@ function buildReportBannerInner(s, m, ev) {
     </div>
     <div class="calc-result ${ev.bandClass}" style="margin-top:4px;">
       ${ev.title} — ${ev.advice}
-      <div style="font-weight:500; font-size:0.8rem; margin-top:4px;">* Lưu ý: Phần Trắc nghiệm đã chấm tự động. Bấm các nút điểm [0..max] ngay dưới mỗi câu Tự luận/ATP để cộng điểm bài viết.</div>
     </div>
   `;
 }
@@ -1968,7 +2289,7 @@ function renderPT() {
   });
   return `
     <div class="appendix-page" id="appendix-pt">
-      <h3 style="margin:0 0 4px; text-align:center;">The Periodic Table of Elements (Cambridge IGCSE 0620)</h3>
+      <h3 style="margin:0 0 4px; text-align:center;">The Periodic Table of Elements (Cambridge IGCSE 0620 — 2026–2028)</h3>
       <div class="pt-grid">${cells}</div>
       <p style="font-size:0.82rem; margin:8px 0 0;">*58–71 Lanthanoids &amp; 90–103 Actinoids omitted for compact diagnostic printing. <strong>The volume of one mole of any gas is 24 dm³ at room temperature and pressure (r.t.p.).</strong></p>
     </div>
@@ -1978,7 +2299,7 @@ function renderPT() {
 function renderQA() {
   return `
     <div class="appendix-page" id="appendix-qa">
-      <h3 style="margin:0 0 10px; text-align:center;">Notes for Use in Qualitative Analysis (0620 Paper 6 — 2023–2028 Syllabus)</h3>
+      <h3 style="margin:0 0 10px; text-align:center;">Notes for Use in Qualitative Analysis (0620 Paper 6 — 2026–2028 Syllabus)</h3>
       <table class="exam-tbl">
         <tr><th colspan="3">Tests for anions</th></tr>
         <tr><th>Anion</th><th>Test</th><th>Test result</th></tr>
@@ -2032,20 +2353,21 @@ function renderPaper() {
   const sheet = document.getElementById("paperSheet");
   const chosen = MODULES.filter(m => state.selected.includes(m.id));
   if (chosen.length === 0) {
-    sheet.innerHTML = `<div class="empty-state"><h3>Chưa chọn Topic Module nào</h3><p>Hãy chọn một Preset hoặc tích chọn các Topic ở bảng điều khiển phía trên để tạo đề thi.</p></div>`;
+    sheet.innerHTML = `<div class="empty-state"><h3>Chưa chọn Module nào</h3><p>Hãy chọn một Preset hoặc tích chọn các Module ở bảng điều khiển phía trên để tạo đề thi.</p></div>`;
     return;
   }
 
   const m = getMarksBreakdown();
   const isOnline = state.view === "online";
   const isTeacher = state.view === "teacher";
-  const showMS = isTeacher || (isOnline && state.onlineSubmitted);
+  // NEVER reveal Mark Schemes or MCQ answer keys to a locked student even after submission!
+  const showMS = isTeacher || (isOnline && state.onlineSubmitted && !state.studentLock);
   const sName = escHtml(document.getElementById("inName").value) || "___________________________________";
   const sSchool = escHtml(document.getElementById("inSchool").value) || "_________________________";
   const sMile = escHtml(document.getElementById("inMilestone").value) || "Custom Modular Test";
   const sDate = escHtml(document.getElementById("inDate").value) || "____ / ____ / 202__";
   const sTime = document.getElementById("inTime").value || m.total;
-  const tierLabel = state.tier === "dual" ? "Dual-Tier (Core + Extended + ATP)" : (state.tier === "core" ? "Core Focus (Khá — Core + ATP)" : "Extended Focus (Giỏi — Extended + ATP)");
+  const tierLabel = state.tier === "dual" ? "Dual-Tier (Core + Supplement + ATP)" : (state.tier === "core" ? "Core Only (Foundation Check)" : "Extended Focus (Supplement + ATP)");
 
   let html = "";
 
@@ -2080,7 +2402,7 @@ function renderPaper() {
       <div class="cam-header-top">
         <div>
           <div class="cam-title">Cambridge IGCSE™ Chemistry (0620) — Entrance Diagnostic ${isTeacher ? "(MARK SCHEME)" : ""}</div>
-          <div class="cam-sub">${sMile} • ${tierLabel}</div>
+          <div class="cam-sub">${sMile} • ${tierLabel} • Syllabus 2026–2028</div>
         </div>
         <div style="text-align:right; font-size:0.86rem; white-space:nowrap; flex-shrink:0;">
           <div><strong>Total Marks: ${m.total}</strong></div>
@@ -2091,7 +2413,7 @@ function renderPaper() {
         <div><strong>Candidate Name:</strong> <span id="hdrName">${sName}</span></div>
         <div><strong>Date:</strong> ${sDate}</div>
         <div><strong>Current School:</strong> <span id="hdrSchool">${sSchool}</span></div>
-        <div><strong>Topics Covered:</strong> ${chosen.map(x => "T" + x.id).join(", ")}</div>
+        <div><strong>Modules Covered:</strong> ${chosen.map(x => x.short).join(", ")}</div>
       </div>
       <div class="cam-instructions">
         <strong>READ THESE INSTRUCTIONS FIRST:</strong> Answer all questions. Electronic calculators may be used. Show clear working in all calculations (give numerical answers to 3 significant figures where appropriate).
@@ -2116,14 +2438,14 @@ function renderPaper() {
       <div class="q-card">
         <div class="q-head">
           <div class="q-num">${qNo}. ${entry.item.stem}</div>
-          <div class="q-meta"><span class="badge badge-topic">T${entry.mod.id}</span>${badge}<span class="marks-tag">[1]</span></div>
+          <div class="q-meta"><span class="badge badge-topic">${entry.mod.short}</span>${badge}<span class="marks-tag">[1]</span></div>
         </div>
         <ul class="mcq-opts">
           ${entry.item.options.map((opt, idx) => {
             let cls = isOnline ? "online-opt" : "";
-            if (isOnline && picked === idx && !state.onlineSubmitted) cls += " selected-opt";
+            if (isOnline && picked === idx && (!state.onlineSubmitted || state.studentLock)) cls += " selected-opt";
             if (showMS && idx === entry.item.ans) cls += " correct-opt";
-            else if (isOnline && state.onlineSubmitted && picked === idx && idx !== entry.item.ans) cls += " wrong-opt";
+            else if (showMS && isOnline && state.onlineSubmitted && picked === idx && idx !== entry.item.ans) cls += " wrong-opt";
             const radio = isOnline
               ? `<input type="radio" name="${key}" ${picked === idx ? "checked" : ""} ${state.onlineSubmitted ? "disabled" : ""} style="margin-top:3px;">`
               : "";
@@ -2144,33 +2466,45 @@ function renderPaper() {
     if (state.tier !== "core") theories.push({ mod, tier: "Ext", item: mod.theoryExt });
   });
   const secBMarks = theories.length * 3;
+  const renderedSvgs = new Set();
   html += `<div class="section-banner"><span>SECTION B — Structured Theory</span><span>${secBMarks} marks</span></div>`;
   theories.forEach(entry => {
     const badge = entry.tier === "Core" ? `<span class="badge badge-core">[Core]</span>` : `<span class="badge badge-ext">[Ext]</span>`;
+    let svgHtml = "";
+    if (entry.item.svg) {
+      const svgKey = `${entry.mod.id}_${entry.item.svg}`;
+      if (!renderedSvgs.has(svgKey)) {
+        renderedSvgs.add(svgKey);
+        svgHtml = `<div class="svg-wrap">${SVGS[entry.item.svg]}</div>`;
+      } else {
+        svgHtml = `<div style="font-size:0.84rem; color:#475569; font-style:italic; margin:4px 0 6px;">(Refer to the diagram shown in the previous question.)</div>`;
+      }
+    }
     html += `
       <div class="q-card">
         <div class="q-head">
-          <div class="q-num">Question ${qNo} — ${entry.mod.title.replace(/^Topic \d+:\s*/, "")}</div>
-          <div class="q-meta"><span class="badge badge-topic">T${entry.mod.id}</span>${badge}<span class="marks-tag">[3]</span></div>
+          <div class="q-num">Question ${qNo} — ${entry.mod.title.replace(/^(Topic|Module) [\w]+:\s*/, "")}</div>
+          <div class="q-meta"><span class="badge badge-topic">${entry.mod.short}</span>${badge}<span class="marks-tag">[3]</span></div>
         </div>
         <div>${entry.item.stem}</div>
-        ${entry.item.svg ? `<div class="svg-wrap">${SVGS[entry.item.svg]}</div>` : ""}
+        ${svgHtml}
         ${entry.item.parts.map((pt, idx) => {
           const rkey = `th_${entry.mod.id}_${entry.tier}_${idx}`;
           const savedVal = state.onlineAnswers[rkey] || "";
+          const isGraded = !!state.rubricGraded[rkey];
           const curScore = Number(state.rubricScores[rkey] || 0);
           let inputHtml = "";
           if (isOnline) {
             inputHtml = `
-              <textarea class="online-ta" placeholder="Nhập câu trả lời và các bước tính toán tại đây..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
+              <textarea class="online-ta" ${state.onlineSubmitted ? "readonly" : ""} placeholder="Nhập câu trả lời và các bước tính toán tại đây..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
               <div class="print-ans" id="pa_${rkey}">${escHtml(savedVal) || "(No written answer)"}</div>
             `;
-            if (state.onlineSubmitted) {
+            if (state.onlineSubmitted && !state.studentLock) {
               let pills = "";
               for (let v = 0; v <= pt.marks; v++) {
-                pills += `<button type="button" class="mark-pill ${curScore === v ? "active" : ""}" data-rkey="${rkey}" data-rval="${v}" onclick="setRubricScore('${rkey}', ${v})">${v}đ</button>`;
+                pills += `<button type="button" class="mark-pill ${isGraded && curScore === v ? "active" : ""}" data-rkey="${rkey}" data-rval="${v}" onclick="setRubricScore('${rkey}', ${v})">${v}đ</button>`;
               }
-              inputHtml += `<div class="rubric-bar no-print"><span>Chấm điểm ý ${pt.lbl} (tối đa ${pt.marks}đ):</span>${pills}</div>`;
+              inputHtml += `<div class="rubric-bar no-print"><span>Chấm ý ${pt.lbl} (tối đa ${pt.marks}đ):</span>${pills}${!isGraded ? `<span class="badge-wait" id="wait_${rkey}">⏳ Chưa chấm</span>` : ""}</div>`;
             }
           } else if (!isTeacher) {
             inputHtml = linesHtml(pt.lines);
@@ -2194,19 +2528,20 @@ function renderPaper() {
   chosen.forEach(mod => {
     const rkey = `atp_${mod.id}`;
     const savedVal = state.onlineAnswers[rkey] || "";
+    const isGraded = !!state.rubricGraded[rkey];
     const curScore = Number(state.rubricScores[rkey] || 0);
     let inputHtml = "";
     if (isOnline) {
       inputHtml = `
-        <textarea class="online-ta" placeholder="Nhập nhận xét thí nghiệm / phương án xử lý sai số tại đây..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
+        <textarea class="online-ta" ${state.onlineSubmitted ? "readonly" : ""} placeholder="Nhập nhận xét thí nghiệm / phương án xử lý sai số tại đây..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
         <div class="print-ans" id="pa_${rkey}">${escHtml(savedVal) || "(No written answer)"}</div>
       `;
-      if (state.onlineSubmitted) {
+      if (state.onlineSubmitted && !state.studentLock) {
         let pills = "";
         for (let v = 0; v <= mod.atp.marks; v++) {
-          pills += `<button type="button" class="mark-pill ${curScore === v ? "active" : ""}" data-rkey="${rkey}" data-rval="${v}" onclick="setRubricScore('${rkey}', ${v})">${v}đ</button>`;
+          pills += `<button type="button" class="mark-pill ${isGraded && curScore === v ? "active" : ""}" data-rkey="${rkey}" data-rval="${v}" onclick="setRubricScore('${rkey}', ${v})">${v}đ</button>`;
         }
-        inputHtml += `<div class="rubric-bar no-print"><span>Chấm điểm câu ATP (tối đa ${mod.atp.marks}đ):</span>${pills}</div>`;
+        inputHtml += `<div class="rubric-bar no-print"><span>Chấm câu ATP (tối đa ${mod.atp.marks}đ):</span>${pills}${!isGraded ? `<span class="badge-wait" id="wait_${rkey}">⏳ Chưa chấm</span>` : ""}</div>`;
       }
     } else if (!isTeacher) {
       inputHtml = linesHtml(mod.atp.lines);
@@ -2214,8 +2549,8 @@ function renderPaper() {
     html += `
       <div class="q-card">
         <div class="q-head">
-          <div class="q-num">Question ${qNo} — Practical Investigation (${mod.title.replace(/^Topic \d+:\s*/, "")})</div>
-          <div class="q-meta"><span class="badge badge-topic">T${mod.id}</span><span class="badge badge-atp">[ATP]</span><span class="marks-tag">[2]</span></div>
+          <div class="q-num">Question ${qNo} — Practical Investigation (${mod.title.replace(/^(Topic|Module) [\w]+:\s*/, "")})</div>
+          <div class="q-meta"><span class="badge badge-topic">${mod.short}</span><span class="badge badge-atp">[ATP]</span><span class="marks-tag">[2]</span></div>
         </div>
         <div>${mod.atp.stem}</div>
         ${inputHtml}
