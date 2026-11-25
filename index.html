@@ -616,6 +616,7 @@
     margin-top: 28px;
     padding-top: 16px;
     border-top: 2px solid #0f172a;
+    scroll-margin-top: 72px;
   }
   .pt-grid {
     display: grid;
@@ -904,19 +905,19 @@ const SVGS = {
     <text x="242" y="172" font-size="9.5" font-weight="bold">Molten iron</text>
   </svg>`,
 
-  chromatogram: `<svg viewBox="0 0 320 185" width="270" xmlns="http://www.w3.org/2000/svg">
-    <rect x="85" y="15" width="150" height="155" fill="#fff" stroke="#334155" stroke-width="1.8"/>
-    <line x1="85" y1="35" x2="235" y2="35" stroke="#2563eb" stroke-dasharray="5,3" stroke-width="1.5"/>
-    <text x="242" y="38" font-size="9.5" fill="#2563eb" font-weight="bold">Solvent front (6.0 cm)</text>
-    <line x1="85" y1="145" x2="235" y2="145" stroke="#475569" stroke-width="1.4"/>
-    <text x="242" y="148" font-size="9.5" font-weight="bold">Pencil baseline</text>
-    <circle cx="130" cy="68" r="6" fill="#dc2626"/>
-    <text x="130" y="162" font-size="10" font-weight="bold" text-anchor="middle">Dye P</text>
-    <text x="115" y="71" font-size="9" text-anchor="end">4.2 cm</text>
-    <circle cx="190" cy="52" r="5.5" fill="#16a34a"/>
-    <circle cx="190" cy="92" r="5.5" fill="#eab308"/>
-    <circle cx="190" cy="122" r="5.5" fill="#7c3aed"/>
-    <text x="190" y="162" font-size="10" font-weight="bold" text-anchor="middle">Dye Q</text>
+  chromatogram: `<svg viewBox="0 0 385 185" width="340" xmlns="http://www.w3.org/2000/svg">
+    <rect x="48" y="15" width="150" height="155" fill="#fff" stroke="#334155" stroke-width="1.8"/>
+    <line x1="48" y1="35" x2="198" y2="35" stroke="#2563eb" stroke-dasharray="5,3" stroke-width="1.5"/>
+    <text x="208" y="38" font-size="9.5" fill="#2563eb" font-weight="bold">Solvent front (6.0 cm)</text>
+    <line x1="48" y1="145" x2="198" y2="145" stroke="#475569" stroke-width="1.4"/>
+    <text x="208" y="148" font-size="9.5" font-weight="bold">Pencil baseline</text>
+    <circle cx="95" cy="68" r="6" fill="#dc2626"/>
+    <text x="95" y="162" font-size="10" font-weight="bold" text-anchor="middle">Dye P</text>
+    <text x="80" y="71" font-size="9" text-anchor="end">4.2 cm</text>
+    <circle cx="155" cy="52" r="5.5" fill="#16a34a"/>
+    <circle cx="155" cy="92" r="5.5" fill="#eab308"/>
+    <circle cx="155" cy="122" r="5.5" fill="#7c3aed"/>
+    <text x="155" y="162" font-size="10" font-weight="bold" text-anchor="middle">Dye Q</text>
   </svg>`
 };
 
@@ -1703,6 +1704,11 @@ function syncUI() {
   document.getElementById("maxCoreLbl").textContent = m.core;
   document.getElementById("maxExtLbl").textContent = m.ext;
   document.getElementById("maxAtpLbl").textContent = m.atp;
+  const stBtn = document.getElementById("btnStSubmit");
+  if (stBtn) {
+    stBtn.disabled = state.onlineSubmitted;
+    stBtn.textContent = state.onlineSubmitted ? "✅ Đã nộp bài" : "🚀 Nộp bài & Chấm";
+  }
   updateTimerDisplays();
   updateCalc();
   renderPaper();
@@ -1863,6 +1869,11 @@ function submitOnlineExam() {
   clearInterval(state.timerInterval);
   state.timerRunning = false;
   state.onlineSubmitted = true;
+  const stBtn = document.getElementById("btnStSubmit");
+  if (stBtn) {
+    stBtn.disabled = true;
+    stBtn.textContent = "✅ Đã nộp bài";
+  }
   syncOnlineScoresToCalc();
   renderPaper();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1873,6 +1884,11 @@ function resetOnlineExam() {
   state.onlineSubmitted = false;
   state.onlineAnswers = {};
   state.rubricScores = {};
+  const stBtn = document.getElementById("btnStSubmit");
+  if (stBtn) {
+    stBtn.disabled = false;
+    stBtn.textContent = "🚀 Nộp bài & Chấm";
+  }
   resetTimer();
   syncOnlineScoresToCalc();
   renderPaper();
@@ -1882,7 +1898,11 @@ function selectMcq(key, optIdx) {
   if (state.onlineSubmitted) return;
   state.onlineAnswers[key] = optIdx;
   const list = document.querySelectorAll(`li[data-mcq-key="${key}"]`);
-  list.forEach((li, i) => li.classList.toggle("selected-opt", i === optIdx));
+  list.forEach((li, i) => {
+    li.classList.toggle("selected-opt", i === optIdx);
+    const radio = li.querySelector('input[type="radio"]');
+    if (radio) radio.checked = (i === optIdx);
+  });
 }
 
 function setTextAnswer(key, val) {
@@ -2062,7 +2082,7 @@ function renderPaper() {
           <div class="cam-title">Cambridge IGCSE™ Chemistry (0620) — Entrance Diagnostic ${isTeacher ? "(MARK SCHEME)" : ""}</div>
           <div class="cam-sub">${sMile} • ${tierLabel}</div>
         </div>
-        <div style="text-align:right; font-size:0.86rem;">
+        <div style="text-align:right; font-size:0.86rem; white-space:nowrap; flex-shrink:0;">
           <div><strong>Total Marks: ${m.total}</strong></div>
           <div>Time Allowed: <strong>${sTime} mins</strong></div>
         </div>
