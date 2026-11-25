@@ -706,7 +706,6 @@
       <button class="btn-mini" id="btnJumpQA" onclick="jumpTo('appendix-qa')">QA Notes</button>
       <button class="btn-submit-online" id="btnStSubmit" onclick="submitOnlineExam()">🚀 Nộp bài</button>
       <button class="btn-mini" onclick="window.print()">🖨️ In</button>
-      <button class="btn-unlock" onclick="unlockTeacher()">Mở bảng GV</button>
     </div>
   </div>
 </div>
@@ -718,6 +717,7 @@
       <p>15 Module độc lập (10đ/Module) • Cambridge IGCSE 0620 Syllabus 2026–2028 &amp; CUP Coursebook 5th Edition • Past Papers 2023–2026</p>
     </div>
     <div class="header-actions">
+      <button class="btn-share" style="background:#7c3aed" onclick="openImportModal()">📥 Nhập Mã Bài Làm học sinh</button>
       <button class="btn-share" onclick="copyStudentLink()">🔗 Copy Link gửi Học sinh</button>
       <button class="btn-print" onclick="window.print()">🖨️ In / Lưu PDF (A4)</button>
     </div>
@@ -776,6 +776,18 @@
 
 <div class="paper-sheet" id="paperSheet"></div>
 <div class="toast no-print" id="toastBox"></div>
+
+<div class="no-print hidden" id="importModal" style="position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:9998; display:flex; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#fff; border-radius:12px; max-width:560px; width:100%; padding:20px 24px; box-shadow:0 12px 32px rgba(15,23,42,0.28);">
+    <h3 style="margin:0 0 8px; color:#1a365d;">📥 Nhập Mã Bài Làm của Học sinh</h3>
+    <p style="margin:0 0 10px; font-size:0.86rem; color:#64748b;">Dán chuỗi Mã Bài Làm mà học sinh copy sau khi nộp bài trên trang <code>student.html</code> để tải toàn bộ câu trả lời và chấm điểm:</p>
+    <textarea id="importTokenBox" style="width:100%; min-height:110px; padding:8px 10px; border:1px solid #cbd5e1; border-radius:6px; font-family:monospace; font-size:0.82rem;" placeholder="Dán mã bài làm tại đây..."></textarea>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+      <button class="seg-btn" onclick="closeImportModal()">Hủy</button>
+      <button class="btn-print" onclick="confirmImportModal()">Nạp bài làm để chấm</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const PRESETS = [
@@ -1141,11 +1153,11 @@ const MODULES = [
     theoryCore: {
       stem: "Answer the following reacting-mass calculations (0620 Core 3.2):",
       parts: [
-        { lbl: "(a)", text: "Calculate the relative formula mass (Mᵣ) of magnesium carbonate, MgCO₃. (Aᵣ: Mg = 24, C = 12, O = 16)", marks: 1, lines: 1 },
+        { lbl: "(a)", text: "Calculate the relative formula mass (Mᵣ) of sodium carbonate, Na₂CO₃. (Aᵣ: Na = 23, C = 12, O = 16)", marks: 1, lines: 1 },
         { lbl: "(b)", text: "4.8 g of magnesium burns completely in oxygen to form 8.0 g of magnesium oxide (MgO). Calculate the mass of oxygen that reacted.", marks: 1, lines: 1 },
-        { lbl: "(c)", text: "Calculate the percentage by mass of magnesium in magnesium oxide, MgO (Mᵣ = 40).", marks: 1, lines: 2 }
+        { lbl: "(c)", text: "4.8 g of magnesium forms 8.0 g of magnesium oxide. Calculate the mass of magnesium oxide formed from 7.2 g of magnesium.", marks: 1, lines: 2 }
       ],
-      ms: "(a) 24 + 12 + 3(16) = 84 [1]. (b) 8.0 − 4.8 = 3.2 g [1]. (c) (24 / 40) × 100 = 60% [1]."
+      ms: "(a) 2(23) + 12 + 3(16) = 106 [1]. (b) 8.0 − 4.8 = 3.2 g [1]. (c) (7.2 / 4.8) × 8.0 = 12.0 g [1]."
     },
     theoryExt: {
       stem: "Magnesium carbonate reacts with dilute hydrochloric acid: MgCO₃(s) + 2HCl(aq) → MgCl₂(aq) + H₂O(l) + CO₂(g). A student adds 2.10 g of pure MgCO₃ (Mᵣ = 84) to 40.0 cm³ of 1.50 mol/dm³ HCl(aq).",
@@ -1673,6 +1685,7 @@ let state = {
   showPT: true,
   showQA: true,
   customTime: false,
+  customMilestone: false,
   studentLock: false,
   onlineAnswers: {},
   onlineSubmitted: false,
@@ -1701,6 +1714,35 @@ function sortModIds(ids) {
   return uniq.sort((a, b) => MODULE_ORDER.indexOf(a) - MODULE_ORDER.indexOf(b));
 }
 
+function detectPresetFromSelection(ids) {
+  const sorted = sortModIds(ids).join(",");
+  return PRESETS.find(p => sortModIds(p.modules).join(",") === sorted) || null;
+}
+
+function isPreIgcseTest() {
+  return state.selected.includes("m0");
+}
+
+function toBase64Utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+
+function fromBase64Utf8(b64) {
+  const bin = atob(b64.trim());
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+function decodeSubmissionToken(token) {
+  const obj = JSON.parse(fromBase64Utf8(token));
+  if (!obj || !Array.isArray(obj.mods)) throw new Error("Mã bài làm không hợp lệ.");
+  return obj;
+}
+
 function expandLegacyModIds(rawList) {
   const out = [];
   rawList.forEach(tok => {
@@ -1714,11 +1756,26 @@ function expandLegacyModIds(rawList) {
 
 function parseUrlParams() {
   const p = new URLSearchParams(window.location.search);
+  if (p.get("student") === "1") {
+    try {
+      const target = new URL("student.html" + window.location.search, window.location.href);
+      if (target.href !== window.location.href) {
+        window.location.replace(target.href);
+        return;
+      }
+    } catch (e) {}
+    state.studentLock = true;
+    state.view = "online";
+  }
   if (p.has("mods")) {
     const ids = expandLegacyModIds(p.get("mods").split(","));
     if (ids.length) {
       state.selected = ids;
-      state.activePreset = null;
+      const matched = detectPresetFromSelection(ids);
+      state.activePreset = matched ? matched.id : null;
+      if (!p.has("milestone")) {
+        document.getElementById("inMilestone").value = matched ? matched.milestone : "Đề tùy chọn (Custom Modular Test)";
+      }
     }
   }
   if (p.has("tier") && ["dual","core","ext"].includes(p.get("tier"))) {
@@ -1726,6 +1783,7 @@ function parseUrlParams() {
   }
   if (p.has("milestone")) {
     document.getElementById("inMilestone").value = p.get("milestone");
+    state.customMilestone = true;
   }
   if (p.has("pt")) {
     state.showPT = p.get("pt") !== "0";
@@ -1743,10 +1801,6 @@ function parseUrlParams() {
       state.timerSeconds = t * 60;
       state.initialTimerSeconds = t * 60;
     }
-  }
-  if (p.get("student") === "1") {
-    state.studentLock = true;
-    state.view = "online";
   }
 }
 
@@ -1769,9 +1823,13 @@ function initUI() {
     lbl.innerHTML = `<input type="checkbox" value="${m.id}"><div><span class="mod-title">${m.title}</span><span class="mod-cup">${m.cup}</span></div>`;
     const cb = lbl.querySelector("input");
     cb.onchange = () => {
-      state.activePreset = null;
       const checkedVals = Array.from(grid.querySelectorAll("input:checked")).map(x => x.value);
       state.selected = sortModIds(checkedVals);
+      const matched = detectPresetFromSelection(state.selected);
+      state.activePreset = matched ? matched.id : null;
+      if (!state.customMilestone) {
+        document.getElementById("inMilestone").value = matched ? matched.milestone : "Đề tùy chọn (Custom Modular Test)";
+      }
       state.customTime = false;
       state.onlineSubmitted = false;
       state.rubricScores = {};
@@ -1802,9 +1860,13 @@ function initUI() {
   document.getElementById("chkPT").onchange = (e) => { state.showPT = e.target.checked; syncAppendixButtons(); renderPaper(); };
   document.getElementById("chkQA").onchange = (e) => { state.showQA = e.target.checked; syncAppendixButtons(); renderPaper(); };
 
-  ["inName","inSchool","inMilestone","inDate"].forEach(id => {
+  ["inName","inSchool","inDate"].forEach(id => {
     document.getElementById(id).oninput = renderPaper;
   });
+  document.getElementById("inMilestone").oninput = () => {
+    state.customMilestone = true;
+    renderPaper();
+  };
   document.getElementById("stName").oninput = (e) => {
     document.getElementById("inName").value = e.target.value;
     updateHeaderMetaOnly();
@@ -1854,6 +1916,7 @@ function applyPreset(p) {
   state.selected = [...p.modules];
   state.activePreset = p.id;
   state.customTime = false;
+  state.customMilestone = false;
   state.onlineSubmitted = false;
   state.rubricScores = {};
   state.rubricGraded = {};
@@ -1940,13 +2003,13 @@ function startStudentTimer() {
   if (stStartBtn) stStartBtn.classList.add("hidden");
   state.timerInterval = setInterval(() => {
     state.elapsedSeconds++;
-    if (state.timerSeconds > 0) {
+    if (state.timerSeconds > 1) {
       state.timerSeconds--;
       updateTimerDisplays();
     } else {
-      clearInterval(state.timerInterval);
-      state.timerRunning = false;
-      showToast("Hết giờ làm bài!");
+      state.timerSeconds = 0;
+      updateTimerDisplays();
+      submitOnlineExam(true);
     }
   }, 1000);
 }
@@ -1959,13 +2022,13 @@ function toggleTimer() {
     state.timerRunning = true;
     state.timerInterval = setInterval(() => {
       state.elapsedSeconds++;
-      if (state.timerSeconds > 0) {
+      if (state.timerSeconds > 1) {
         state.timerSeconds--;
         updateTimerDisplays();
       } else {
-        clearInterval(state.timerInterval);
-        state.timerRunning = false;
-        showToast("Hết giờ làm bài!");
+        state.timerSeconds = 0;
+        updateTimerDisplays();
+        submitOnlineExam(true);
       }
     }, 1000);
   }
@@ -1987,11 +2050,13 @@ function jumpTo(id) {
 }
 
 function copyStudentLink() {
-  const baseUrl = window.location.origin === "null"
+  const rawBase = window.location.origin === "null"
     ? window.location.href.split("?")[0]
     : (window.location.origin + window.location.pathname);
+  const studentBase = rawBase.endsWith(".html")
+    ? rawBase.replace(/[^/]*$/, "student.html")
+    : (rawBase.endsWith("/") ? rawBase + "student.html" : rawBase + "/student.html");
   const params = new URLSearchParams({
-    student: "1",
     mods: state.selected.join(","),
     tier: state.tier,
     time: document.getElementById("inTime").value || "50",
@@ -1999,15 +2064,67 @@ function copyStudentLink() {
     pt: state.showPT ? "1" : "0",
     qa: state.showQA ? "1" : "0"
   });
-  const url = baseUrl + "?" + params.toString();
+  const url = studentBase + "?" + params.toString();
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(() => {
-      showToast("Đã copy link bài thi Online gửi học sinh!");
+      showToast("Đã copy link trang Student (không có đáp án) gửi học sinh!");
     }).catch(() => {
       window.prompt("Copy link gửi học sinh:", url);
     });
   } else {
     window.prompt("Copy link gửi học sinh:", url);
+  }
+}
+
+function openImportModal() {
+  document.getElementById("importTokenBox").value = "";
+  document.getElementById("importModal").classList.remove("hidden");
+}
+
+function closeImportModal() {
+  document.getElementById("importModal").classList.add("hidden");
+}
+
+function applyImportedSubmission(obj) {
+  const ids = expandLegacyModIds(obj.mods || []);
+  if (!ids.length) throw new Error("Không tìm thấy module hợp lệ trong mã bài làm.");
+  state.selected = ids;
+  const matched = detectPresetFromSelection(ids);
+  state.activePreset = matched ? matched.id : null;
+  state.tier = ["dual","core","ext"].includes(obj.tier) ? obj.tier : "dual";
+  state.showPT = obj.pt !== false;
+  state.showQA = obj.qa !== false;
+  document.getElementById("chkPT").checked = state.showPT;
+  document.getElementById("chkQA").checked = state.showQA;
+  document.getElementById("inName").value = obj.name || "";
+  document.getElementById("inSchool").value = obj.school || "";
+  document.getElementById("inDate").value = obj.date || "";
+  document.getElementById("inMilestone").value = obj.milestone || (matched ? matched.milestone : "Đề tùy chọn (Custom Modular Test)");
+  if (obj.time) {
+    document.getElementById("inTime").value = obj.time;
+    state.customTime = true;
+  }
+  state.elapsedSeconds = Number(obj.elapsedSeconds || 0);
+  state.onlineAnswers = obj.answers || {};
+  state.rubricScores = {};
+  state.rubricGraded = {};
+  state.studentLock = false;
+  state.view = "online";
+  state.onlineSubmitted = true;
+  syncOnlineScoresToCalc();
+  syncUI();
+}
+
+function confirmImportModal() {
+  const raw = document.getElementById("importTokenBox").value;
+  try {
+    const obj = decodeSubmissionToken(raw);
+    applyImportedSubmission(obj);
+    closeImportModal();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    showToast("Đã nạp bài làm của học sinh! Hãy chấm các ý Tự luận & ATP bên dưới.");
+  } catch (err) {
+    alert("Lỗi giải mã bài làm: " + err.message);
   }
 }
 
@@ -2019,6 +2136,29 @@ function evaluatePlacement(c, e, a, m) {
   const pctAtp = m.atp > 0 ? (a / m.atp) * 100 : 0;
 
   let bandClass = "band-1", title = "", advice = "";
+
+  // Pre-IGCSE diagnostic (contains M0): report Foundation+ATP vs Extension separately
+  if (isPreIgcseTest()) {
+    const foundEarned = c + a;
+    const foundMax = m.core + m.atp;
+    const foundPct = foundMax > 0 ? (foundEarned / foundMax) * 100 : 0;
+    if (foundPct < 50) {
+      bandClass = "band-1";
+      title = `Pre-IGCSE: Cần củng cố nền tảng Lower Secondary (Nền tảng & Thực hành: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
+      advice = "Cần ôn lại nền tảng hạt, phân loại chất, pH và tách chất đơn giản. Không dùng bài Pre-IGCSE này để xếp lớp Core hay Extended.";
+    } else if (foundPct < 78) {
+      bandClass = "band-2";
+      title = `Pre-IGCSE: Đạt nền tảng vào Year 1 IGCSE (Nền tảng & Thực hành: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
+      advice = "Đủ nền tảng học Year 1 IGCSE theo lộ trình chuẩn; tiếp tục theo dõi trong HK I trước khi xét Core hay Extended.";
+    } else {
+      bandClass = "band-4";
+      title = `Pre-IGCSE: Nền tảng Khoa học rất vững cho Year 1 IGCSE (Nền tảng & Thực hành: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
+      advice = (pctExt !== null && pctExt >= 60)
+        ? "Nền tảng rất chắc và học sinh đã học trước phần Mở rộng IGCSE (" + pctExt.toFixed(0) + "%); có thể bổ sung bài nâng cao sớm."
+        : "Nền tảng Lower Secondary rất vững; sẵn sàng vào Year 1 IGCSE (không trừ/hạ đánh giá nếu chưa học phần Mở rộng IGCSE).";
+    }
+    return { bandClass, title, advice, pct, pctExt, pctAtp, totalEarned, isPre: true, foundEarned, foundMax, foundPct };
+  }
 
   // Core-only mode (no Supplement [Ext] questions tested) MUST NOT award Extended / A* labels
   if (m.ext === 0) {
@@ -2069,6 +2209,11 @@ function updateCalc() {
   if (m.total === 0) {
     res.className = "calc-result";
     res.textContent = "Hãy chọn ít nhất 1 Module để tính điểm xếp lớp.";
+    return;
+  }
+  if (state.view === "online" && state.onlineSubmitted && !computeOnlineScores().allWrittenGraded) {
+    res.className = "calc-result band-wait";
+    res.textContent = "⏳ Đang chờ giáo viên chấm đủ tất cả các ý Tự luận & ATP trước khi công bố kết luận xếp lớp.";
     return;
   }
   const ev = evaluatePlacement(c, e, a, m);
@@ -2129,7 +2274,7 @@ function syncOnlineScoresToCalc() {
   return s;
 }
 
-function submitOnlineExam() {
+function submitOnlineExam(isTimeout = false) {
   clearInterval(state.timerInterval);
   state.timerRunning = false;
   state.onlineSubmitted = true;
@@ -2143,7 +2288,9 @@ function submitOnlineExam() {
   syncOnlineScoresToCalc();
   renderPaper();
   window.scrollTo({ top: 0, behavior: "smooth" });
-  if (state.studentLock) {
+  if (isTimeout) {
+    showToast("⏰ Hết giờ — bài làm đã tự động khóa và nộp!");
+  } else if (state.studentLock) {
     showToast("Đã nộp bài! Hãy in/lưu PDF bài làm gửi giáo viên chấm phần tự luận.");
   } else {
     showToast("Đã chấm tự động phần Trắc nghiệm! Chấm điểm các ý Tự luận & ATP bên dưới để ra kết luận xếp lớp.");
@@ -2251,6 +2398,18 @@ function buildReportBannerInner(s, m, ev) {
       </div>
     `;
   }
+  const statsHtml = ev.isPre
+    ? `
+      <div class="stat-pill"><div class="lbl">Nền tảng &amp; Thực hành (Core+ATP)</div><div class="val">${ev.foundEarned} / ${ev.foundMax} (${ev.foundPct.toFixed(0)}%)</div></div>
+      <div class="stat-pill"><div class="lbl">Mở rộng / Học trước ([Ext])</div><div class="val">${s.e} / ${m.ext}${ev.pctExt !== null ? ` (${ev.pctExt.toFixed(0)}%)` : ""}</div></div>
+      <div class="stat-pill"><div class="lbl">Tổng điểm tham khảo</div><div class="val">${ev.totalEarned} / ${m.total}</div></div>
+    `
+    : `
+      <div class="stat-pill"><div class="lbl">[Core] (MCQ + Theory)</div><div class="val">${s.c} / ${m.core}</div></div>
+      <div class="stat-pill"><div class="lbl">[Ext] (MCQ + Theory)</div><div class="val">${s.e} / ${m.ext}</div></div>
+      <div class="stat-pill"><div class="lbl">[ATP] (Paper 6)</div><div class="val">${s.a} / ${m.atp}</div></div>
+      <div class="stat-pill"><div class="lbl">Tổng điểm</div><div class="val">${ev.totalEarned} / ${m.total} (${ev.pct.toFixed(1)}%)</div></div>
+    `;
   return `
     <h2>
       <span>📊 Kết quả Chẩn đoán Chính thức (Official Placement Report)</span>
@@ -2259,12 +2418,7 @@ function buildReportBannerInner(s, m, ev) {
         <button class="btn-mini" onclick="resetOnlineExam()">🔄 Làm lại bài</button>
       </span>
     </h2>
-    <div class="report-stats">
-      <div class="stat-pill"><div class="lbl">[Core] (MCQ + Theory)</div><div class="val">${s.c} / ${m.core}</div></div>
-      <div class="stat-pill"><div class="lbl">[Ext] (MCQ + Theory)</div><div class="val">${s.e} / ${m.ext}</div></div>
-      <div class="stat-pill"><div class="lbl">[ATP] (Paper 6)</div><div class="val">${s.a} / ${m.atp}</div></div>
-      <div class="stat-pill"><div class="lbl">Tổng điểm</div><div class="val">${ev.totalEarned} / ${m.total} (${ev.pct.toFixed(1)}%)</div></div>
-    </div>
+    <div class="report-stats">${statsHtml}</div>
     <div class="calc-result ${ev.bandClass}" style="margin-top:4px;">
       ${ev.title} — ${ev.advice}
     </div>
