@@ -717,6 +717,7 @@
       <p>15 Module độc lập (10đ/Module) • Cambridge IGCSE 0620 Syllabus 2026–2028 &amp; CUP Coursebook 5th Edition • Past Papers 2023–2026</p>
     </div>
     <div class="header-actions">
+      <a href="skills_pack.html" class="btn-share" style="background:#b45309; text-decoration:none; display:inline-flex; align-items:center;">🎯 Bộ Đề Kỹ Năng Đề Thật (Set B)</a>
       <button class="btn-share" style="background:#7c3aed" onclick="openImportModal()">📥 Nhập Mã Bài Làm học sinh</button>
       <button class="btn-share" onclick="copyStudentLink()">🔗 Copy Link gửi Học sinh</button>
       <button class="btn-print" onclick="window.print()">🖨️ In / Lưu PDF (A4)</button>
@@ -972,10 +973,11 @@ const MODULES = [
     theoryCore: {
       stem: "Answer the following questions on pH and acids–metals:",
       parts: [
-        { lbl: "(a)", text: "State the pH of pure water at 25 °C and the colour of universal indicator in aqueous sodium hydroxide.", marks: 1, lines: 1 },
-        { lbl: "(b)", text: "Write the word equation for zinc reacting with dilute sulfuric acid, and state the test for the gas produced.", marks: 2, lines: 2 }
+        { lbl: "(a)", text: "State the pH of pure water at 25 °C.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Write the word equation for zinc reacting with dilute sulfuric acid.", marks: 1, lines: 1 },
+        { lbl: "(c)", text: "State the chemical test and positive result for hydrogen gas.", marks: 1, lines: 1 }
       ],
-      ms: "(a) pH 7 and purple / dark blue [1 for both]. (b) zinc + sulfuric acid → zinc sulfate + hydrogen [1]; lighted splint gives a squeaky pop [1]."
+      ms: "(a) pH 7 [1]. (b) zinc + sulfuric acid → zinc sulfate + hydrogen [1]. (c) Lighted splint gives a squeaky pop [1]."
     },
     theoryExt: {
       stem: "An atom of magnesium is represented as ²⁴₁₂Mg (early IGCSE stretch check).",
@@ -1021,22 +1023,23 @@ const MODULES = [
       ms: "D — NH₃ has a lower Mᵣ (17 < 36.5), so NH₃ molecules diffuse faster and travel further before meeting HCl."
     },
     theoryCore: {
-      stem: "The cooling curve below shows a pure gas A cooled steadily to a solid E.",
-      svg: "coolingCurve",
+      stem: "Answer the following questions on states of matter and particle arrangement (0620 Core 1.1):",
       parts: [
-        { lbl: "(a)", text: "State the physical state of the substance during region <strong>C</strong>.", marks: 1, lines: 1 },
-        { lbl: "(b)", text: "State the boiling point of this substance and identify which letter (A–E) represents condensation.", marks: 2, lines: 2 }
+        { lbl: "(a)", text: "Name the change of state when a gas turns into a liquid.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Describe the arrangement and movement of particles in a solid.", marks: 1, lines: 1 },
+        { lbl: "(c)", text: "A pure substance has melting point 55 °C and boiling point 95 °C. State its physical state at 75 °C.", marks: 1, lines: 1 }
       ],
-      ms: "(a) Liquid [1]. (b) Boiling point = 95 °C [1]; condensation occurs at B [1]."
+      ms: "(a) Condensation / condensing [1]. (b) Closely packed in a regular lattice, vibrating about fixed positions [1]. (c) Liquid [1]."
     },
     theoryExt: {
-      stem: "Using the cooling curve and kinetic particle theory, answer the following:",
+      stem: "The cooling curve below shows a pure gas A cooled steadily to a solid E (0620 Supplement 1.1).",
       svg: "coolingCurve",
       parts: [
-        { lbl: "(a)", text: "Explain why the temperature stays constant at 55 °C during region <strong>D</strong> even though heat energy is continuously lost to the surroundings.", marks: 1, lines: 2 },
-        { lbl: "(b)", text: "A sample of gas A is sealed in a syringe. Explain what happens to the gas pressure when the plunger is pushed in at constant temperature.", marks: 2, lines: 3 }
+        { lbl: "(a)", text: "From the cooling curve, state the boiling point of the substance and identify which letter (B or D) represents freezing.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Explain why the temperature stays constant at 55 °C during region <strong>D</strong> even though heat energy is continuously lost to the surroundings.", marks: 1, lines: 2 },
+        { lbl: "(c)", text: "A sample of gas A is sealed in a syringe. Explain, using kinetic particle theory, what happens to the gas pressure when the plunger is pushed in at constant temperature.", marks: 1, lines: 2 }
       ],
-      ms: "(a) Energy is released as intermolecular forces of attraction form between particles (rather than lowering kinetic energy) [1]. (b) Volume decreases so particles are closer together / more particles per unit volume [1] → more frequent collisions with the syringe walls → pressure increases [1]."
+      ms: "(a) Boiling point = 95 °C and freezing = D [1 for both]. (b) Energy is released as forces of attraction form between particles (rather than lowering kinetic energy) [1]. (c) Smaller volume → more particles per unit volume → more frequent collisions with syringe walls → pressure increases [1]."
     },
     atp: {
       stem: "A pure solid melts sharply at 80 °C. A student measures the melting point of an unknown sample of the same solid and records that it melts from 74 °C to 77 °C. State what this shows about the sample and explain how the melting point range confirms your answer.",
@@ -1072,9 +1075,9 @@ const MODULES = [
       svg: "structures",
       parts: [
         { lbl: "(a)", text: "State which structure (A, B, or C) conducts electricity when <strong>solid</strong>, and explain why.", marks: 2, lines: 2 },
-        { lbl: "(b)", text: "Explain why structure <strong>C</strong> conducts electricity when molten or aqueous, but NOT when solid.", marks: 1, lines: 2 }
+        { lbl: "(b)", text: "State whether ionic compound <strong>C</strong> (NaCl) conducts electricity when <strong>solid</strong>, and state whether it conducts when <strong>molten</strong>.", marks: 1, lines: 1 }
       ],
-      ms: "(a) Structure A (graphite) [1]; each C atom forms 3 covalent bonds leaving 1 delocalised electron per atom free to move [1]. (b) Ions are fixed in the lattice when solid, but are free to move when molten/aqueous [1]."
+      ms: "(a) Structure A (graphite) [1]; each C atom forms 3 covalent bonds leaving 1 delocalised electron per atom free to move [1]. (b) Solid: does not conduct; molten: conducts [1]."
     },
     theoryExt: {
       stem: "Covalent bonding occurs in both simple molecules (CO₂) and giant covalent lattices (SiO₂).",
@@ -1160,13 +1163,13 @@ const MODULES = [
       ms: "(a) 2(23) + 12 + 3(16) = 106 [1]. (b) 8.0 − 4.8 = 3.2 g [1]. (c) (7.2 / 4.8) × 8.0 = 12.0 g [1]."
     },
     theoryExt: {
-      stem: "Magnesium carbonate reacts with dilute hydrochloric acid: MgCO₃(s) + 2HCl(aq) → MgCl₂(aq) + H₂O(l) + CO₂(g). A student adds 2.10 g of pure MgCO₃ (Mᵣ = 84) to 40.0 cm³ of 1.50 mol/dm³ HCl(aq).",
+      stem: "Magnesium carbonate reacts with dilute hydrochloric acid: MgCO₃(s) + 2HCl(aq) → MgCl₂(aq) + H₂O(l) + CO₂(g). A student reacts 0.0250 mol of MgCO₃ with 0.0600 mol of HCl.",
       parts: [
-        { lbl: "(a)", text: "Calculate the moles of MgCO₃ and the moles of HCl used, and deduce which reactant is the limiting reactant.", marks: 1, lines: 2 },
+        { lbl: "(a)", text: "Deduce, with working, which reactant is the limiting reactant.", marks: 1, lines: 2 },
         { lbl: "(b)", text: "Calculate the theoretical volume of CO₂ gas formed, in cm³, at r.t.p.", marks: 1, lines: 2 },
         { lbl: "(c)", text: "In the actual experiment, 510 cm³ of CO₂ is collected. Calculate the percentage yield.", marks: 1, lines: 2 }
       ],
-      ms: "(a) n(MgCO₃) = 2.10 / 84 = 0.0250 mol; n(HCl) = (40.0/1000) × 1.50 = 0.0600 mol; 0.0250 mol MgCO₃ needs 0.0500 mol HCl → MgCO₃ is limiting [1]. (b) V = 0.0250 × 24 × 1000 = 600 cm³ [1]. (c) % yield = (510 / 600) × 100 = 85.0% [1]."
+      ms: "(a) 0.0250 mol MgCO₃ requires 2 × 0.0250 = 0.0500 mol HCl (< 0.0600 mol) → MgCO₃ is limiting [1]. (b) V = 0.0250 × 24 × 1000 = 600 cm³ [1]. (c) % yield = (510 / 600) × 100 = 85.0% [1]."
     },
     atp: {
       stem: "A student measures 25.0 cm³ of HCl into a conical flask using a measuring cylinder, and records three burette readings as: 24, 24.15, 24.2. Identify ONE apparatus improvement for measuring the 25.0 cm³ HCl and ONE recording error in the burette readings.",
@@ -1284,15 +1287,15 @@ const MODULES = [
     title: "Topic 6: Rates, Equilibrium & Redox",
     cup: "CUP 5th Ed. Ch. 8–10",
     mcqCore: {
-      stem: "How does a catalyst increase the rate of a chemical reaction?",
+      stem: "How does a catalyst affect a chemical reaction?",
       options: [
-        "Increases the kinetic energy of the reactant particles",
-        "Increases the concentration of reactants",
+        "Slows down the reaction and is used up",
+        "Increases the total mass of product formed",
         "Shifts the position of equilibrium to the right",
-        "Provides an alternative reaction pathway with a lower activation energy (Eₐ)"
+        "Increases the rate of reaction and remains chemically unchanged at the end"
       ],
       ans: 3,
-      ms: "D — A catalyst lowers the activation energy so a greater proportion of collisions have E ≥ Eₐ."
+      ms: "D — A catalyst increases the rate of a reaction and is chemically unchanged at the end."
     },
     mcqExt: {
       stem: "What is the oxidation number of chromium in the dichromate ion, Cr₂O₇²⁻?",
@@ -1353,12 +1356,12 @@ const MODULES = [
       ms: "A — Strong acids fully dissociate into ions in water (HCl → H⁺ + Cl⁻)."
     },
     theoryCore: {
-      stem: "Answer the following questions on oxides and salt preparation:",
+      stem: "Answer the following questions on oxides and soluble salt preparation (0620 Core 7.2–7.3):",
       parts: [
-        { lbl: "(a)", text: "Classify each oxide as acidic, basic, or amphoteric: <strong>Al₂O₃</strong>, <strong>MgO</strong>, <strong>SO₂</strong>.", marks: 2, lines: 2 },
-        { lbl: "(b)", text: "Name the method used to prepare an insoluble salt such as barium sulfate (BaSO₄) from two aqueous solutions.", marks: 1, lines: 1 }
+        { lbl: "(a)", text: "Classify <strong>MgO</strong> and <strong>SO₂</strong> as acidic or basic oxides, and state whether each is formed from a metal or a non-metal.", marks: 2, lines: 2 },
+        { lbl: "(b)", text: "Name a suitable insoluble base and dilute acid to prepare soluble copper(II) sulfate crystals.", marks: 1, lines: 1 }
       ],
-      ms: "(a) Al₂O₃ = amphoteric, MgO = basic, SO₂ = acidic [2: all 3 = 2, 2 = 1]. (b) Precipitation [1]."
+      ms: "(a) MgO = basic oxide, metal [1]; SO₂ = acidic oxide, non-metal [1]. (b) Copper(II) oxide (or copper(II) hydroxide) + dilute sulfuric acid [1]."
     },
     theoryExt: {
       stem: "25.0 cm³ of aqueous NaOH is titrated against 0.150 mol/dm³ dilute sulfuric acid: 2NaOH(aq) + H₂SO₄(aq) → Na₂SO₄(aq) + 2H₂O(l). Exactly 20.0 cm³ of H₂SO₄ is required.",
@@ -1631,31 +1634,31 @@ const MODULES = [
       ms: "C — Potassium ions (K⁺) give a lilac flame (Na⁺ = yellow, Ca²⁺ = orange-red, Cu²⁺ = blue-green)."
     },
     mcqExt: {
-      stem: "Which test confirms the presence of nitrate ions, NO₃⁻, in aqueous solution?",
+      stem: "Which ionic equation represents the yellow precipitate formed when aqueous silver nitrate is added to aqueous potassium iodide?",
       options: [
-        "Add NaOH(aq) and aluminium foil, warm carefully → ammonia gas produced turns damp red litmus paper blue",
-        "Add dilute HNO₃ then AgNO₃(aq) → white precipitate",
-        "Add dilute HNO₃ then Ba(NO₃)₂(aq) → white precipitate",
-        "Add acidified KMnO₄(aq) → purple to colourless"
+        "Ag⁺(aq) + I⁻(aq) → AgI(s)",
+        "K⁺(aq) + NO₃⁻(aq) → KNO₃(s)",
+        "Ag²⁺(aq) + 2I⁻(aq) → AgI₂(s)",
+        "Ba²⁺(aq) + SO₄²⁻(aq) → BaSO₄(s)"
       ],
       ans: 0,
-      ms: "A — Al + NaOH(aq) on warming reduces NO₃⁻ to NH₃ gas, which turns damp red litmus blue."
+      ms: "A — Silver ions react with iodide ions to form insoluble yellow silver(I) iodide, AgI(s)."
     },
     theoryCore: {
-      stem: "Use the Qualitative Analysis Notes to answer the following:",
+      stem: "Use the Qualitative Analysis Notes to answer the following (0620 Core 12.5):",
       parts: [
         { lbl: "(a)", text: "Salt X forms a pale green solution. Adding NaOH(aq) gives a green precipitate (insoluble in excess). Adding dilute HNO₃ then Ba(NO₃)₂(aq) gives a white precipitate. Identify the cation and anion in Salt X.", marks: 2, lines: 2 },
-        { lbl: "(b)", text: "State the flame test colour produced by calcium ions (Ca²⁺).", marks: 1, lines: 1 }
+        { lbl: "(b)", text: "Describe what is observed when aqueous ammonia, NH₃(aq), is added dropwise and then in excess to aqueous copper(II) sulfate, CuSO₄(aq).", marks: 1, lines: 2 }
       ],
-      ms: "(a) Cation: iron(II) / Fe²⁺ [1]; Anion: sulfate / SO₄²⁻ (Salt X = FeSO₄) [1]. (b) Orange-red [1]."
+      ms: "(a) Cation: iron(II) / Fe²⁺ [1]; Anion: sulfate / SO₄²⁻ (Salt X = FeSO₄) [1]. (b) Light blue precipitate forms initially, dissolving in excess NH₃(aq) to form a dark/deep blue solution [1]."
     },
     theoryExt: {
-      stem: "Use the Qualitative Analysis Notes for the following observations:",
+      stem: "Answer the following quantitative and ionic analysis questions (0620 Supplement 3.1 & 3.3):",
       parts: [
-        { lbl: "(a)", text: "Salt Y gives a lilac flame and a yellow precipitate with acidified AgNO₃(aq). Identify Salt Y.", marks: 1, lines: 1 },
-        { lbl: "(b)", text: "Describe what is observed when aqueous ammonia, NH₃(aq), is added dropwise and then in excess to aqueous copper(II) sulfate, CuSO₄(aq).", marks: 2, lines: 2 }
+        { lbl: "(a)", text: "Write the balanced ionic equation (including state symbols) for the white precipitate formed between Ba²⁺(aq) and SO₄²⁻(aq).", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "In a titration, 25.0 cm³ of 0.200 mol/dm³ HCl(aq) neutralises 20.0 cm³ of NaOH(aq) (HCl + NaOH → NaCl + H₂O). Calculate the moles of HCl used and the concentration of NaOH(aq) in mol/dm³.", marks: 2, lines: 3 }
       ],
-      ms: "(a) Potassium iodide / KI [1]. (b) Light blue precipitate forms initially [1]; precipitate dissolves in excess NH₃(aq) to form a dark/deep blue solution [1]."
+      ms: "(a) Ba²⁺(aq) + SO₄²⁻(aq) → BaSO₄(s) [1]. (b) n(HCl) = (25.0/1000) × 0.200 = 0.00500 mol [1]; n(NaOH) = 0.00500 mol → c(NaOH) = 0.00500 / (20.0/1000) = 0.250 mol/dm³ [1]."
     },
     atp: {
       stem: "Plan a laboratory method to prepare pure, dry crystals of magnesium sulfate (MgSO₄) starting from insoluble magnesium oxide powder (MgO) and dilute sulfuric acid (H₂SO₄).",
