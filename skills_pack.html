@@ -313,12 +313,12 @@
 <script>
 const SVGS = {
   of2DotCross: `<svg viewBox="0 0 320 115" width="280" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="88" cy="58" r="36" fill="none" stroke="#1e293b" stroke-width="1.8"/>
+    <circle cx="102" cy="58" r="36" fill="none" stroke="#1e293b" stroke-width="1.8"/>
     <circle cx="160" cy="58" r="36" fill="none" stroke="#1e293b" stroke-width="1.8"/>
-    <circle cx="232" cy="58" r="36" fill="none" stroke="#1e293b" stroke-width="1.8"/>
-    <text x="80" y="62" font-size="13" font-weight="bold" text-anchor="middle">F</text>
+    <circle cx="218" cy="58" r="36" fill="none" stroke="#1e293b" stroke-width="1.8"/>
+    <text x="90" y="62" font-size="13" font-weight="bold" text-anchor="middle">F</text>
     <text x="160" y="62" font-size="13" font-weight="bold" text-anchor="middle">O</text>
-    <text x="240" y="62" font-size="13" font-weight="bold" text-anchor="middle">F</text>
+    <text x="230" y="62" font-size="13" font-weight="bold" text-anchor="middle">F</text>
     <text x="160" y="108" font-size="9.5" fill="#64748b" text-anchor="middle">OF₂ outer-shell dot-and-cross template</text>
   </svg>`,
 
@@ -382,7 +382,7 @@ const PAPERS = [
           {
             lbl: "(d)",
             ao: "AO2", tier: "Ext", marks: 3, lines: 3,
-            text: "Describe (or draw on paper) the dot-and-cross diagram for the ions in magnesium fluoride (MgF₂), showing outer-shell electrons and charges clearly.",
+            text: "Describe (or draw on paper) the dot-and-cross diagram for the ions in magnesium fluoride (MgF₂), showing outer-shell electrons and charges clearly. <em>(Online candidates: describe outer electrons and charges clearly in text, or draw on paper and send a photo to your teacher.)</em>",
             ms: "M1: One Mg²⁺ ion with 8 (or 0) outer electrons and 2+ charge [1]; M2: Two F⁻ ions each with 7 dots + 1 cross [1]; M3: 1− charge on each F⁻ ion [1]."
           },
           {
@@ -409,7 +409,7 @@ const PAPERS = [
           {
             lbl: "(b)",
             ao: "AO2", tier: "Ext", marks: 3, lines: 2,
-            text: "Using the OF₂ template above, describe (or draw on paper) the dot-and-cross outer-shell electron arrangement in a molecule of oxygen difluoride, OF₂.",
+            text: "Using the OF₂ template above, describe (or draw on paper) the dot-and-cross outer-shell electron arrangement in a molecule of oxygen difluoride, OF₂. <em>(Online candidates: state shared pairs and lone pairs on each atom in text, or draw on paper and send a photo.)</em>",
             ms: "M1: O forms 1 shared dot-cross pair with each F [1]; M2: 4 non-bonding electrons (2 lone pairs) on O [1]; M3: 6 non-bonding electrons (3 lone pairs) on each F [1]."
           },
           {
@@ -420,7 +420,7 @@ const PAPERS = [
           },
           {
             lbl: "(d)",
-            ao: "AO1", tier: "Core", marks: 2, lines: 2,
+            ao: "AO1", tier: "Ext", marks: 2, lines: 2,
             text: "Explain why liquid OF₂ does not conduct electricity.",
             ms: "M1: No mobile ions [1]; M2: No delocalised / mobile electrons [1]."
           }
@@ -518,25 +518,25 @@ const PAPERS = [
         parts: [
           {
             lbl: "(a)",
-            ao: "AO1", tier: "Core", marks: 2, lines: 2,
+            ao: "AO1", tier: "Ext", marks: 2, lines: 2,
             text: "Aqueous copper(II) sulfate, CuSO₄(aq), is electrolysed using inert graphite electrodes. State ONE observation at the anode and describe what happens to the colour of the solution.",
             ms: "Anode observation: bubbles / effervescence [1]; solution becomes paler blue / colourless [1]."
           },
           {
             lbl: "(b)",
-            ao: "AO2", tier: "Ext", marks: 3, lines: 2,
+            ao: "AO2", tier: "Ext", marks: 2, lines: 2,
             text: "Write the balanced ionic half-equation for the reaction occurring at the inert anode in CuSO₄(aq).",
-            ms: "4OH⁻ → 2H₂O + O₂ + 4e⁻ [3: M1 OH⁻ losing e⁻, M2 H₂O + O₂ as only products, M3 fully balanced]."
+            ms: "4OH⁻ → 2H₂O + O₂ + 4e⁻ OR 2H₂O → O₂ + 4H⁺ + 4e⁻ [2: M1 correct species, M2 fully balanced]."
           },
           {
             lbl: "(c)",
-            ao: "AO1", tier: "Core", marks: 1, lines: 1,
-            text: "Name the product formed at the cathode during the electrolysis of CuSO₄(aq).",
-            ms: "Copper [1]."
+            ao: "AO1", tier: "Ext", marks: 2, lines: 1,
+            text: "Name the product formed at the cathode during the electrolysis of CuSO₄(aq) and state ONE observation at the cathode.",
+            ms: "Copper [1]; pink-brown / reddish-brown solid deposit coats the cathode [1]."
           },
           {
             lbl: "(d)",
-            ao: "AO2", tier: "Ext", marks: 2, lines: 2,
+            ao: "AO2", tier: "Core", marks: 2, lines: 2,
             text: "Name the product formed at the cathode when: (i) molten sodium chloride is electrolysed, and (ii) concentrated aqueous sodium chloride is electrolysed.",
             ms: "(i) sodium [1]; (ii) hydrogen [1]."
           },
@@ -654,24 +654,30 @@ const PAPERS = [
         parts: [
           {
             lbl: "(a)",
-            ao: "AO1", tier: "Core", marks: 4, lines: 3,
-            text: "Aluminium is extracted from its main ore. Name: (i) the main ore of aluminium, (ii) the molten solvent used to dissolve Al₂O₃, and (iii) explain why the carbon anodes must be replaced regularly (write a word or symbol equation).",
-            ms: "(i) bauxite [1]; (ii) cryolite [1]; (iii) oxygen formed at anodes reacts with hot carbon/graphite [1] to form carbon dioxide / C + O₂ → CO₂ [1]."
+            ao: "AO1", tier: "Core", marks: 1, lines: 1,
+            text: "Aluminium is extracted from its main ore. Name the main ore of aluminium.",
+            ms: "Bauxite [1]."
           },
           {
             lbl: "(b)",
+            ao: "AO1", tier: "Ext", marks: 3, lines: 3,
+            text: "In the extraction of aluminium from purified Al₂O₃: (i) name the molten solvent used to dissolve Al₂O₃, and (ii) explain why the carbon anodes must be replaced regularly (write a word or symbol equation).",
+            ms: "(i) cryolite [1]; (ii) oxygen formed at anodes reacts with hot carbon/graphite [1] to form carbon dioxide / C + O₂ → CO₂ [1]."
+          },
+          {
+            lbl: "(c)",
             ao: "AO2", tier: "Ext", marks: 2, lines: 2,
             text: "Aluminium oxide is amphoteric. Write the balanced symbol equation for Al₂O₃ reacting with dilute hydrochloric acid.",
             ms: "Al₂O₃ + 6HCl → 2AlCl₃ + 3H₂O [2: AlCl₃ + H₂O 1, balanced 1]."
           },
           {
-            lbl: "(c)",
-            ao: "AO2", tier: "Core", marks: 2, lines: 2,
+            lbl: "(d)",
+            ao: "AO2", tier: "Ext", marks: 2, lines: 2,
             text: "In the blast furnace, iron(III) oxide is reduced by carbon monoxide and silica (SiO₂) is removed by calcium oxide. Write BOTH balanced symbol equations.",
             ms: "Fe₂O₃ + 3CO → 2Fe + 3CO₂ [1]; CaO + SiO₂ → CaSiO₃ [1]."
           },
           {
-            lbl: "(d)",
+            lbl: "(e)",
             ao: "AO2", tier: "Ext", marks: 2, lines: 2,
             text: "Explain, in terms of electron transfer, how magnesium blocks protect an underground iron pipe from rusting.",
             ms: "M1: Magnesium is more reactive than iron so Mg loses electrons / oxidises more readily (Mg → Mg²⁺ + 2e⁻) [1]; M2: supplies electrons to iron so iron does not oxidise/rust [1]."
@@ -751,13 +757,13 @@ const PAPERS = [
           {
             lbl: "(a)",
             ao: "AO2", tier: "Ext", marks: 2, lines: 2,
-            text: "But-2-ene (CH₃CH=CHCH₃) undergoes addition polymerisation. Write/draw ONE repeat unit of poly(but-2-ene).",
+            text: "But-2-ene (CH₃CH=CHCH₃) undergoes addition polymerisation. Write/draw ONE repeat unit of poly(but-2-ene). <em>(Online candidates: write the condensed repeat unit with continuation bonds, e.g. –CH(CH₃)–..., or draw on paper and attach a photo.)</em>",
             ms: "M1: C–C single backbone with continuation bonds [1]; M2: –CH(CH₃)–CH(CH₃)– accurate [1]."
           },
           {
             lbl: "(b)",
             ao: "AO2", tier: "Ext", marks: 4, lines: 3,
-            text: "A polyester is made by condensation polymerisation of a diol (HO–□–OH) and a dicarboxylic acid (HOOC–■–COOH). Draw ONE repeat unit showing the ester linkage, name the small molecule eliminated, and state why it is called condensation polymerisation.",
+            text: "A polyester is made by condensation polymerisation of a diol (HO–□–OH) and a dicarboxylic acid (HOOC–■–COOH). Draw ONE repeat unit showing the ester linkage, name the small molecule eliminated, and state why it is called condensation polymerisation. <em>(Online candidates: write the condensed repeat unit using □ and ■ with continuation bonds, or draw on paper and attach a photo.)</em>",
             ms: "M1–M2: –O–□–O–C(=O)–■–C(=O)– with continuation bonds [2]; M3: water / H₂O [1]; M4: monomers join with elimination of a small molecule [1]."
           },
           {
@@ -830,7 +836,7 @@ const PAPERS = [
           {
             lbl: "(b)",
             ao: "AO3", tier: "ATP", marks: 2, lines: 2,
-            text: "Use the plotted curve above to estimate the time taken when 35 cm³ of distilled water is added, and state how you show working on a printed graph.",
+            text: "Use the plotted curve above to estimate the time taken when 35 cm³ of distilled water is added, and state (or draw on a printed copy) the construction lines used on the graph.",
             ms: "Show vertical line from 35 cm³ to curve and horizontal line to y-axis [1]; value ≈ 31–33 s [1]."
           },
           {
@@ -868,7 +874,7 @@ const PAPERS = [
           {
             lbl: "(a)",
             ao: "AO3", tier: "ATP", marks: 5, lines: 3,
-            text: "Solid P is added to dilute nitric acid: effervescence occurs and the gas turns limewater milky. The resulting solution shows NO precipitate with acidified Ba(NO₃)₂(aq), but with excess NH₃(aq) gives a deep blue solution. Identify the gas, the anion NOT present, both ions in Solid P, and write the chemical formula of Solid P.",
+            text: "Solid P is added to dilute nitric acid: effervescence occurs and the gas turns limewater milky. The resulting solution shows NO precipitate with acidified Ba(NO₃)₂(aq), but with excess NH₃(aq) gives a deep blue solution. Identify the gas, the anion shown to be absent by the Ba(NO₃)₂ test, both ions in Solid P, and write the chemical formula of Solid P.",
             ms: "Gas: carbon dioxide / CO₂ [1]; Not sulfate / SO₄²⁻ [1]; Cation: copper(II) / Cu²⁺ [1]; Anion: carbonate / CO₃²⁻ [1]; Solid P = CuCO₃ [1]."
           },
           {
@@ -881,7 +887,7 @@ const PAPERS = [
             lbl: "(c)",
             ao: "AO3", tier: "ATP", marks: 3, lines: 2,
             text: "For an aqueous sample of barium chloride, BaCl₂(aq), state: (i) the Bunsen flame type used for a flame test, (ii) the flame colour observed, and (iii) the observation when Na₂SO₄(aq) is added.",
-            ms: "(i) blue / roaring flame [1]; (ii) light green [1]; (iii) white precipitate [1]."
+            ms: "(i) blue / roaring / non-luminous flame [1]; (ii) light green [1]; (iii) white precipitate [1]."
           }
         ]
       },
@@ -918,6 +924,7 @@ let state = {
   showPT: true,
   showQA: true,
   customTime: false,
+  importedTimeLimit: null,
   answers: {},
   submitted: false,
   rubricScores: {},
@@ -985,6 +992,7 @@ function initUI() {
     b.onclick = () => {
       state.paperId = p.id;
       state.customTime = false;
+      state.importedTimeLimit = null;
       state.submitted = false;
       state.answers = {};
       state.rubricScores = {};
@@ -1089,7 +1097,8 @@ function applyImportedSkillsSubmission(obj) {
   document.getElementById("inName").value = obj.name || "";
   document.getElementById("inSchool").value = obj.school || "";
   document.getElementById("inDate").value = obj.date || "";
-  if (obj.time) { document.getElementById("inTime").value = obj.time; state.customTime = true; }
+  if (obj.time) { document.getElementById("inTime").value = obj.time; state.customTime = true; state.importedTimeLimit = Number(obj.time); }
+  else { state.importedTimeLimit = null; }
   state.elapsedSeconds = Number(obj.elapsedSeconds || 0);
   state.answers = obj.answers || {};
   state.rubricScores = {};
@@ -1182,6 +1191,7 @@ function submitOnlineExam(isTimeout = false) {
 }
 
 function resetOnlineExam() {
+  state.importedTimeLimit = null;
   state.submitted = false;
   state.answers = {};
   state.rubricScores = {};
@@ -1209,6 +1219,9 @@ function setRubricScore(key, val) {
 
 function buildReportBannerInner() {
   const s = computeOnlineScores();
+  const stdLimit = getActivePaper().defaultTime;
+  const appliedLimit = state.importedTimeLimit || Number(document.getElementById("inTime").value) || stdLimit;
+  const timeAuditHtml = `<div style="margin-top:6px; font-size:0.82rem; color:#475569;">⏱️ Thời gian làm bài: <strong>${formatTime(state.elapsedSeconds)}</strong> · Giới hạn từ bài nộp: <strong>${appliedLimit} phút</strong>${(state.importedTimeLimit && state.importedTimeLimit > stdLimit) ? ` <span style="color:#b45309; font-weight:600;">⚠️ (Lớn hơn mức chuẩn ${stdLimit} phút)</span>` : ""}</div>`;
   if (!s.allGraded) {
     return `
       <h2><span>⏳ Đang chờ hoàn tất chấm điểm Set B (${s.gradedParts}/${s.totalParts} ý)</span>
@@ -1217,6 +1230,7 @@ function buildReportBannerInner() {
         <button class="btn-mini" onclick="resetOnlineExam()">🔄 Làm lại</button>
       </span></h2>
       <div class="calc-result band-wait">Hãy chấm đủ <strong>${s.totalParts - s.gradedParts} ý còn lại</strong> bằng các nút điểm <code>[0đ..max]</code> dưới mỗi câu để xuất hồ sơ kỹ năng AO1/AO2/AO3 chính thức.</div>
+      ${timeAuditHtml}
     `;
   }
   const pct = (s.totalEarned / s.totalMax) * 100;
@@ -1238,6 +1252,7 @@ function buildReportBannerInner() {
     </div>
     <div class="calc-result ${bandCls}">${verdict} — Core: ${s.tierEarned.Core}/${s.tierMax.Core} | Ext: ${s.tierEarned.Ext}/${s.tierMax.Ext} | ATP: ${s.tierEarned.ATP}/${s.tierMax.ATP}</div>
     ${getActivePaper().id === "B4" ? `<div style="margin-top:8px; font-size:0.82rem; color:#78350f; background:#fffbeb; border:1px solid #fcd34d; border-radius:8px; padding:7px 10px;">⚠️ <strong>Lưu ý diễn giải Paper B4:</strong> 75% điểm số đến từ ATP (30/40đ) nhằm kiểm tra kỹ năng thực nghiệm trước Mock; trọng số chính thức của ATP trong Cambridge 0620 là 20%, nên cần đối chiếu kèm điểm lý thuyết (B1–B3 / Paper 4).</div>` : ""}
+    ${timeAuditHtml}
   `;
 }
 

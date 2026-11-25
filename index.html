@@ -1707,6 +1707,7 @@ let state = {
   onlineSubmitted: false,
   rubricScores: {},
   rubricGraded: {},
+  importedTimeLimit: null,
   timerSeconds: 50 * 60,
   initialTimerSeconds: 50 * 60,
   elapsedSeconds: 0,
@@ -1847,6 +1848,7 @@ function initUI() {
         document.getElementById("inMilestone").value = matched ? matched.milestone : "Đề tùy chọn (Custom Modular Test)";
       }
       state.customTime = false;
+      state.importedTimeLimit = null;
       state.onlineSubmitted = false;
       state.rubricScores = {};
       state.rubricGraded = {};
@@ -1859,6 +1861,7 @@ function initUI() {
     btn.onclick = () => {
       state.tier = btn.dataset.tier;
       state.customTime = false;
+      state.importedTimeLimit = null;
       state.onlineSubmitted = false;
       state.rubricScores = {};
       state.rubricGraded = {};
@@ -1932,6 +1935,7 @@ function applyPreset(p) {
   state.selected = [...p.modules];
   state.activePreset = p.id;
   state.customTime = false;
+  state.importedTimeLimit = null;
   state.customMilestone = false;
   state.onlineSubmitted = false;
   state.rubricScores = {};
@@ -2119,6 +2123,9 @@ function applyImportedSubmission(obj) {
   if (obj.time) {
     document.getElementById("inTime").value = obj.time;
     state.customTime = true;
+    state.importedTimeLimit = Number(obj.time);
+  } else {
+    state.importedTimeLimit = null;
   }
   state.elapsedSeconds = Number(obj.elapsedSeconds || 0);
   state.onlineAnswers = obj.answers || {};
@@ -2315,6 +2322,7 @@ function submitOnlineExam(isTimeout = false) {
 
 function resetOnlineExam() {
   state.onlineSubmitted = false;
+  state.importedTimeLimit = null;
   state.onlineAnswers = {};
   state.rubricScores = {};
   state.rubricGraded = {};
@@ -2395,6 +2403,9 @@ function buildReportBannerInner(s, m, ev) {
     return buildStudentSubmittedBanner(s, m);
   }
   const writtenMax = m.total - s.mcqMax;
+  const stdLimit = Math.max(15, m.total);
+  const appliedLimit = state.importedTimeLimit || Number(document.getElementById("inTime").value) || stdLimit;
+  const timeAuditHtml = `<div style="margin-top:6px; font-size:0.82rem; color:#475569;">⏱️ Thời gian làm bài: <strong>${formatTime(state.elapsedSeconds)}</strong> · Giới hạn từ bài nộp: <strong>${appliedLimit} phút</strong>${(state.importedTimeLimit && state.importedTimeLimit > stdLimit) ? ` <span style="color:#b45309; font-weight:600;">⚠️ (Lớn hơn mức chuẩn ${stdLimit} phút)</span>` : ""}</div>`;
   if (!s.allWrittenGraded) {
     return `
       <h2>
@@ -2412,6 +2423,7 @@ function buildReportBannerInner(s, m, ev) {
       <div class="calc-result band-wait" style="margin-top:4px;">
         Trắc nghiệm: <strong>${s.mcqTotal}/${s.mcqMax}</strong> · Tự luận &amp; Thực hành còn <strong>${s.totalWritten - s.gradedWritten} ý chưa chấm</strong>. Hãy bấm các nút điểm <code>[0đ..max]</code> ngay dưới từng câu bên dưới — kết luận xếp lớp sẽ chỉ hiển thị sau khi giáo viên chấm đủ 100% các ý viết!
       </div>
+      ${timeAuditHtml}
     `;
   }
   const statsHtml = ev.isPre
@@ -2438,6 +2450,7 @@ function buildReportBannerInner(s, m, ev) {
     <div class="calc-result ${ev.bandClass}" style="margin-top:4px;">
       ${ev.title} — ${ev.advice}
     </div>
+    ${timeAuditHtml}
   `;
 }
 

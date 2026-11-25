@@ -116,11 +116,32 @@ let state = {
   answers: {},
   submitted: false,
   timedOut: false,
+  startedAt: null,
+  deadlineAt: null,
+  tokenCopied: false,
   timerSeconds: 45 * 60,
   elapsedSeconds: 0,
   timerRunning: false,
   timerInterval: null
 };
+
+const STORAGE_KEY = "igcse0620_setB_" + (window.location.search || "default");
+
+function saveDraft() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      studentName: state.studentName,
+      studentSchool: state.studentSchool,
+      answers: state.answers,
+      submitted: state.submitted,
+      timedOut: state.timedOut,
+      startedAt: state.startedAt,
+      deadlineAt: state.deadlineAt,
+      elapsedSeconds: state.elapsedSeconds,
+      tokenCopied: state.tokenCopied
+    }));
+  } catch (e) {}
+}
 
 function escHtml(s) {
   return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
@@ -173,23 +194,44 @@ function updateTimerDisplays() {
   if (pill) pill.classList.toggle("urgent", state.timerSeconds <= 300);
 }
 
+function syncWallClock() {
+  if (!state.startedAt || !state.deadlineAt || state.submitted) return;
+  const now = Date.now();
+  state.elapsedSeconds = Math.max(0, Math.floor((now - state.startedAt) / 1000));
+  state.timerSeconds = Math.max(0, Math.ceil((state.deadlineAt - now) / 1000));
+  updateTimerDisplays();
+  if (now >= state.deadlineAt) {
+    submitOnlineExam(true);
+  }
+}
+
 function startStudentTimer() {
   if (state.timerRunning || state.submitted) return;
+  if (!state.startedAt) {
+    state.startedAt = Date.now();
+    state.deadlineAt = state.startedAt + state.timeMinutes * 60 * 1000;
+    saveDraft();
+  }
   state.timerRunning = true;
   const btn = document.getElementById("btnStStartTimer");
   if (btn) btn.classList.add("hidden");
-  state.timerInterval = setInterval(() => {
-    state.elapsedSeconds++;
-    if (state.timerSeconds > 1) {
-      state.timerSeconds--;
-      updateTimerDisplays();
-    } else {
-      state.timerSeconds = 0;
-      updateTimerDisplays();
-      submitOnlineExam(true);
-    }
-  }, 1000);
+  syncWallClock();
+  if (!state.submitted) {
+    state.timerInterval = setInterval(syncWallClock, 500);
+  }
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && state.timerRunning && !state.submitted) syncWallClock();
+});
+
+window.addEventListener("beforeunload", e => {
+  const hasWork = state.timerRunning || Object.keys(state.answers).length > 0;
+  if ((!state.submitted && hasWork) || (state.submitted && !state.tokenCopied)) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
 
 function jumpTo(id) {
   const el = document.getElementById(id);
@@ -206,6 +248,8 @@ function buildSubmissionToken() {
     name: state.studentName,
     school: state.studentSchool,
     date: state.examDate,
+    startedAt: state.startedAt,
+    submittedAt: Date.now(),
     elapsedSeconds: state.elapsedSeconds,
     answers: state.answers
   }));
@@ -213,19 +257,52 @@ function buildSubmissionToken() {
 
 function copySubmissionToken() {
   const token = buildSubmissionToken();
+  state.tokenCopied = true;
+  saveDraft();
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(token).then(() => showToast("Đã copy Mã Bài Làm Set B gửi Giáo viên!")).catch(() => window.prompt("Copy Mã Bài Làm:", token));
+    navigator.clipboard.writeText(token).then(() => showToast("Đã copy Mã Bài Làm Set B! Hãy gửi ngay cho Giáo viên.")).catch(() => window.prompt("Copy Mã Bài Làm:", token));
   } else {
     window.prompt("Copy Mã Bài Làm:", token);
   }
+}
+
+function downloadSubmissionFile() {
+  const token = buildSubmissionToken();
+  state.tokenCopied = true;
+  saveDraft();
+  const safeName = (state.studentName || "hoc_sinh").trim().replace(/[^a-zA-Z0-9_-]+/g, "_");
+  const content = [
+    "IGCSE Chemistry (0620) - Set B Submission (" + state.paperId + ")",
+    "Candidate: " + (state.studentName || "(unnamed)"),
+    "School: " + (state.studentSchool || "(unspecified)"),
+    "Paper: " + state.paperId,
+    "Time Limit: " + state.timeMinutes + " mins",
+    "Time Spent: " + formatTime(state.elapsedSeconds),
+    "",
+    "--- SUBMISSION TOKEN (Paste in Teacher App -> Nhap Ma Bai Lam) ---",
+    token
+  ].join("\n");
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "IGCSE_0620_SetB_" + state.paperId + "_" + safeName + ".txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  showToast("Đã tải file .txt dự phòng chứa Mã Bài Làm!");
 }
 
 function submitOnlineExam(isTimeout = false) {
   if (state.submitted) return;
   clearInterval(state.timerInterval);
   state.timerRunning = false;
+  if (state.startedAt) {
+    state.elapsedSeconds = Math.max(state.elapsedSeconds, Math.floor((Date.now() - state.startedAt) / 1000));
+  }
   state.submitted = true;
   state.timedOut = !!isTimeout;
+  saveDraft();
   const stBtn = document.getElementById("btnStSubmit");
   if (stBtn) { stBtn.disabled = true; stBtn.textContent = "✅ Đã nộp bài"; }
   const startBtn = document.getElementById("btnStStartTimer");
@@ -241,6 +318,7 @@ function setTextAnswer(key, val) {
   if (state.submitted) return;
   if (!state.timerRunning) startStudentTimer();
   state.answers[key] = val;
+  saveDraft();
   const pa = document.getElementById("pa_" + key);
   if (pa) pa.textContent = val || "(No written answer)";
 }
@@ -268,10 +346,12 @@ function renderPaper() {
   let html = "";
   if (state.submitted) {
     const answered = Object.keys(state.answers).filter(k => String(state.answers[k] || "").trim().length > 0).length;
+    const tokStr = buildSubmissionToken();
     html += '<div class="report-banner">' +
       '<h2><span>' + (state.timedOut ? "⏰ Hết giờ — Bài làm đã tự động khóa và nộp!" : "✅ Đã nộp bài thành công!") + '</span>' +
       '<span class="no-print" style="display:flex; gap:8px; flex-wrap:wrap;">' +
       '<button class="btn-share" style="padding:6px 12px; font-size:0.82rem;" onclick="copySubmissionToken()">📋 Copy Mã Bài Làm gửi Giáo viên</button>' +
+      '<button class="btn-mini" style="padding:6px 12px; font-size:0.82rem;" onclick="downloadSubmissionFile()">💾 Tải file .txt dự phòng</button>' +
       '<button class="btn-print" style="padding:6px 12px; font-size:0.82rem;" onclick="window.print()">🖨️ In / Lưu PDF bài làm</button>' +
       '</span></h2>' +
       '<div class="report-stats">' +
@@ -279,7 +359,8 @@ function renderPaper() {
       '<div class="stat-pill"><div class="lbl">Thời gian làm bài</div><div class="val">' + formatTime(state.elapsedSeconds) + '</div></div>' +
       '<div class="stat-pill"><div class="lbl">Trạng thái</div><div class="val">⏳ Chờ giáo viên chấm</div></div>' +
       '</div>' +
-      '<div class="calc-result band-wait">Bài làm đã khóa. Hãy bấm <strong>📋 Copy Mã Bài Làm gửi Giáo viên</strong> (hoặc In/PDF) để giáo viên chấm điểm chi tiết kỹ năng AO1/AO2/AO3.</div>' +
+      '<div class="calc-result band-wait">⚠️ <strong>QUAN TRỌNG: Bài làm mới chỉ lưu trên máy của bạn!</strong> Hãy bấm <strong>📋 Copy Mã Bài Làm</strong> (hoặc <strong>💾 Tải file .txt</strong>) và gửi ngay cho Giáo viên. Nếu có câu vẽ hình trên giấy, hãy chụp ảnh gửi kèm.</div>' +
+      '<textarea class="no-print" readonly onclick="this.select()" style="width:100%; margin-top:8px; min-height:62px; font-family:monospace; font-size:0.75rem; padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; background:#f8fafc;">' + escHtml(tokStr) + '</textarea>' +
       '</div>';
   }
 
@@ -317,20 +398,69 @@ function renderPaper() {
   updateTimerDisplays();
 }
 
+function restoreDraft() {
+  let raw = null;
+  try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  if (!raw) return;
+  try {
+    const d = JSON.parse(raw);
+    if (!d || typeof d !== "object") return;
+    if (typeof d.studentName === "string") {
+      state.studentName = d.studentName;
+      document.getElementById("stName").value = d.studentName;
+    }
+    if (typeof d.studentSchool === "string") {
+      state.studentSchool = d.studentSchool;
+      document.getElementById("stSchool").value = d.studentSchool;
+    }
+    if (d.answers && typeof d.answers === "object") state.answers = d.answers;
+    state.startedAt = d.startedAt || null;
+    state.deadlineAt = d.deadlineAt || null;
+    state.elapsedSeconds = Number(d.elapsedSeconds || 0);
+    state.tokenCopied = !!d.tokenCopied;
+    state.timedOut = !!d.timedOut;
+    if (d.submitted) {
+      state.submitted = true;
+      const stBtn = document.getElementById("btnStSubmit");
+      if (stBtn) { stBtn.disabled = true; stBtn.textContent = "✅ Đã nộp bài"; }
+      const startBtn = document.getElementById("btnStStartTimer");
+      if (startBtn) startBtn.classList.add("hidden");
+      document.getElementById("stName").readOnly = true;
+      document.getElementById("stSchool").readOnly = true;
+      showToast("Đã khôi phục bài làm đã nộp từ máy.");
+    } else if (state.startedAt && state.deadlineAt) {
+      const now = Date.now();
+      if (now >= state.deadlineAt) {
+        state.timerSeconds = 0;
+        state.elapsedSeconds = state.timeMinutes * 60;
+        submitOnlineExam(true);
+      } else {
+        startStudentTimer();
+        showToast("Đã khôi phục bài làm đã lưu tự động!");
+      }
+    } else if (Object.keys(state.answers).length > 0) {
+      showToast("Đã khôi phục bài làm đã lưu tự động!");
+    }
+  } catch (e) {}
+}
+
 function initStudent() {
   parseUrlParams();
   document.getElementById("btnJumpPT").classList.toggle("hidden", !state.showPT);
   document.getElementById("btnJumpQA").classList.toggle("hidden", !state.showQA);
   document.getElementById("stName").oninput = e => {
     state.studentName = e.target.value;
+    saveDraft();
     const h = document.getElementById("hdrName");
     if (h) h.textContent = state.studentName || "___________________________________";
   };
   document.getElementById("stSchool").oninput = e => {
     state.studentSchool = e.target.value;
+    saveDraft();
     const h = document.getElementById("hdrSchool");
     if (h) h.textContent = state.studentSchool || "_________________________";
   };
+  restoreDraft();
   renderPaper();
 }
 
