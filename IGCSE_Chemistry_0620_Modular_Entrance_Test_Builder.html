@@ -897,6 +897,18 @@ const SVGS = {
     <text x="275" y="145" font-size="10" text-anchor="middle">CO₂ + 2H₂O</text>
   </svg>`,
 
+  reactionPathwayCore: `<svg viewBox="0 0 360 190" width="320" xmlns="http://www.w3.org/2000/svg">
+    <line x1="50" y1="20" x2="50" y2="160" stroke="#0f172a" stroke-width="2"/>
+    <line x1="50" y1="160" x2="340" y2="160" stroke="#0f172a" stroke-width="2"/>
+    <text x="18" y="92" font-size="11" font-weight="bold" transform="rotate(-90 18,92)" text-anchor="middle">Energy</text>
+    <text x="195" y="178" font-size="11" font-weight="bold" text-anchor="middle">Progress of reaction</text>
+    <line x1="65" y1="75" x2="130" y2="75" stroke="#1d4ed8" stroke-width="2.5"/>
+    <path d="M130,75 Q175,18 225,130" fill="none" stroke="#1d4ed8" stroke-width="2.5"/>
+    <line x1="225" y1="130" x2="310" y2="130" stroke="#1d4ed8" stroke-width="2.5"/>
+    <text x="95" y="68" font-size="10" text-anchor="middle">CH₄ + 2O₂</text>
+    <text x="275" y="145" font-size="10" text-anchor="middle">CO₂ + 2H₂O</text>
+  </svg>`,
+
   rateCurve: `<svg viewBox="0 0 380 200" width="340" xmlns="http://www.w3.org/2000/svg">
     <line x1="55" y1="20" x2="55" y2="165" stroke="#0f172a" stroke-width="2"/>
     <line x1="55" y1="165" x2="355" y2="165" stroke="#0f172a" stroke-width="2"/>
@@ -1258,12 +1270,13 @@ const MODULES = [
     },
     theoryCore: {
       stem: "The reaction pathway diagram below represents the complete combustion of methane: CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(g).",
-      svg: "reactionPathway",
+      svg: "reactionPathwayCore",
       parts: [
-        { lbl: "(a)", text: "Identify the energy changes labelled <strong>X</strong> and <strong>Y</strong>.", marks: 2, lines: 2 },
-        { lbl: "(b)", text: "State whether this reaction is exothermic or endothermic, giving a reason from the diagram.", marks: 1, lines: 1 }
+        { lbl: "(a)", text: "State whether this reaction is exothermic or endothermic.", marks: 1, lines: 1 },
+        { lbl: "(b)", text: "Compare the energy level of the products with that of the reactants on the diagram to explain your answer to (a).", marks: 1, lines: 1 },
+        { lbl: "(c)", text: "State what happens to the temperature of the surroundings during this reaction.", marks: 1, lines: 1 }
       ],
-      ms: "(a) X = activation energy (Eₐ) [1]; Y = enthalpy change (ΔH) [1]. (b) Exothermic because products have lower energy than reactants [1]."
+      ms: "(a) Exothermic [1]. (b) Products (CO₂ + 2H₂O) have lower energy than reactants (CH₄ + 2O₂), so thermal energy is released [1]. (c) The temperature of the surroundings increases [1]."
     },
     theoryExt: {
       stem: "Use the bond energies (kJ/mol): C–H = 413, O=O = 498, C=O = 805, O–H = 464 for the combustion: CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(g).",

@@ -254,7 +254,7 @@
   <div class="panel-header">
     <div>
       <h1>IGCSE Chemistry (0620) — Adapted Past-Paper Skills Pack (Set B)</h1>
-      <p>Biên soạn &amp; chuyển thể trực tiếp từ đề thi thật Paper 4 &amp; Paper 6 (2023–2026) • Đo trọn bộ kỹ năng AO1 / AO2 / AO3 cho Year 1 &amp; Year 2 (HK I &amp; HK II)</p>
+      <p>Biên soạn &amp; chuyển thể trực tiếp từ đề thi thật Paper 4 &amp; Paper 6 (2023–2026) • Đo trọn bộ kỹ năng AO1 / AO2 / AO3 theo tiến độ chương Cambridge 0620</p>
     </div>
     <div class="header-actions">
       <a href="index.html" class="btn-share" style="background:#1e3a8a;">← Set A (Entrance Builder)</a>
@@ -264,7 +264,7 @@
     </div>
   </div>
 
-  <div class="section-label">1. Chọn Đề Kiểm Tra Kỹ Năng Theo Học Kỳ (40 điểm / đề)</div>
+  <div class="section-label">1. Chọn Đề Kiểm Tra Kỹ Năng Theo Tiến Độ Chương Đã Học (40 điểm / đề)</div>
   <div class="paper-grid" id="paperGrid"></div>
 
   <div class="controls-bar">
@@ -351,8 +351,8 @@ const SVGS = {
 const PAPERS = [
   {
     id: "B1",
-    label: "Paper B1: Year 1 — HK I Skills",
-    subtitle: "Atoms/Isotopes, Bonding, Stoichiometry & Separation (CUP Ch. 1–5, 21)",
+    label: "Paper B1 — Dùng sau khi học CUP Ch. 1–5 & 21",
+    subtitle: "Cuối HK I / đầu HK II Year 1 • Nguyên tử, đồng vị, liên kết, mol, PT ion & tách chất (Đầu Year 1 dùng Set A Mốc 1)",
     defaultTime: 45,
     questions: [
       {
@@ -365,7 +365,7 @@ const PAPERS = [
             lbl: "(a)",
             ao: "AO1", tier: "Core", marks: 3, lines: 3,
             text: "Complete the particle counts for an atom of ³⁵₁₇Cl and an ion of ³⁷₁₇Cl⁻:<br>• ³⁵₁₇Cl: protons = ___, neutrons = ___, electrons = ___<br>• ³⁷₁₇Cl⁻: protons = ___, neutrons = ___, electrons = ___",
-            ms: "³⁵₁₇Cl: 17p, 18n, 17e [1.5→2 marks: 1 mark per correct row/item]; ³⁷₁₇Cl⁻: 17p, 20n, 18e [3 marks for all 6 values; 2 marks for 4–5 correct; 1 mark for 2–3 correct]."
+            ms: "³⁵₁₇Cl: 17p, 18n, 17e; ³⁷₁₇Cl⁻: 17p, 20n, 18e. [3 marks for all 6 values correct; 2 marks for 4–5 correct; 1 mark for 2–3 correct; 0 marks for 0–1 correct]."
           },
           {
             lbl: "(b)",
@@ -506,8 +506,8 @@ const PAPERS = [
   },
   {
     id: "B2",
-    label: "Paper B2: Year 1 — HK II Skills",
-    subtitle: "Electrolysis, Energetics, Equilibrium, Rates & Titration (CUP Ch. 6–12)",
+    label: "Paper B2 — Dùng sau khi học CUP Ch. 6–12",
+    subtitle: "Cuối Year 1 / đầu Year 2 • Điện phân, năng lượng, cân bằng Haber, động học & chuẩn độ",
     defaultTime: 45,
     questions: [
       {
@@ -574,7 +574,7 @@ const PAPERS = [
           },
           {
             lbl: "(d)",
-            ao: "AO1", tier: "Core", marks: 2, lines: 2,
+            ao: "AO1", tier: "Ext", marks: 2, lines: 2,
             text: "State the enthalpy change (ΔH, with sign and unit) for the reverse reaction 2NH₃(g) → N₂(g) + 3H₂(g), and define activation energy (Eₐ).",
             ms: "Reverse ΔH = +94 kJ/mol [1]; Eₐ = minimum energy colliding particles must have to react [1]."
           }
@@ -615,7 +615,7 @@ const PAPERS = [
           {
             lbl: "(a)",
             ao: "AO3", tier: "ATP", marks: 3, lines: 2,
-            text: "In a titration using dilute acid against two unknown alkalis (Solution A and Solution B):<br>• Experiment 1 (25.0 cm³ of Solution A): initial burette = 1.2 cm³, final burette = 14.6 cm³<br>• Experiment 2 (25.0 cm³ of Solution B): initial burette = 2.5 cm³, final burette = 29.3 cm³<br>Calculate the volume of acid added in each experiment and state the required precision for burette readings.",
+            text: "In a titration using the same dilute hydrochloric acid against two aqueous sodium hydroxide solutions of different concentrations (Solution A and Solution B):<br>• Experiment 1 (25.0 cm³ of Solution A): initial burette = 1.2 cm³, final burette = 14.6 cm³<br>• Experiment 2 (25.0 cm³ of Solution B): initial burette = 2.5 cm³, final burette = 29.3 cm³<br>Calculate the volume of acid added in each experiment and state the required precision for burette readings.",
             ms: "Exp 1 titre = 13.4 cm³ [1]; Exp 2 titre = 26.8 cm³ [1]; burette readings recorded consistently to 1 d.p. or 2 d.p. (e.g. nearest 0.05 cm³) [1]."
           },
           {
@@ -627,7 +627,7 @@ const PAPERS = [
           {
             lbl: "(c)",
             ao: "AO3", tier: "ATP", marks: 3, lines: 2,
-            text: "Deduce which alkali (Solution A or Solution B) is more concentrated, and state the quantitative relationship between their concentrations, explaining your reasoning.",
+            text: "Deduce which sodium hydroxide solution (Solution A or Solution B) is more concentrated, and state the quantitative relationship between their concentrations, explaining your reasoning.",
             ms: "M1: Solution B is more concentrated [1]; M2: larger volume of acid was needed to neutralise 25.0 cm³ of Solution B [1]; M3: Solution B is twice (2×) as concentrated as Solution A (26.8 = 2 × 13.4) [1]."
           },
           {
@@ -642,8 +642,8 @@ const PAPERS = [
   },
   {
     id: "B3",
-    label: "Paper B3: Year 2 — HK I Skills",
-    subtitle: "Metals, Environment, Organic Reactions & Polymers (CUP Ch. 14–20)",
+    label: "Paper B3 — Dùng sau khi học CUP Ch. 14–20",
+    subtitle: "Giữa–cuối Year 2 • Kim loại, môi trường, phản ứng hữu cơ & polymer (chỉ giao khi đã học hữu cơ)",
     defaultTime: 45,
     questions: [
       {
@@ -778,8 +778,8 @@ const PAPERS = [
   },
   {
     id: "B4",
-    label: "Paper B4: Year 2 — HK II Pre-Mock",
-    subtitle: "Cross-Topic Paper 4 + Full Paper 6 ATP Mastery (2023–2026 Standard)",
+    label: "Paper B4 — Chẩn đoán Thực hành (ATP) & Pre-Mock",
+    subtitle: "Trước Mock Year 2 • 10đ Paper 4 + 30đ Paper 6 ATP (75% thực nghiệm — không thay trọng số 20% toàn môn)",
     defaultTime: 50,
     questions: [
       {
@@ -803,8 +803,8 @@ const PAPERS = [
           {
             lbl: "(c)",
             ao: "AO2", tier: "Ext", marks: 3, lines: 2,
-            text: "Ethanoic acid is a weak acid. Write the reversible equation for its partial dissociation in water and state the typical pH range of dilute ethanoic acid.",
-            ms: "M1–M2: CH₃COOH ⇌ CH₃COO⁻ + H⁺ (⇌ symbol [1], ions [1]); M3: 3 ≤ pH < 7 [1]."
+            text: "Ethanoic acid is a weak acid. Write the reversible equation for its partial dissociation in water. At the same concentration, state which has the higher pH: ethanoic acid or hydrochloric acid, giving a reason.",
+            ms: "M1–M2: CH₃COOH ⇌ CH₃COO⁻ + H⁺ (⇌ symbol [1], correct ions [1]); M3: ethanoic acid has the higher pH because it only partially dissociates (lower H⁺ concentration than HCl) [1]."
           },
           {
             lbl: "(d)",
@@ -868,13 +868,13 @@ const PAPERS = [
           {
             lbl: "(a)",
             ao: "AO3", tier: "ATP", marks: 5, lines: 3,
-            text: "Solid P is added to dilute nitric acid: effervescence occurs and the gas turns limewater milky. The resulting solution shows NO precipitate with acidified Ba(NO₃)₂(aq), but with excess NH₃(aq) gives a deep blue solution. Identify the gas, the anion NOT present, and both ions in Solid P.",
+            text: "Solid P is added to dilute nitric acid: effervescence occurs and the gas turns limewater milky. The resulting solution shows NO precipitate with acidified Ba(NO₃)₂(aq), but with excess NH₃(aq) gives a deep blue solution. Identify the gas, the anion NOT present, both ions in Solid P, and write the chemical formula of Solid P.",
             ms: "Gas: carbon dioxide / CO₂ [1]; Not sulfate / SO₄²⁻ [1]; Cation: copper(II) / Cu²⁺ [1]; Anion: carbonate / CO₃²⁻ [1]; Solid P = CuCO₃ [1]."
           },
           {
             lbl: "(b)",
             ao: "AO3", tier: "ATP", marks: 4, lines: 2,
-            text: "Solid Q is warmed with NaOH(aq), producing a gas that turns damp red litmus paper blue. An aqueous solution of Q acidified with HNO₃ gives a white precipitate with AgNO₃(aq). Identify the gas and both ions in Solid Q.",
+            text: "Solid Q is warmed with NaOH(aq), producing a gas that turns damp red litmus paper blue. An aqueous solution of Q acidified with HNO₃ gives a white precipitate with AgNO₃(aq). Identify the gas, both ions in Solid Q, and write the chemical formula of Solid Q.",
             ms: "Gas: ammonia / NH₃ [1]; Cation: ammonium / NH₄⁺ [1]; Anion: chloride / Cl⁻ [1]; Solid Q = NH₄Cl [1]."
           },
           {
@@ -1159,11 +1159,15 @@ function syncUI() {
     if (!state.timerRunning && !state.submitted) state.timerSeconds = p.defaultTime * 60;
   }
   const mat = computeSkillMatrix(p);
+  const b4Note = p.id === "B4"
+    ? `<div class="skill-pill" style="grid-column:1 / -1; background:#fffbeb; border-color:#fcd34d; color:#78350f;"><strong>⚠️ Lưu ý trọng số B4:</strong> Đề này gồm 30/40 điểm (75%) Paper 6 ATP để chẩn đoán sâu kỹ năng thực hành; trong kỳ thi Cambridge 0620 chính thức, Paper 6 chỉ chiếm 20% tổng điểm — không dùng điểm thô B4 để dự báo trực tiếp điểm tổng môn.</div>`
+    : "";
   document.getElementById("skillMatrix").innerHTML = `
     <div class="skill-pill"><strong>AO1 (Kiến thức &amp; Định nghĩa)</strong>${mat.ao.AO1} / ${mat.total} điểm</div>
     <div class="skill-pill"><strong>AO2 (Vận dụng, Tính toán &amp; Cơ chế)</strong>${mat.ao.AO2} / ${mat.total} điểm</div>
     <div class="skill-pill"><strong>AO3 (Thực nghiệm Paper 6 ATP)</strong>${mat.ao.AO3} / ${mat.total} điểm</div>
     <div class="skill-pill"><strong>Phân tầng Syllabus</strong>Core: ${mat.tier.Core}đ • Ext: ${mat.tier.Ext}đ • ATP: ${mat.tier.ATP}đ</div>
+    ${b4Note}
   `;
   renderPaper();
 }
@@ -1233,6 +1237,7 @@ function buildReportBannerInner() {
       <div class="stat-pill"><div class="lbl">Tổng điểm</div><div class="val">${s.totalEarned} / ${s.totalMax} (${pct.toFixed(1)}%)</div></div>
     </div>
     <div class="calc-result ${bandCls}">${verdict} — Core: ${s.tierEarned.Core}/${s.tierMax.Core} | Ext: ${s.tierEarned.Ext}/${s.tierMax.Ext} | ATP: ${s.tierEarned.ATP}/${s.tierMax.ATP}</div>
+    ${getActivePaper().id === "B4" ? `<div style="margin-top:8px; font-size:0.82rem; color:#78350f; background:#fffbeb; border:1px solid #fcd34d; border-radius:8px; padding:7px 10px;">⚠️ <strong>Lưu ý diễn giải Paper B4:</strong> 75% điểm số đến từ ATP (30/40đ) nhằm kiểm tra kỹ năng thực nghiệm trước Mock; trọng số chính thức của ATP trong Cambridge 0620 là 20%, nên cần đối chiếu kèm điểm lý thuyết (B1–B3 / Paper 4).</div>` : ""}
   `;
 }
 
