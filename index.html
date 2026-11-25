@@ -747,6 +747,7 @@
         <button class="seg-btn" data-view="teacher">✅ Đáp Án Giáo Viên (Teacher Key)</button>
       </div>
       <div class="appendix-toggles">
+        <label><input type="checkbox" id="chkATP" checked> Kèm Section C — Practical Skills (Paper 6 ATP)</label>
         <label><input type="checkbox" id="chkPT" checked> Kèm Periodic Table (cuối đề)</label>
         <label><input type="checkbox" id="chkQA" checked> Kèm Qualitative Analysis Notes (Paper 6)</label>
       </div>
@@ -1698,6 +1699,7 @@ let state = {
   activePreset: "m2a",
   tier: "dual",
   view: "online",
+  showATP: true,
   showPT: true,
   showQA: true,
   customTime: false,
@@ -1805,6 +1807,10 @@ function parseUrlParams() {
     document.getElementById("inMilestone").value = p.get("milestone");
     state.customMilestone = true;
   }
+  if (p.has("atp")) {
+    state.showATP = p.get("atp") !== "0";
+    document.getElementById("chkATP").checked = state.showATP;
+  }
   if (p.has("pt")) {
     state.showPT = p.get("pt") !== "0";
     document.getElementById("chkPT").checked = state.showPT;
@@ -1885,6 +1891,18 @@ function initUI() {
     };
   });
 
+  document.getElementById("chkATP").onchange = (e) => {
+    state.showATP = e.target.checked;
+    state.customTime = false;
+    state.importedTimeLimit = null;
+    state.importedStartedAt = null;
+    state.importedSubmittedAt = null;
+    state.importedTimedOut = null;
+    state.onlineSubmitted = false;
+    state.rubricScores = {};
+    state.rubricGraded = {};
+    syncUI();
+  };
   document.getElementById("chkPT").onchange = (e) => { state.showPT = e.target.checked; syncAppendixButtons(); renderPaper(); };
   document.getElementById("chkQA").onchange = (e) => { state.showQA = e.target.checked; syncAppendixButtons(); renderPaper(); };
 
@@ -1958,9 +1976,10 @@ function applyPreset(p) {
 
 function getMarksBreakdown() {
   const n = state.selected.length;
-  if (state.tier === "dual") return { core: n * 4, ext: n * 4, atp: n * 2, total: n * 10 };
-  if (state.tier === "core") return { core: n * 4, ext: 0, atp: n * 2, total: n * 6 };
-  return { core: 0, ext: n * 4, atp: n * 2, total: n * 6 };
+  const atp = state.showATP ? n * 2 : 0;
+  if (state.tier === "dual") return { core: n * 4, ext: n * 4, atp, total: n * 8 + atp };
+  if (state.tier === "core") return { core: n * 4, ext: 0, atp, total: n * 4 + atp };
+  return { core: 0, ext: n * 4, atp, total: n * 4 + atp };
 }
 
 function syncUI() {
@@ -1989,6 +2008,12 @@ function syncUI() {
       state.initialTimerSeconds = mins * 60;
       state.elapsedSeconds = 0;
     }
+  }
+  document.getElementById("chkATP").checked = state.showATP;
+  const atpInput = document.getElementById("earnAtp");
+  if (atpInput) {
+    atpInput.disabled = !state.showATP;
+    if (!state.showATP) atpInput.value = 0;
   }
   document.getElementById("maxCoreLbl").textContent = m.core;
   document.getElementById("maxExtLbl").textContent = m.ext;
@@ -2093,6 +2118,7 @@ function copyStudentLink() {
     tier: state.tier,
     time: document.getElementById("inTime").value || "50",
     milestone: document.getElementById("inMilestone").value || "IGCSE Chemistry 0620",
+    atp: state.showATP ? "1" : "0",
     pt: state.showPT ? "1" : "0",
     qa: state.showQA ? "1" : "0"
   });
@@ -2124,8 +2150,10 @@ function applyImportedSubmission(obj) {
   const matched = detectPresetFromSelection(ids);
   state.activePreset = matched ? matched.id : null;
   state.tier = ["dual","core","ext"].includes(obj.tier) ? obj.tier : "dual";
+  state.showATP = obj.atp !== false;
   state.showPT = obj.pt !== false;
   state.showQA = obj.qa !== false;
+  document.getElementById("chkATP").checked = state.showATP;
   document.getElementById("chkPT").checked = state.showPT;
   document.getElementById("chkQA").checked = state.showQA;
   document.getElementById("inName").value = obj.name || "";
@@ -2171,26 +2199,27 @@ function evaluatePlacement(c, e, a, m) {
   if (m.total === 0) return { bandClass: "", title: "", advice: "", pct: 0, pctExt: null, pctAtp: 0, totalEarned: 0 };
   const pct = (totalEarned / m.total) * 100;
   const pctExt = m.ext > 0 ? (e / m.ext) * 100 : null;
-  const pctAtp = m.atp > 0 ? (a / m.atp) * 100 : 0;
+  const pctAtp = m.atp > 0 ? (a / m.atp) * 100 : null;
 
   let bandClass = "band-1", title = "", advice = "";
 
-  // Pre-IGCSE diagnostic (contains M0): report Foundation+ATP vs Extension separately
+  // Pre-IGCSE diagnostic (contains M0): report Foundation(+ATP) vs Extension separately
   if (isPreIgcseTest()) {
     const foundEarned = c + a;
     const foundMax = m.core + m.atp;
     const foundPct = foundMax > 0 ? (foundEarned / foundMax) * 100 : 0;
+    const foundLbl = m.atp > 0 ? "Nền tảng & Thực hành" : "Nền tảng (Core)";
     if (foundPct < 50) {
       bandClass = "band-1";
-      title = `Pre-IGCSE: Cần củng cố nền tảng Lower Secondary (Nền tảng & Thực hành: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
+      title = `Pre-IGCSE: Cần củng cố nền tảng Lower Secondary (${foundLbl}: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
       advice = "Cần ôn lại nền tảng hạt, phân loại chất, pH và tách chất đơn giản. Không dùng bài Pre-IGCSE này để xếp lớp Core hay Extended.";
     } else if (foundPct < 78) {
       bandClass = "band-2";
-      title = `Pre-IGCSE: Đạt nền tảng vào Year 1 IGCSE (Nền tảng & Thực hành: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
+      title = `Pre-IGCSE: Đạt nền tảng vào Year 1 IGCSE (${foundLbl}: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
       advice = "Đủ nền tảng học Year 1 IGCSE theo lộ trình chuẩn; tiếp tục theo dõi trong HK I trước khi xét Core hay Extended.";
     } else {
       bandClass = "band-4";
-      title = `Pre-IGCSE: Nền tảng Khoa học rất vững cho Year 1 IGCSE (Nền tảng & Thực hành: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
+      title = `Pre-IGCSE: Nền tảng Khoa học rất vững cho Year 1 IGCSE (${foundLbl}: ${foundEarned}/${foundMax}${m.ext > 0 ? ` · Mở rộng: ${e}/${m.ext}` : ""})`;
       advice = (pctExt !== null && pctExt >= 60)
         ? "Nền tảng rất chắc và học sinh đã học trước phần Mở rộng IGCSE (" + pctExt.toFixed(0) + "%); có thể bổ sung bài nâng cao sớm."
         : "Nền tảng Lower Secondary rất vững; sẵn sàng vào Year 1 IGCSE (không trừ/hạ đánh giá nếu chưa học phần Mở rộng IGCSE).";
@@ -2225,7 +2254,7 @@ function evaluatePlacement(c, e, a, m) {
     bandClass = "band-2";
     title = "Nhóm 2: Trung bình – Khá (Core vững / Standard Extended)";
     advice = "Phần [Ext] đạt " + pctExt.toFixed(0) + "%. Xếp lớp Core (mục tiêu C) hoặc Extended chuẩn kèm bổ trợ Mol & định lượng.";
-  } else if (pct >= 82 && pctExt >= 75 && pctAtp >= 70) {
+  } else if (pct >= 82 && pctExt >= 75 && (pctAtp === null || pctAtp >= 70)) {
     bandClass = "band-4";
     title = "Nhóm 4: Giỏi – Xuất sắc (Extended tăng tốc / A*)";
     advice = "Đủ năng lực bứt phá A/A*! Tập trung đề Paper 4 nâng cao và câu Q4 thiết kế thí nghiệm Paper 6.";
@@ -2256,7 +2285,7 @@ function updateCalc() {
   }
   const ev = evaluatePlacement(c, e, a, m);
   res.className = "calc-result " + ev.bandClass;
-  res.innerHTML = `${ev.title} (${ev.pct.toFixed(1)}% tổng${ev.pctExt !== null ? " | Ext: " + ev.pctExt.toFixed(0) + "%" : ""} | ATP: ${ev.pctAtp.toFixed(0)}%) — ${ev.advice}`;
+  res.innerHTML = `${ev.title} (${ev.pct.toFixed(1)}% tổng${ev.pctExt !== null ? " | Ext: " + ev.pctExt.toFixed(0) + "%" : ""}${ev.pctAtp !== null ? " | ATP: " + ev.pctAtp.toFixed(0) + "%" : " | Không gồm ATP"}) — ${ev.advice}`;
 }
 
 function computeOnlineScores() {
@@ -2292,10 +2321,12 @@ function computeOnlineScores() {
         e += Number(state.rubricScores[rk] || 0);
       });
     }
-    totalWritten += 1;
-    const atpKey = `atp_${mod.id}`;
-    if (state.rubricGraded[atpKey]) gradedWritten += 1;
-    a += Number(state.rubricScores[atpKey] || 0);
+    if (state.showATP) {
+      totalWritten += 1;
+      const atpKey = `atp_${mod.id}`;
+      if (state.rubricGraded[atpKey]) gradedWritten += 1;
+      a += Number(state.rubricScores[atpKey] || 0);
+    }
   });
 
   const mcqTotal = mcqCoreCorrect + mcqExtCorrect;
@@ -2455,14 +2486,14 @@ function buildReportBannerInner(s, m, ev) {
   }
   const statsHtml = ev.isPre
     ? `
-      <div class="stat-pill"><div class="lbl">Nền tảng &amp; Thực hành (Core+ATP)</div><div class="val">${ev.foundEarned} / ${ev.foundMax} (${ev.foundPct.toFixed(0)}%)</div></div>
+      <div class="stat-pill"><div class="lbl">${m.atp > 0 ? "Nền tảng &amp; Thực hành (Core+ATP)" : "Nền tảng (Core)"}</div><div class="val">${ev.foundEarned} / ${ev.foundMax} (${ev.foundPct.toFixed(0)}%)</div></div>
       <div class="stat-pill"><div class="lbl">Mở rộng / Học trước ([Ext])</div><div class="val">${s.e} / ${m.ext}${ev.pctExt !== null ? ` (${ev.pctExt.toFixed(0)}%)` : ""}</div></div>
       <div class="stat-pill"><div class="lbl">Tổng điểm tham khảo</div><div class="val">${ev.totalEarned} / ${m.total}</div></div>
     `
     : `
       <div class="stat-pill"><div class="lbl">[Core] (MCQ + Theory)</div><div class="val">${s.c} / ${m.core}</div></div>
       <div class="stat-pill"><div class="lbl">[Ext] (MCQ + Theory)</div><div class="val">${s.e} / ${m.ext}</div></div>
-      <div class="stat-pill"><div class="lbl">[ATP] (Paper 6)</div><div class="val">${s.a} / ${m.atp}</div></div>
+      ${m.atp > 0 ? `<div class="stat-pill"><div class="lbl">[ATP] (Paper 6)</div><div class="val">${s.a} / ${m.atp}</div></div>` : ""}
       <div class="stat-pill"><div class="lbl">Tổng điểm</div><div class="val">${ev.totalEarned} / ${m.total} (${ev.pct.toFixed(1)}%)</div></div>
     `;
   return `
@@ -2577,7 +2608,8 @@ function renderPaper() {
   const sMile = escHtml(document.getElementById("inMilestone").value) || "Custom Modular Test";
   const sDate = escHtml(document.getElementById("inDate").value) || "____ / ____ / 202__";
   const sTime = document.getElementById("inTime").value || m.total;
-  const tierLabel = state.tier === "dual" ? "Dual-Tier (Core + Supplement + ATP)" : (state.tier === "core" ? "Core Only (Foundation Check)" : "Extended Focus (Supplement + ATP)");
+  const atpSuffix = state.showATP ? " + ATP" : " (Theory Only — No ATP)";
+  const tierLabel = state.tier === "dual" ? ("Dual-Tier (Core + Supplement" + atpSuffix + ")") : (state.tier === "core" ? ("Core Only (Foundation" + (state.showATP ? " + ATP)" : ")")) : ("Extended Focus (Supplement" + atpSuffix + ")"));
 
   let html = "";
 
@@ -2733,42 +2765,44 @@ function renderPaper() {
   });
 
   // SECTION C: ATP
-  const secCMarks = chosen.length * 2;
-  html += `<div class="section-banner"><span>SECTION C — Practical Skills &amp; Analysis (Paper 6 ATP)</span><span>${secCMarks} marks</span></div>`;
-  chosen.forEach(mod => {
-    const rkey = `atp_${mod.id}`;
-    const savedVal = state.onlineAnswers[rkey] || "";
-    const isGraded = !!state.rubricGraded[rkey];
-    const curScore = Number(state.rubricScores[rkey] || 0);
-    let inputHtml = "";
-    if (isOnline) {
-      inputHtml = `
-        <textarea class="online-ta" ${state.onlineSubmitted ? "readonly" : ""} placeholder="Nhập nhận xét thí nghiệm / phương án xử lý sai số tại đây..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
-        <div class="print-ans" id="pa_${rkey}">${escHtml(savedVal) || "(No written answer)"}</div>
-      `;
-      if (state.onlineSubmitted && !state.studentLock) {
-        let pills = "";
-        for (let v = 0; v <= mod.atp.marks; v++) {
-          pills += `<button type="button" class="mark-pill ${isGraded && curScore === v ? "active" : ""}" data-rkey="${rkey}" data-rval="${v}" onclick="setRubricScore('${rkey}', ${v})">${v}đ</button>`;
+  if (state.showATP) {
+    const secCMarks = chosen.length * 2;
+    html += `<div class="section-banner"><span>SECTION C — Practical Skills &amp; Analysis (Paper 6 ATP)</span><span>${secCMarks} marks</span></div>`;
+    chosen.forEach(mod => {
+      const rkey = `atp_${mod.id}`;
+      const savedVal = state.onlineAnswers[rkey] || "";
+      const isGraded = !!state.rubricGraded[rkey];
+      const curScore = Number(state.rubricScores[rkey] || 0);
+      let inputHtml = "";
+      if (isOnline) {
+        inputHtml = `
+          <textarea class="online-ta" ${state.onlineSubmitted ? "readonly" : ""} placeholder="Nhập nhận xét thí nghiệm / phương án xử lý sai số tại đây..." oninput="setTextAnswer('${rkey}', this.value)">${escHtml(savedVal)}</textarea>
+          <div class="print-ans" id="pa_${rkey}">${escHtml(savedVal) || "(No written answer)"}</div>
+        `;
+        if (state.onlineSubmitted && !state.studentLock) {
+          let pills = "";
+          for (let v = 0; v <= mod.atp.marks; v++) {
+            pills += `<button type="button" class="mark-pill ${isGraded && curScore === v ? "active" : ""}" data-rkey="${rkey}" data-rval="${v}" onclick="setRubricScore('${rkey}', ${v})">${v}đ</button>`;
+          }
+          inputHtml += `<div class="rubric-bar no-print"><span>Chấm câu ATP (tối đa ${mod.atp.marks}đ):</span>${pills}${!isGraded ? `<span class="badge-wait" id="wait_${rkey}">⏳ Chưa chấm</span>` : ""}</div>`;
         }
-        inputHtml += `<div class="rubric-bar no-print"><span>Chấm câu ATP (tối đa ${mod.atp.marks}đ):</span>${pills}${!isGraded ? `<span class="badge-wait" id="wait_${rkey}">⏳ Chưa chấm</span>` : ""}</div>`;
+      } else if (!isTeacher) {
+        inputHtml = linesHtml(mod.atp.lines);
       }
-    } else if (!isTeacher) {
-      inputHtml = linesHtml(mod.atp.lines);
-    }
-    html += `
-      <div class="q-card">
-        <div class="q-head">
-          <div class="q-num">Question ${qNo} — Practical Investigation (${mod.title.replace(/^(Topic|Module) [\w]+:\s*/, "")})</div>
-          <div class="q-meta"><span class="badge badge-topic">${mod.short}</span><span class="badge badge-atp">[ATP]</span><span class="marks-tag">[2]</span></div>
+      html += `
+        <div class="q-card">
+          <div class="q-head">
+            <div class="q-num">Question ${qNo} — Practical Investigation (${mod.title.replace(/^(Topic|Module) [\w]+:\s*/, "")})</div>
+            <div class="q-meta"><span class="badge badge-topic">${mod.short}</span><span class="badge badge-atp">[ATP]</span><span class="marks-tag">[2]</span></div>
+          </div>
+          <div>${mod.atp.stem}</div>
+          ${inputHtml}
+          ${showMS ? `<div class="ms-box"><strong>Mark Scheme:</strong> ${mod.atp.ms}</div>` : ""}
         </div>
-        <div>${mod.atp.stem}</div>
-        ${inputHtml}
-        ${showMS ? `<div class="ms-box"><strong>Mark Scheme:</strong> ${mod.atp.ms}</div>` : ""}
-      </div>
-    `;
-    qNo++;
-  });
+      `;
+      qNo++;
+    });
+  }
 
   if (state.showPT) html += renderPT();
   if (state.showQA) html += renderQA();

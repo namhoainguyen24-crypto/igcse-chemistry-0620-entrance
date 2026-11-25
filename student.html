@@ -1802,6 +1802,7 @@ let state = {
   selected: ["1", "2", "3a", "3b", "12a"],
   tier: "dual",
   milestone: "Mốc 2A — Đầu HK II Year 1 (CUP Ch. 1–5, 21)",
+  showATP: true,
   showPT: true,
   showQA: true,
   timeMinutes: 50,
@@ -1898,6 +1899,7 @@ function parseUrlParams() {
   if (p.has("milestone")) {
     state.milestone = p.get("milestone");
   }
+  if (p.has("atp")) state.showATP = p.get("atp") !== "0";
   if (p.has("pt")) state.showPT = p.get("pt") !== "0";
   if (p.has("qa")) state.showQA = p.get("qa") !== "0";
   if (p.has("time")) {
@@ -1918,9 +1920,10 @@ function parseUrlParams() {
 
 function getMarksBreakdown() {
   const n = state.selected.length;
-  if (state.tier === "dual") return { core: n * 4, ext: n * 4, atp: n * 2, total: n * 10 };
-  if (state.tier === "core") return { core: n * 4, ext: 0, atp: n * 2, total: n * 6 };
-  return { core: 0, ext: n * 4, atp: n * 2, total: n * 6 };
+  const atp = state.showATP ? n * 2 : 0;
+  if (state.tier === "dual") return { core: n * 4, ext: n * 4, atp, total: n * 8 + atp };
+  if (state.tier === "core") return { core: n * 4, ext: 0, atp, total: n * 4 + atp };
+  return { core: 0, ext: n * 4, atp, total: n * 4 + atp };
 }
 
 function formatTime(sec) {
@@ -1987,6 +1990,7 @@ function buildSubmissionToken() {
     tier: state.tier,
     time: state.timeMinutes,
     milestone: state.milestone,
+    atp: state.showATP,
     pt: state.showPT,
     qa: state.showQA,
     name: state.studentName,
@@ -2125,14 +2129,15 @@ function renderPaper() {
   const sheet = document.getElementById("paperSheet");
   const chosen = MODULES.filter(m => state.selected.includes(m.id));
   const m = getMarksBreakdown();
-  const tierLabel = state.tier === "dual" ? "Dual-Tier (Core + Supplement + ATP)" : (state.tier === "core" ? "Core Only (Foundation Check)" : "Extended Focus (Supplement + ATP)");
+  const atpSuffix = state.showATP ? " + ATP" : " (Theory Only — No ATP)";
+  const tierLabel = state.tier === "dual" ? ("Dual-Tier (Core + Supplement" + atpSuffix + ")") : (state.tier === "core" ? ("Core Only (Foundation" + (state.showATP ? " + ATP)" : ")")) : ("Extended Focus (Supplement" + atpSuffix + ")"));
   const sName = escHtml(state.studentName) || "___________________________________";
   const sSchool = escHtml(state.studentSchool) || "_________________________";
 
   let html = "";
   if (state.submitted) {
     const answeredMcqs = Object.keys(state.answers).filter(k => k.startsWith("mcq_")).length;
-    const answeredWritten = Object.keys(state.answers).filter(k => (k.startsWith("th_") || k.startsWith("atp_")) && String(state.answers[k] || "").trim().length > 0).length;
+    const answeredWritten = Object.keys(state.answers).filter(k => (k.startsWith("th_") || (state.showATP && k.startsWith("atp_"))) && String(state.answers[k] || "").trim().length > 0).length;
     const bannerTitle = state.timedOut
       ? "⏰ Hết giờ — Bài làm đã tự động khóa và nộp!"
       : "✅ Đã nộp bài thành công!";
@@ -2232,17 +2237,19 @@ function renderPaper() {
     qNo++;
   });
 
-  html += '<div class="section-banner"><span>SECTION C — Practical Skills &amp; Analysis (Paper 6 ATP)</span><span>' + (chosen.length * 2) + ' marks</span></div>';
-  chosen.forEach(mod => {
-    const rkey = "atp_" + mod.id;
-    const savedVal = state.answers[rkey] || "";
-    html += '<div class="q-card"><div class="q-head"><div class="q-num">Question ' + qNo + ' — Practical Investigation (' + mod.title.replace(/^(Topic|Module) [\w]+:\s*/, "") + ')</div>' +
-      '<div class="q-meta"><span class="badge badge-topic">' + mod.short + '</span><span class="badge badge-atp">[ATP]</span><span class="marks-tag">[2]</span></div></div>' +
-      '<div>' + mod.atp.stem + '</div>' +
-      '<textarea class="online-ta" ' + (state.submitted ? "readonly" : "") + ' placeholder="Nhập nhận xét thí nghiệm / phương án xử lý sai số tại đây..." oninput="setTextAnswer(\'' + rkey + '\', this.value)">' + escHtml(savedVal) + '</textarea>' +
-      '<div class="print-ans" id="pa_' + rkey + '">' + (escHtml(savedVal) || "(No written answer)") + '</div></div>';
-    qNo++;
-  });
+  if (state.showATP) {
+    html += '<div class="section-banner"><span>SECTION C — Practical Skills &amp; Analysis (Paper 6 ATP)</span><span>' + (chosen.length * 2) + ' marks</span></div>';
+    chosen.forEach(mod => {
+      const rkey = "atp_" + mod.id;
+      const savedVal = state.answers[rkey] || "";
+      html += '<div class="q-card"><div class="q-head"><div class="q-num">Question ' + qNo + ' — Practical Investigation (' + mod.title.replace(/^(Topic|Module) [\w]+:\s*/, "") + ')</div>' +
+        '<div class="q-meta"><span class="badge badge-topic">' + mod.short + '</span><span class="badge badge-atp">[ATP]</span><span class="marks-tag">[2]</span></div></div>' +
+        '<div>' + mod.atp.stem + '</div>' +
+        '<textarea class="online-ta" ' + (state.submitted ? "readonly" : "") + ' placeholder="Nhập nhận xét thí nghiệm / phương án xử lý sai số tại đây..." oninput="setTextAnswer(\'' + rkey + '\', this.value)">' + escHtml(savedVal) + '</textarea>' +
+        '<div class="print-ans" id="pa_' + rkey + '">' + (escHtml(savedVal) || "(No written answer)") + '</div></div>';
+      qNo++;
+    });
+  }
 
   if (state.showPT) html += renderPT();
   if (state.showQA) html += renderQA();
